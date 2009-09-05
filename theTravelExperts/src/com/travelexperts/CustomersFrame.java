@@ -354,7 +354,6 @@ public class CustomersFrame extends JInternalFrame {
 		add(southPanel, BorderLayout.SOUTH);
 		
 		setSize(600, 400);
-		setVisible(true);
 		pack();
 	}
 }
