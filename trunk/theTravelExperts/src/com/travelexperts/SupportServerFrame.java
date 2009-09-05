@@ -1,7 +1,10 @@
 package com.travelexperts;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -17,6 +20,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import javax.net.ssl.SSLServerSocketFactory;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
@@ -26,6 +31,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -62,28 +69,13 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 	JButton btnSend = new JButton("Send");		// Button to send the messages
 	
 	JPanel pnlCenter = new JPanel();				// Contains main message window
+	JPanel pnlEast = new JPanel();					// Contains user list
 	JPanel pnlSouth = new JPanel(new FlowLayout());	// Contains input and send button
 	
 	private volatile boolean serverOnline = true;	// Set to false to shut down server
 
 	private String serverLog = new String();
 
-	public static void main(String[] args) {
-		// AWT friendly way of starting a new JFRame
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					new SupportServerFrame();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
 	public SupportServerFrame() throws IOException, InterruptedException {
 		super("Travel Experts Online Support", true,  true, true, true);
 		
@@ -103,11 +95,20 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		pnlCenter.add(new JScrollPane(txtMessages));
 		
 		pnlSouth.add(cboSendTo);
-		pnlSouth.add(txtInput);
+		pnlSouth.add(new JScrollPane(txtInput));
 		pnlSouth.add(btnSend);
+		
+		// Make cool border
+		lstUsers.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Online Users:"));
+		JScrollPane jspUsers = new JScrollPane(lstUsers);
+		jspUsers.setPreferredSize(new Dimension(300, 300));
+		pnlEast.add(jspUsers);		// List should be in a scroll pane
+		
+		initComponents();	// Add action handlers to components
 		
 		add(pnlCenter, BorderLayout.CENTER);
 		add(pnlSouth, BorderLayout.SOUTH);
+		add(pnlEast, BorderLayout.EAST);
 		
 		pack();		// Auto-size the frame based on computed size of components
 		setVisible(true);
@@ -124,13 +125,84 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		});
 	}
 	
+	// Just adds some event handling to chat frame components
+	public void initComponents() {
+		
+		// Input 
+		txtInput.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				messageToAll(txtInput.getText());
+				txtInput.setText("");
+			}
+		});
+		
+		// Send button just does the same thing
+		btnSend.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+	}
+	
+	private void logMessage(String message) {
+		serverLog += message;
+		txtMessages.setText(serverLog);
+		System.out.println(message);
+	}
+	
+	// Refresh lstUsers to show all online users
+	private void refreshUsers() {
+		synchronized (allClients) {
+			
+			// Use event queue as JList methods are not thread safe
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					DefaultListModel listModel = new DefaultListModel();
+					
+					// Add connected client names to list
+					Iterator<handleClient> i = allClients.iterator();
+					while(i.hasNext()) {
+						listModel.addElement(i.next().username);
+					}
+					lstUsers.setModel(listModel);
+					lstUsers.revalidate();
+				}
+			});			
+		}
+	}
+	
+	private String formatMessage(String unformattedMessage) {
+		// Format with sender and date
+		return Thread.currentThread().getName() + "( " +
+			DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+ ") :" +
+			unformattedMessage + "\r\n";
+		
+	}
+	
+	private void messageToAll(String outgoingMessage) {
+		synchronized(allClients) {
+			outgoingMessage = formatMessage(outgoingMessage);
+			// Send the message to other threads (contained in allClients)
+			Iterator<handleClient> i = allClients.iterator();
+			while(i.hasNext()) {
+				i.next().sendMessage(outgoingMessage);
+			}
+			
+			// This method only calls JTextComponent.setText
+			// which is one of the few thread-safe Swing methods
+			logMessage(outgoingMessage);
+		}
+	}
+	
 	// Called when run as a thread
 	@Override
 	public void run() {
 		// Set the timeout for the server socket to 5 seconds
 		// This prevents the ServerSocket.accept() method from blocking indefinitely
 		// which will prevent it from closing
-		// Note: also throttles connections to (100+100)/1000 = 10 per second (5 per port)
 		try {
 			serverSocket.setSoTimeout(100);
 		} catch (SocketException e1) {
@@ -148,9 +220,10 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 				// Create thread, add to group and use IP address as thread name
 				Thread clientThread = new Thread(clientThreads, new handleClient(clientSocket), clientSocket.getRemoteSocketAddress().toString());
 				clientThread.start();
+				refreshUsers();
 			}
 			catch (SocketTimeoutException e) {	// Must be caught before IOException
-				// Do nothing
+				// Check if server should still be online then continue listening
 			}
 			catch (IOException e) {
 				e.printStackTrace();
@@ -162,12 +235,6 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	
-	private void logMessage(String message) {
-		serverLog += message;
-		txtMessages.setText(serverLog);
-		System.out.println(message);
-	}
 
 	// Internal class that will handle connections from clients
 	class handleClient implements Runnable {
@@ -175,6 +242,7 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		private BufferedReader clientReader = null;
 		private BufferedWriter clientWriter = null;
 		
+		public String username = "anonymous";
 		Socket clientSocket;
 		
 		public handleClient(Socket newClientSocket) throws IOException {
@@ -199,6 +267,8 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		
 		@Override
 		public void run () {
+			// User name = thread name , dirty?
+			username = Thread.currentThread().getName();
 			String receivedMessage = "";
 			// Synchronize lock allClients object to prevent concurrent access from other threads
 			synchronized(allClients) {
@@ -217,35 +287,7 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 						// Read the message from the stream
 						receivedMessage = clientReader.readLine().trim();
 						
-						// Format with sender and date
-						String outgoingMessage = Thread.currentThread().getName() + "( " +
-							DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+ ") :" +
-							receivedMessage + "\r\n";
-						
-						// Lock thread while sending messages to other threads
-						synchronized(allClients) {
-							// Send the message to other threads (contained in allClients)
-							Iterator<handleClient> i = allClients.iterator();
-							while(i.hasNext()) {
-								i.next().sendMessage(outgoingMessage);
-							}
-							
-							// This method only calls JTextComponent.setText
-							// which is one of the few thread-safe Swing methods
-							logMessage(outgoingMessage);
-							
-							// This method might interact with Swing components that are not thread safe
-							// It must be processed by the EventQueue
-							// Alternative: implement SwingWorker interface
-							/* TODO: fix this by changing increasing scope of outgoingMessage
-							EventQueue.invokeLater(new Runnable() {
-								@Override
-								public void run() {
-									logMessage(outgoingMessage);
-								}
-							});
-							*/
-						}
+						messageToAll(receivedMessage);
 					}
 					else
 						// Yield since there's nothing to do  
@@ -264,6 +306,4 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		}
 		
 	}
-
-	
 }
