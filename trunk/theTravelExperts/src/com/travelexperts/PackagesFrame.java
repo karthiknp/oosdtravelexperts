@@ -994,6 +994,9 @@ public class PackagesFrame extends JInternalFrame
 		indexToChange = tblPackages.getSelectedRow() == e
 				.getLastIndex() ? e.getFirstIndex() : e
 				.getLastIndex();
+		int indexNext = tblPackages.getSelectedRow() == e
+				.getLastIndex() ? e.getLastIndex() : e
+				.getFirstIndex();
 
 		System.out.println("ListSelection 1st Listener"
 				+ e.getFirstIndex());
@@ -1118,7 +1121,7 @@ public class PackagesFrame extends JInternalFrame
 						JOptionPane.OK_CANCEL_OPTION))
 		{
 			updatePackages(sql1);
-			initTable(pkgTblModel, indexToChange);
+			initTable(pkgTblModel, indexNext);
 		}		
 	}
 }
