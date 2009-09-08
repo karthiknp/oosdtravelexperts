@@ -1,12 +1,31 @@
 package com.travelexperts;
 
+
 public class Products_Suppliers
 {
 	// Products_Suppliers class definition
-	private int productSupplierID;
+	private int  productSupplierID;
 	private int productID;
 	private int supplierID;
+	private String psProdName;
+	private String psSuppName;
 
+	public String getPsProdName()
+	{
+		return psProdName;
+	}
+	public void setPsProdName(String psProdName)
+	{
+		this.psProdName = psProdName;
+	}
+	public String getPsSuppName()
+	{
+		return psSuppName;
+	}
+	public void setPsSuppName(String psSuppName)
+	{
+		this.psSuppName = psSuppName;
+	}
 	// Products_Suppliers class definition
 	public Products_Suppliers(int prodSuppID, int prodID, int suppID)
 	{
@@ -14,7 +33,13 @@ public class Products_Suppliers
 		this.setProductID(prodID);
 		this.setSupplierID(suppID);
 	}
-
+	// Products_Suppliers class definition
+	public Products_Suppliers()
+	{
+		this.productSupplierID=0;
+		this.productID=0;
+		this.supplierID=0;
+	}
 	/**
 	 * @param prodSuppID the productSupplierID to set
 	 */
@@ -61,5 +86,10 @@ public class Products_Suppliers
 	public int getSupplierID()
 	{
 		return supplierID;
+	}
+	public String toString()
+	{
+		String strProdSupp= this.psProdName+"--"+this.psSuppName;
+		return strProdSupp;
 	}
 }
