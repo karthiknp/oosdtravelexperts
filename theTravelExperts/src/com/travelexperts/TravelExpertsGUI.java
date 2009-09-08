@@ -1,8 +1,7 @@
 package com.travelexperts;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Color;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.Connection;
@@ -11,10 +10,6 @@ import java.sql.SQLException;
 import javax.swing.ActionMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -74,6 +69,7 @@ public class TravelExpertsGUI extends JFrame {
     	desktopPane.add(agentsFrame);
     	desktopPane.add(customersFrame);
     	desktopPane.add(supportServerFrame);
+    	desktopPane.setBackground(Color.BLACK);
     	
     	// Add content to main JPanel
     	setJMenuBar(mainMenuBar);

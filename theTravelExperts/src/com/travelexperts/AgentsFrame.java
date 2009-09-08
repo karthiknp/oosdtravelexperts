@@ -1,7 +1,6 @@
 package com.travelexperts;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;

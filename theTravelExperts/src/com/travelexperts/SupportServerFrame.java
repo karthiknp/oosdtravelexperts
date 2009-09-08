@@ -92,6 +92,7 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		serverThread.setDaemon(true);
 		serverThread.start();
 		
+		txtMessages.setFocusable(false);
 		pnlCenter.add(new JScrollPane(txtMessages));
 		
 		pnlSouth.add(cboSendTo);

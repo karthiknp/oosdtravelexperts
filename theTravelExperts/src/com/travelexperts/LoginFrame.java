@@ -29,18 +29,7 @@ public class LoginFrame extends JOptionPane {
 	}
 	
 	public boolean showLogin() {
-		// disabled for now
+		// TODO: Will finish this asap - Will
 		return true;
-		
-		/*
-		showConfirmDialog(null, pnlLogin);
-		
-		// Return true if login successful
-		if(String.copyValueOf(txtPassword.getPassword()).compareTo("oosd") == 0) { // Returns 0 if equal
-			return true;
-		}
-		
-		return false;
-		*/
 	}
 }
