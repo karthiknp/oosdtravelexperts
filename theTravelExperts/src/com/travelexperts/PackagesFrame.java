@@ -534,7 +534,7 @@ public class PackagesFrame extends JInternalFrame
 			jLabel3.setName("jLabel3");
 		}
 		{
-			btnInc = new JButton();
+			btnInc = new JButton("<");
 			getContentPane().add(btnInc);
 			btnInc.setBounds(351, 327, 52, 21);
 			btnInc.setName("btnInc");
@@ -549,7 +549,7 @@ public class PackagesFrame extends JInternalFrame
 			});
 		}
 		{
-			btnIncAll = new JButton();
+			btnIncAll = new JButton("<<");
 			getContentPane().add(btnIncAll);
 			btnIncAll.setBounds(351, 362, 52, 21);
 			btnIncAll.setName("btnIncAll");
@@ -562,7 +562,7 @@ public class PackagesFrame extends JInternalFrame
 			});
 		}
 		{
-			btnExc = new JButton();
+			btnExc = new JButton(">");
 			getContentPane().add(btnExc);
 			btnExc.setBounds(351, 394, 52, 21);
 			btnExc.setName("btnExc");
@@ -575,7 +575,7 @@ public class PackagesFrame extends JInternalFrame
 			});
 		}
 		{
-			btnExcAll = new JButton();
+			btnExcAll = new JButton(">>");
 			getContentPane().add(btnExcAll);
 			btnExcAll.setBounds(351, 426, 52, 21);
 			btnExcAll.setName("btnExcAll");
@@ -750,6 +750,10 @@ public class PackagesFrame extends JInternalFrame
 		// TODO add your code for tblPackages.mousePressed
 		dlmInc.clear();
 		Point pt = evt.getPoint();
+		if(tblPackages.rowAtPoint(pt)==-1)
+		{
+			return;
+		}
 		String sql1 = "SELECT ps.ProductSupplierId, pro.ProductId, ProdName, sup.SupplierId, SupName "
 				+ " FROM Packages pkg, Packages_Products_Suppliers pps, Products_Suppliers ps, Products pro, Suppliers sup "
 				+ " WHERE pkg.PackageId = pps.PackageId "
