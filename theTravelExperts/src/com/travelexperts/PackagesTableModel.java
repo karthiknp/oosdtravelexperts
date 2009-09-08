@@ -14,6 +14,13 @@ import javax.swing.table.AbstractTableModel;
 			//
 			// Instance Variables
 			//
+		    public static final int PACKAGE_ID = 0;
+		    public static final int PACKAGE_NAME = 1;
+		    public static final int START_DATE = 2;
+		    public static final int END_DATE = 3;
+		    public static final int DESCRIPTION = 4;
+		    public static final int PRICE = 5;
+		    public static final int COMISSION = 6;
 
 			    /**
 			 * 
