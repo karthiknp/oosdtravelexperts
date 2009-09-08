@@ -1,16 +1,32 @@
 package com.travelexperts;
 
+//import java.awt.Component;
+
+//import javax.swing.JLabel;
+//import javax.swing.ListCellRenderer;
+
 public class Products
 {
 	// Packages class definition
 	private int productID;
 	private String prodName;
+	private int productSupplierId; 
 	
 	// Products class constructor
 	public Products(int prodID, String prodName)
 	{
 		this.setProductID(prodID);
 		this.setProdName(prodName);
+	}
+	public Products(int prodID, String prodName, int psID)
+	{
+		this.setProductID(prodID);
+		this.setProdName(prodName);
+		this.setProductSupplierId(psID);
+	}
+	public Products()
+	{
+		
 	}
 
 	/**
@@ -44,4 +60,15 @@ public class Products
 	{
 		return prodName;
 	}
+	public String toString()
+	{
+		return prodName;
+	}
+	public void setProductSupplierId(int productSupplierId) {
+		this.productSupplierId = productSupplierId;
+	}
+	public int getProductSupplierId() {
+		return productSupplierId;
+	}
 }
+
