@@ -72,7 +72,7 @@ public class TravelExpertsGUI extends JFrame {
     	
     	// Add content to main JPanel
     	setJMenuBar(mainMenuBar);
-		add(statusBar, BorderLayout.NORTH);
+		// add(statusBar, BorderLayout.NORTH);
     	add(desktopPane, BorderLayout.CENTER);    	// Attach MDI parent to Main Frame
     	
     	// Maximize and show the main form
