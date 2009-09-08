@@ -18,6 +18,10 @@ public class Messages
 	
  
  	// validation messages
+ 	public static String getValidateMsg_A_CANT_GREATERTHAN_B(String strA,String strB)
+ 	{
+ 		return strA + " can't greater than " + strB + ". Please try again.";
+ 	}
  	public static String getValidateMsg_Delete(String itemName)
  	{
  		return "Please select a(an) " + itemName + " before tring to delete.";
