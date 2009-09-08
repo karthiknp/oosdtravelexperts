@@ -12,6 +12,7 @@ import javax.swing.ActionMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 

@@ -7,11 +7,22 @@ import java.net.URL;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.UIManager.LookAndFeelInfo;
 
+/**
+ * Custom menu bar for Travel Experts project
+ * 
+ * @author will_ad
+ *
+ */
 @SuppressWarnings("serial")
 public class MainMenuBar extends JMenuBar {
 
@@ -25,6 +36,9 @@ public class MainMenuBar extends JMenuBar {
     private JMenu suppliersMenu = new JMenu("Suppliers");
     private JMenu packagesMenu = new JMenu("Packages");
     private JMenu fileMenu = new JMenu("File");
+    
+    // Submenus
+    private JMenu skinsMenu = new JMenu("Skins");
 
     // Menu items
     public JMenuItem fileMenuExit = new JMenuItem("Exit", 'X');
@@ -33,7 +47,7 @@ public class MainMenuBar extends JMenuBar {
     public JMenuItem suppliersMenuEdit = new JMenuItem("Edit Suppliers", 'S');
     public JMenuItem agentsMenuEdit = new JMenuItem("Manage Agents", 'A');
     public JMenuItem customersMenuEdit = new JMenuItem("Manage Customers", 'C');
-    public JMenuItem customersMenuReport = new JMenuItem("Print Invoices", 'C');
+    public JMenuItem customersMenuReport = new JMenuItem("Print Invoices", 'I');
     public JMenuItem helpFAQ = new JMenuItem("FAQ");
     public JMenuItem helpAbout = new JMenuItem("About");
     public JMenuItem helpSupport = new JMenuItem("Real-time Support");
@@ -99,6 +113,44 @@ public class MainMenuBar extends JMenuBar {
     	}
     	add(optionsMenu);
     	{
+    		{
+    			// FINALLY FIXED!!!
+    			// I had to call static method SwingUtilities.refreshLookAndFeel
+    			// and pass it a reference to     			
+    			
+    			// Look and feels
+    			LookAndFeelInfo[] skins = UIManager.getInstalledLookAndFeels();
+    			// Add menu items for each LookAndFeel
+    			for(LookAndFeelInfo skin : skins) {
+    				
+    				JMenuItem skinMenuItem= new JMenuItem(skin.getName());
+    				// Must declare final to reference within ActionListener 
+    				final String skinName = skin.getClassName();
+    				
+    				skinMenuItem.addActionListener(new ActionListener() {
+    					@Override
+    					public void actionPerformed(ActionEvent e) {
+    						try {
+    							UIManager.setLookAndFeel(skinName);
+    							SwingUtilities.updateComponentTreeUI(parentFrame);
+    						} catch (ClassNotFoundException e1) {
+    							e1.printStackTrace();
+    						} catch (InstantiationException e1) {
+    							e1.printStackTrace();
+    						} catch (IllegalAccessException e1) {
+    							e1.printStackTrace();
+    						} catch (UnsupportedLookAndFeelException e1) {
+    							e1.printStackTrace();
+    						}
+    						
+    					}
+    				});
+    				
+    				skinsMenu.add(skinMenuItem);
+    				
+    			}
+    		}
+    		optionsMenu.add(skinsMenu);
 	   		optionsMenu.add(new JMenuItem("Preferences"));
     		optionsMenu.add(new JCheckBoxMenuItem("Verbose Debug Logging"));
     		
