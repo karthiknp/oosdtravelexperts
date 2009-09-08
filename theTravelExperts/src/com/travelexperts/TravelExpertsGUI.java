@@ -14,7 +14,6 @@ import javax.swing.JFrame;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
-
 /**
  * 	The main frame
  */
@@ -126,7 +125,6 @@ public class TravelExpertsGUI extends JFrame {
     }
     
     public static void main(String[] args) {
-    	    	
         try {
         	new TravelExpertsGUI();
 		} catch (MalformedURLException e) {
