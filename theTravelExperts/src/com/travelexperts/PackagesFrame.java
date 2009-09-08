@@ -41,7 +41,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableRowSorter;
-import javax.swing.text.StyledEditorKit.BoldAction;
 
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
@@ -103,7 +102,7 @@ public class PackagesFrame extends JInternalFrame
 	private String sql1;
 	private ResultSetMetaData rsm;
 	static Logger logger = Logger.getLogger(TXLogger.class.getName());
-	private DefaultListModel dlmInc= new DefaultListModel();
+	private DefaultListModel dlmInc = new DefaultListModel();
 	private DefaultListModel dlmAvi;
 
 	private DefaultComboBoxModel cmbProdFilterModel;
@@ -111,6 +110,8 @@ public class PackagesFrame extends JInternalFrame
 	private Vector<Vector> v_initTblData = new Vector<Vector>();
 
 	private Vector<Vector> v_initTblModelData;
+
+	private int indexToChange;
 
 	// Build the form
 	public PackagesFrame()
@@ -124,14 +125,6 @@ public class PackagesFrame extends JInternalFrame
 		getContentPane().setSize(800, 550);
 
 		// Add CRUD buttons
-		btnNew.addMouseListener(new MouseAdapter()
-		{
-			public void mouseClicked(MouseEvent evt)
-			{
-				clearForm();
-			}
-		});
-
 		// Add all panels to form
 		getContentPane().add(new JLabel("Viewing Packages"), "North");
 		getContentPane().add(pnlCrudPanel, "South");
@@ -149,6 +142,7 @@ public class PackagesFrame extends JInternalFrame
 			{
 				public void mouseClicked(MouseEvent evt)
 				{
+					// add new row to jtable
 					addNewRow();
 				}
 			});
@@ -167,56 +161,7 @@ public class PackagesFrame extends JInternalFrame
 				public void mouseClicked(MouseEvent evt)
 				{
 					System.out.println("btnDelete.mouseClicked, event=" + evt);
-					// TODO add your code for btnDelete.mouseClicked
-					// popup confirm message box
-					String msgID = "";
-					for (int row : tblPackages.getSelectedRows())
-					{
-						msgID += (row + 1) + " ";
-					}
-
-					if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(
-							null, Messages.getConfirmMsg_Delete("Package ID:"
-									+ msgID), "Warning",
-							JOptionPane.OK_CANCEL_OPTION))
-					{
-						return;
-					}
-					// delete all selected rows
-					for (int row : tblPackages.getSelectedRows())
-					{
-						String sql1 = "DELETE FROM Packages_Products_Suppliers "
-								+ " WHERE PackageId = "
-								+ tblPackages.getValueAt(row, 0);
-						String sql2 = "DELETE FROM  Packages"
-								+ " WHERE PackageId = "
-								+ tblPackages.getValueAt(row, 0);
-						System.out.println(sql1);
-						System.out.println(sql2);
-						try
-						{
-							sqlConn.setAutoCommit(false);
-							stmt1.executeQuery(sql1);
-							stmt1.executeQuery(sql2);
-							sqlConn.commit();
-							sqlConn.setAutoCommit(true);
-						}
-						catch (SQLException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							try
-							{
-								sqlConn.rollback();
-							}
-							catch (SQLException e1)
-							{
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						}
-					}
-					initTable(pkgTblModel,0);
+					btnDeleteMouseClicked(evt);
 				}
 			});
 			{
@@ -225,154 +170,25 @@ public class PackagesFrame extends JInternalFrame
 				pkgTblModel = new PackagesTableModel();
 				pkgTblModel.addTableModelListener(new TableModelListener()
 				{
-					@Override
+					// replaced by table selection event
 					public void tableChanged(TableModelEvent e)
 					{
-						// TODO Auto-generated method stub
 						pkgTblModelChanged(e);
 					}
 
 				});
 				tblPackages.setModel(pkgTblModel);
-				initTable(pkgTblModel,-1);
+				initTable(pkgTblModel, -1);
 				final TableRowSorter sorter = new TableRowSorter(pkgTblModel);
 				tblPackages.setRowSorter(sorter);
 				tblPackages.getSelectionModel().addListSelectionListener(
 						new ListSelectionListener()
 						{
-
-							private int indexToChange;
-
 							@Override
 							public void valueChanged(ListSelectionEvent e)
 							{
-								if (tblPackages.getSelectedRow()==-1 && dlmInc.size()>0)
-								{
-									dlmInc.removeRange(0, dlmInc.size()-1);
-									return;
-								}
-								if(indexToChange  == tblPackages.getSelectedRow() )
-								{
-									return;
-								}
-								
-								// TODO Auto-generated method stub 
-								 indexToChange = tblPackages.getSelectedRow()==e.getLastIndex()?e.getFirstIndex():e.getLastIndex();
-								
-								System.out.println("ListSelection 1st Listener"
-										+ e.getFirstIndex());
-								System.out.println("ListSelection 2nd Listener"
-										+ e.getLastIndex());
-								System.out.println("Selected row num"
-										+ tblPackages.getSelectedRow()); 
-								Boolean rowChanged = false;
-								String rowInitData = new String();
-								String rowData = new String();
-								for (int i = 0; i < v_initTblData.get(
-										indexToChange).size(); i++)
-								{
-									if (v_initTblData.get(indexToChange)
-											.get(i) == null
-											&& v_initTblModelData.get(
-													indexToChange).get(i) != null)
-									{
+								listSelectionChaged(e);
 
-										rowChanged = true;
-									}
-									else if(v_initTblData.get(indexToChange)
-											.get(i) != null
-											&& v_initTblModelData.get(
-													indexToChange).get(i) == null)
-									{
-										rowChanged = true;
-									}
-									else if(v_initTblData.get(indexToChange)
-											.get(i) != null
-											&& v_initTblModelData.get(
-													indexToChange).get(i) != null)
-									{
-										rowInitData = v_initTblData.get(
-												indexToChange).get(i)
-												.toString();
-										rowData = v_initTblModelData.get(
-												indexToChange).get(i)
-												.toString();
-										System.out.println(rowInitData);
-										System.out.println(rowData);
-										if (!rowInitData.equals(rowData))
-										{
-											rowChanged = true;
-										}
-									}
-								}
-								// no changes to the row
-								if (!rowChanged)
-								{
-									return;
-								}
-								// validate Table inputs
-								if (!validateTable(indexToChange))
-								{
-									tblPackages.setRowSelectionInterval(indexToChange, indexToChange);
-									return;
-								}
-								String startDate = null;
-								String endDate = null;
-								if (tblPackages
-										.getValueAt(indexToChange, 2) != null)
-								{
-									startDate = tblPackages.getValueAt(
-											indexToChange, 2).toString();
-									startDate = "to_date('"
-											+ startDate.split(" ")[0]
-											+ "','YYYY-MM-DD') ";
-								}
-								if (tblPackages
-										.getValueAt(indexToChange, 3) != null)
-								{
-									endDate = tblPackages.getValueAt(
-											indexToChange, 3).toString();
-									endDate = "to_date('"
-											+ endDate.split(" ")[0]
-											+ "','YYYY-MM-DD') ";
-								}
-								String sql1 = "UPDATE packages SET "
-										+ "PKGNAME = '"
-										+ tblPackages.getValueAt(indexToChange, 1)
-										+ "', "
-										+ " PKGSTARTDATE ="
-										+ startDate
-										+ ", "
-										+ " PKGENDDATE ="
-										+ endDate
-										+ ", "
-										+ " PKGDESC = '"
-										+ tblPackages.getValueAt(indexToChange, 4)
-										+ "', "
-										+ "PKGBASEPRICE = "
-										+ tblPackages.getValueAt(indexToChange, 5)
-										+ ", "
-										+ "PKGAGENCYCOMMISSION = "
-										+ tblPackages.getValueAt(indexToChange, 6)
-										+ " WHERE PACKAGEID = "
-										+ tblPackages.getValueAt(indexToChange, 0);
-
-								if (JOptionPane.OK_OPTION == JOptionPane
-										.showConfirmDialog(
-												null,
-												Messages
-														.getConfirmMsg_Update("Package ID:"
-																+ tblPackages
-																		.getValueAt(
-																				indexToChange,
-																				0)
-																		.toString()),
-												"Warning",
-												JOptionPane.OK_CANCEL_OPTION))
-								{
-									updatePackages(sql1);
-									initTable(pkgTblModel,indexToChange);
-								}
 							}
 
 						});
@@ -431,7 +247,6 @@ public class PackagesFrame extends JInternalFrame
 					@Override
 					public void focusLost(FocusEvent e)
 					{
-						// TODO Auto-generated method stub
 						// String txtOld = ((JTextField)
 						// e.getComponent()).getText();
 						// BigDecimal amount = new BigDecimal(txtOld);
@@ -460,7 +275,8 @@ public class PackagesFrame extends JInternalFrame
 							int i = tblPackages.rowAtPoint(pt);
 							int j = tblPackages.columnAtPoint(pt);
 							// System.out.println("<" + i + "," + j + ">");
-							if (j == 2 || j == 3)
+							if (j == PackagesTableModel.START_DATE
+									|| j == PackagesTableModel.END_DATE)
 							{
 								// show calendar
 								JOptionPane.showConfirmDialog(null,
@@ -472,7 +288,8 @@ public class PackagesFrame extends JInternalFrame
 												Calendar.MONTH)
 										+ "-"
 										+ (calStartDate.getCalendar()
-												.get(Calendar.DAY_OF_MONTH)), i, j);
+												.get(Calendar.DAY_OF_MONTH)),
+										i, j);
 							}
 						}
 					}
@@ -483,17 +300,16 @@ public class PackagesFrame extends JInternalFrame
 				{
 					public void keyPressed(KeyEvent evt)
 					{
-						// TODO add your code for tblPackages.keyPressed
 						if (evt.getKeyChar() != KeyEvent.VK_ENTER)
 						{
 							evt.consume();
-						}
-						System.out.println("tblPackages.keyPressed, event="
-								+ evt);
-						int rowNum = tblPackages.getSelectedRow();
-						if (rowNum == pkgTblModel.getRowCount() - 1)
-						{
-							addNewRow();
+							System.out.println("tblPackages.keyPressed, event="
+									+ evt);
+							int rowNum = tblPackages.getSelectedRow();
+							if (rowNum == pkgTblModel.getRowCount() - 1)
+							{
+								addNewRow();
+							}
 						}
 					}
 				});
@@ -543,7 +359,6 @@ public class PackagesFrame extends JInternalFrame
 				public void mouseClicked(MouseEvent evt)
 				{
 					System.out.println("btnInc.mouseClicked, event=" + evt);
-					// TODO add your code for btnInc.mouseClicked
 					btnIncMouseClicked(evt);
 				}
 			});
@@ -687,14 +502,14 @@ public class PackagesFrame extends JInternalFrame
 				return null;
 			}
 			ptm.setDataVector(v_initTblModelData, culomnNames);
-			
+
 		}
 		catch (SQLException e)
 		{
 			logger.error(e.getMessage());
 		}
-		if(rowNum>-1)
-		tblPackages.setRowSelectionInterval(rowNum, rowNum);
+		if (rowNum > -1)
+			tblPackages.setRowSelectionInterval(rowNum, rowNum);
 		return culomnNames;
 	}
 
@@ -737,7 +552,6 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -747,10 +561,9 @@ public class PackagesFrame extends JInternalFrame
 	private void tblPackagesMousePressed(MouseEvent evt)
 	{
 		System.out.println("tblPackages.mousePressed, event=" + evt);
-		// TODO add your code for tblPackages.mousePressed
 		dlmInc.clear();
 		Point pt = evt.getPoint();
-		if(tblPackages.rowAtPoint(pt)==-1)
+		if (tblPackages.rowAtPoint(pt) == -1)
 		{
 			return;
 		}
@@ -761,7 +574,8 @@ public class PackagesFrame extends JInternalFrame
 				+ " AND ps.ProductId = pro.ProductId "
 				+ " AND ps.SupplierId = sup.SupplierId "
 				+ " AND pkg.PackageId = "
-				+ tblPackages.getValueAt(tblPackages.rowAtPoint(pt), 0)
+				+ tblPackages.getValueAt(tblPackages.rowAtPoint(pt),
+						PackagesTableModel.PACKAGE_ID)
 				+ " ORDER BY ProdName, SupName";
 		System.out.println(sql1);
 		try
@@ -781,7 +595,6 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -804,7 +617,6 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		cmbProdFilter.setSelectedIndex(0);
@@ -865,7 +677,6 @@ public class PackagesFrame extends JInternalFrame
 	private void btnIncAllMouseClicked(MouseEvent evt)
 	{
 		System.out.println("btnIncAll.mouseClicked, event=" + evt);
-		// TODO add your code for btnIncAll.mouseClicked
 		int[] indeices = new int[dlmAvi.size()];
 		for (int i = 0; i < indeices.length; i++)
 		{
@@ -879,7 +690,6 @@ public class PackagesFrame extends JInternalFrame
 	private void btnExcAllMouseClicked(MouseEvent evt)
 	{
 		System.out.println("btnExcAll.mouseClicked, event=" + evt);
-		// TODO add your code for btnExcAll.mouseClicked
 		int[] indeices = new int[dlmInc.size()];
 		for (int i = 0; i < indeices.length; i++)
 		{
@@ -893,33 +703,27 @@ public class PackagesFrame extends JInternalFrame
 	private void btnSaveMouseClicked(MouseEvent evt)
 	{
 		System.out.println("btnSave.mouseClicked, event=" + evt);
-		// TODO add your code for btnSave.mouseClicked
 		String sql1 = "DELETE from Packages_Products_Suppliers "
 				+ "WHERE PackageId = "
-				+ tblPackages.getValueAt(tblPackages.getSelectedRows()[0], 0);
+				+ tblPackages.getValueAt(tblPackages.getSelectedRows()[0],
+						PackagesTableModel.PACKAGE_ID);
 		Vector<String> v_sql2 = new Vector<String>();
 		for (int i = 0; i < dlmInc.getSize(); i++)
 		{
 			v_sql2
 					.addElement("INSERT INTO Packages_Products_Suppliers VALUES ("
 							+ tblPackages.getValueAt(tblPackages
-									.getSelectedRows()[0], 0)
+									.getSelectedRows()[0],
+									PackagesTableModel.PACKAGE_ID)
 							+ ","
 							+ ((Products_Suppliers) (dlmInc.getElementAt(i)))
 									.getProductSupplierID() + ")");
 		}
-		if (JOptionPane.OK_OPTION != JOptionPane
-				.showConfirmDialog(
-						null,
-						Messages
-								.getConfirmMsg_Update("Package ID:"
-										+ tblPackages
-												.getValueAt(
-														tblPackages.getSelectedRow(),
-														0)
-												.toString()),
-						"Warning",
-						JOptionPane.OK_CANCEL_OPTION))
+		if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(null,
+				Messages.getConfirmMsg_Update("Package ID:"
+						+ tblPackages.getValueAt(tblPackages.getSelectedRow(),
+								PackagesTableModel.PACKAGE_ID).toString()),
+				"Warning", JOptionPane.OK_CANCEL_OPTION))
 		{
 			return;
 		}
@@ -938,7 +742,6 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			try
 			{
@@ -946,7 +749,6 @@ public class PackagesFrame extends JInternalFrame
 			}
 			catch (SQLException e1)
 			{
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -996,6 +798,7 @@ public class PackagesFrame extends JInternalFrame
 		// }
 	}
 
+	// 
 	private void updatePackages(String sql)
 	{
 		try
@@ -1009,13 +812,13 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, Messages.DB_EXCEPTION);
 			e.printStackTrace();
 		}
 		clearForm();
 	}
 
+	// perform insert SQL into packages table
 	private void insertPackages(String sql)
 	{
 		try
@@ -1025,24 +828,27 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, Messages.DB_EXCEPTION);
 			e.printStackTrace();
 		}
-		initTable(pkgTblModel,tblPackages.getRowCount()-1);
+		// reload table data and set the new row selected
+		initTable(pkgTblModel, tblPackages.getRowCount() - 1);
 	}
 
+	// add a new row to the end of jtable and insert into database
 	private void addNewRow()
 	{
-		if (pkgTblModel.getValueAt(pkgTblModel.getRowCount() - 1, 1) == null)
+		if (pkgTblModel.getValueAt(pkgTblModel.getRowCount() - 1,
+				PackagesTableModel.PACKAGE_NAME) == null)
 			return;
 		// pkgTblModel.addEmptyRow();
 		Vector v_pkg = new Vector();
 		Vector v_pkgTbl = new Vector();
-		int pkg_id = Integer.parseInt((pkgTblModel.getValueAt(pkgTblModel.getRowCount()-1, 0)).toString()) + 1;
+		int pkg_id = Integer.parseInt((pkgTblModel.getValueAt(pkgTblModel
+				.getRowCount() - 1, PackagesTableModel.PACKAGE_ID)).toString()) + 1;
 		v_pkg.addElement(pkg_id);
 		v_pkgTbl.addElement(pkg_id);
-		
+
 		pkgTblModel.addRow(v_pkg);
 		v_initTblData.addElement(v_pkgTbl);
 		String sql1 = "INSERT INTO packages (PACKAGEID, PKGNAME,PKGBASEPRICE) "
@@ -1050,45 +856,269 @@ public class PackagesFrame extends JInternalFrame
 		insertPackages(sql1);
 	}
 
+	// validate inputs in jtable
 	private Boolean validateTable(int rowNum)
 	{
 		System.out.println("validateTable");
-		if(tblPackages.getValueAt(rowNum, 1) == null || (tblPackages.getValueAt(rowNum, 1)).toString().trim() == "")
+		// package name not null
+		if (tblPackages.getValueAt(rowNum, PackagesTableModel.PACKAGE_NAME) == null
+				|| (tblPackages.getValueAt(rowNum,
+						PackagesTableModel.PACKAGE_NAME)).toString().trim() == "")
 		{
-			JOptionPane.showMessageDialog(null, "Package Name " + Messages.VALUE_REQUIRED);
+			JOptionPane.showMessageDialog(null, "Package Name "
+					+ Messages.VALUE_REQUIRED);
 			return false;
 		}
-		if(tblPackages.getValueAt(rowNum, 4) == null || (tblPackages.getValueAt(rowNum, 4)).toString().trim().equals(""))
+		// package description not null
+		if (tblPackages.getValueAt(rowNum, PackagesTableModel.DESCRIPTION) == null
+				|| (tblPackages.getValueAt(rowNum,
+						PackagesTableModel.DESCRIPTION)).toString().trim()
+						.equals(""))
 		{
-			JOptionPane.showMessageDialog(null, "Package Description " + Messages.VALUE_REQUIRED);
+			JOptionPane.showMessageDialog(null, "Package Description "
+					+ Messages.VALUE_REQUIRED);
 			return false;
 		}
-		if (pkgTblModel.getValueAt(rowNum, 2)!=null && pkgTblModel.getValueAt(rowNum, 3)!=null)
+		// start date not later than end date
+		if (pkgTblModel.getValueAt(rowNum, PackagesTableModel.START_DATE) != null
+				&& pkgTblModel.getValueAt(rowNum, PackagesTableModel.END_DATE) != null)
 		{
-		Calendar startDate =  Calendar.getInstance();
-		startDate.set(Calendar.YEAR, Integer.parseInt(pkgTblModel.getValueAt(rowNum, 2).toString().split("-")[0]));
-		startDate.set(Calendar.MONTH, Integer.parseInt(pkgTblModel.getValueAt(rowNum, 2).toString().split("-")[1]));
-		startDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(pkgTblModel.getValueAt(rowNum, 2).toString().split("-")[2]));
-		Calendar endDate =  Calendar.getInstance();
-		endDate.set(Calendar.YEAR, Integer.parseInt(pkgTblModel.getValueAt(rowNum, 3).toString().split("-")[0]));
-		endDate.set(Calendar.MONTH, Integer.parseInt(pkgTblModel.getValueAt(rowNum, 3).toString().split("-")[1]));
-		endDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(pkgTblModel.getValueAt(rowNum, 3).toString().split("-")[2]));
-		
-		if(startDate.compareTo(endDate) > 0)
+			Calendar startDate = Calendar.getInstance();
+			startDate.set(Calendar.YEAR, Integer.parseInt(pkgTblModel
+					.getValueAt(rowNum, PackagesTableModel.START_DATE)
+					.toString().split("-")[0]));
+			startDate.set(Calendar.MONTH, Integer.parseInt(pkgTblModel
+					.getValueAt(rowNum, PackagesTableModel.START_DATE)
+					.toString().split("-")[1]));
+			startDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(pkgTblModel
+					.getValueAt(rowNum, PackagesTableModel.START_DATE)
+					.toString().split("-")[2]));
+			Calendar endDate = Calendar.getInstance();
+			endDate.set(Calendar.YEAR,
+					Integer
+							.parseInt(pkgTblModel.getValueAt(rowNum,
+									PackagesTableModel.END_DATE).toString()
+									.split("-")[0]));
+			endDate.set(Calendar.MONTH, Integer.parseInt(pkgTblModel
+					.getValueAt(rowNum, PackagesTableModel.END_DATE).toString()
+					.split("-")[1]));
+			endDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(pkgTblModel
+					.getValueAt(rowNum, PackagesTableModel.END_DATE).toString()
+					.split("-")[2]));
+			if (startDate.compareTo(endDate) > 0)
+			{
+				JOptionPane.showMessageDialog(null, Messages
+						.getValidateMsg_A_CANT_GREATERTHAN_B("Start Date",
+								"End Date"));
+				return false;
+			}
+		}
+		// commission not greater than price
+		BigDecimal price = new BigDecimal(pkgTblModel.getValueAt(rowNum, PackagesTableModel.PRICE)
+				.toString());
+		BigDecimal commission = new BigDecimal(pkgTblModel
+				.getValueAt(rowNum, PackagesTableModel.COMISSION).toString());
+		if (commission.compareTo(price) > 0)
 		{
-			JOptionPane.showMessageDialog(null, Messages.getValidateMsg_A_CANT_GREATERTHAN_B("Start Date","End Date"));
+			JOptionPane.showMessageDialog(null, Messages
+					.getValidateMsg_A_CANT_GREATERTHAN_B("Commission",
+							"Package Price"));
 			return false;
 		}
-		}
-		BigDecimal price = new BigDecimal(pkgTblModel.getValueAt(rowNum, 5).toString());
-		BigDecimal commission = new BigDecimal(pkgTblModel.getValueAt(rowNum, 6).toString());
-		if(commission.compareTo(price) > 0)
-		{
-			JOptionPane.showMessageDialog(null, Messages.getValidateMsg_A_CANT_GREATERTHAN_B("Commission","Package Price"));
-			return false;
-		}
-
 		return true;
+	}
+	// delete button on mouse click event handler 
+	private void btnDeleteMouseClicked(MouseEvent evt)
+	{
+		// popup confirm message box
+		String msgID = "";
+		for (int row : tblPackages.getSelectedRows())
+		{
+			msgID += (row + 1) + " ";
+		}
+		if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(
+				null, Messages.getConfirmMsg_Delete("Package ID:"
+						+ msgID), "Warning",
+				JOptionPane.OK_CANCEL_OPTION))
+		{
+			return;
+		}
+		// delete all selected rows
+		for (int row : tblPackages.getSelectedRows())
+		{
+			String sql1 = "DELETE FROM Packages_Products_Suppliers "
+					+ " WHERE PackageId = "
+					+ tblPackages.getValueAt(row, PackagesTableModel.PACKAGE_ID);
+			String sql2 = "DELETE FROM  Packages"
+					+ " WHERE PackageId = "
+					+ tblPackages.getValueAt(row, PackagesTableModel.PACKAGE_ID);
+			System.out.println(sql1);
+			System.out.println(sql2);
+			try
+			{
+				sqlConn.setAutoCommit(false);
+				stmt1.executeQuery(sql1);
+				stmt1.executeQuery(sql2);
+				sqlConn.commit();
+				sqlConn.setAutoCommit(true);
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+				try
+				{
+					sqlConn.rollback();
+				}
+				catch (SQLException e1)
+				{
+					e1.printStackTrace();
+				}
+			}
+		}
+		initTable(pkgTblModel, 0);
+	}
+	private void listSelectionChaged(ListSelectionEvent e)
+	{
+		if (tblPackages.getSelectedRow() == -1)
+		{
+			dlmInc.clear();
+			//dlmInc.removeRange(0, dlmInc.size() - 1);
+			return;
+		}
+		if (indexToChange == tblPackages
+				.getSelectedRow() || e.getFirstIndex() == e.getLastIndex())
+		{
+			return;
+		}
 
+		indexToChange = tblPackages.getSelectedRow() == e
+				.getLastIndex() ? e.getFirstIndex() : e
+				.getLastIndex();
+
+		System.out.println("ListSelection 1st Listener"
+				+ e.getFirstIndex());
+		System.out.println("ListSelection 2nd Listener"
+				+ e.getLastIndex());
+		System.out.println("Selected row num"
+				+ tblPackages.getSelectedRow());
+		Boolean rowChanged = false;
+		String rowInitData = new String();
+		String rowData = new String();
+		for (int i = 0; i < v_initTblData.get(
+				indexToChange).size(); i++)
+		{
+			if (v_initTblData.get(indexToChange).get(i) == null
+					&& v_initTblModelData.get(
+							indexToChange).get(i) != null)
+			{
+
+				rowChanged = true;
+			}
+			else if (v_initTblData.get(indexToChange)
+					.get(i) != null
+					&& v_initTblModelData.get(
+							indexToChange).get(i) == null)
+			{
+				rowChanged = true;
+			}
+			else if (v_initTblData.get(indexToChange)
+					.get(i) != null
+					&& v_initTblModelData.get(
+							indexToChange).get(i) != null)
+			{
+				rowInitData = v_initTblData.get(
+						indexToChange).get(i)
+						.toString();
+				rowData = v_initTblModelData.get(
+						indexToChange).get(i)
+						.toString();
+				System.out.println(rowInitData);
+				System.out.println(rowData);
+				if (!rowInitData.equals(rowData))
+				{
+					rowChanged = true;
+				}
+			}
+		}
+		// no changes to the row
+		if (!rowChanged)
+		{
+			return;
+		}
+		// validate Table inputs
+		if (!validateTable(indexToChange))
+		{
+			tblPackages.setRowSelectionInterval(
+					indexToChange, indexToChange);
+			return;
+		}
+		String startDate = null;
+		String endDate = null;
+		if (tblPackages.getValueAt(indexToChange,
+				PackagesTableModel.START_DATE) != null)
+		{
+			startDate = tblPackages.getValueAt(
+					indexToChange,
+					PackagesTableModel.START_DATE)
+					.toString();
+			startDate = "to_date('"
+					+ startDate.split(" ")[0]
+					+ "','YYYY-MM-DD') ";
+		}
+		if (tblPackages.getValueAt(indexToChange,
+				PackagesTableModel.END_DATE) != null)
+		{
+			endDate = tblPackages.getValueAt(
+					indexToChange,
+					PackagesTableModel.END_DATE)
+					.toString();
+			endDate = "to_date('"
+					+ endDate.split(" ")[0]
+					+ "','YYYY-MM-DD') ";
+		}
+		String sql1 = "UPDATE packages SET "
+				+ "PKGNAME = '"
+				+ tblPackages
+						.getValueAt(
+								indexToChange,
+								PackagesTableModel.PACKAGE_NAME)
+				+ "', "
+				+ " PKGSTARTDATE ="
+				+ startDate
+				+ ", "
+				+ " PKGENDDATE ="
+				+ endDate
+				+ ", "
+				+ " PKGDESC = '"
+				+ tblPackages.getValueAt(indexToChange,
+						PackagesTableModel.DESCRIPTION)
+				+ "', "
+				+ "PKGBASEPRICE = "
+				+ tblPackages.getValueAt(indexToChange,
+						PackagesTableModel.PRICE)
+				+ ", "
+				+ "PKGAGENCYCOMMISSION = "
+				+ tblPackages.getValueAt(indexToChange,
+						PackagesTableModel.COMISSION)
+				+ " WHERE PACKAGEID = "
+				+ tblPackages.getValueAt(indexToChange,
+						PackagesTableModel.PACKAGE_ID);
+
+		if (JOptionPane.OK_OPTION == JOptionPane
+				.showConfirmDialog(
+						null,
+						Messages
+								.getConfirmMsg_Update("Package ID:"
+										+ tblPackages
+												.getValueAt(
+														indexToChange,
+														PackagesTableModel.PACKAGE_ID)
+												.toString()),
+						"Warning",
+						JOptionPane.OK_CANCEL_OPTION))
+		{
+			updatePackages(sql1);
+			initTable(pkgTblModel, indexToChange);
+		}		
 	}
 }
