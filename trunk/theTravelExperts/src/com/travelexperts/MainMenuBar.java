@@ -5,9 +5,7 @@ import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -29,7 +27,7 @@ public class MainMenuBar extends JMenuBar {
 	// Menus
 	private TravelExpertsGUI parentFrame;
     private JMenu helpMenu = new JMenu("Help");
-    public JMenu optionsMenu = new JMenu("Options"); 
+    private JMenu optionsMenu = new JMenu("Options"); 
     private JMenu customersMenu = new JMenu("Customers");
     private JMenu agentsMenu = new JMenu("Agents");
     private JMenu productsMenu = new JMenu("Products");
@@ -118,7 +116,7 @@ public class MainMenuBar extends JMenuBar {
     			// I had to call static method SwingUtilities.refreshLookAndFeel
     			// and pass it a reference to     			
     			
-    			// Look and feels
+    			// Add already installed Looks and Feels
     			LookAndFeelInfo[] skins = UIManager.getInstalledLookAndFeels();
     			// Add menu items for each LookAndFeel
     			for(LookAndFeelInfo skin : skins) {
@@ -127,6 +125,7 @@ public class MainMenuBar extends JMenuBar {
     				// Must declare final to reference within ActionListener 
     				final String skinName = skin.getClassName();
     				
+    				// Add detected LNFs
     				skinMenuItem.addActionListener(new ActionListener() {
     					@Override
     					public void actionPerformed(ActionEvent e) {
@@ -145,10 +144,27 @@ public class MainMenuBar extends JMenuBar {
     						
     					}
     				});
-    				
     				skinsMenu.add(skinMenuItem);
-    				
     			}
+    			
+    			// Add our LNFs attached as jars
+    			JMenuItem skinMenuItem = new JMenuItem("Mac");
+    			skinMenuItem.addActionListener(newSkinMenuAction("ch.randelshofer.quaqua.QuaquaLookAndFeel"));
+				skinsMenu.add(skinMenuItem);
+				
+    			skinMenuItem = new JMenuItem("NimROD");
+    			skinMenuItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try {
+							UIManager.setLookAndFeel( new com.nilo.plaf.nimrod.NimRODLookAndFeel());
+							SwingUtilities.updateComponentTreeUI(parentFrame);
+						} catch (UnsupportedLookAndFeelException e1) {
+							// printStackTrace();
+						}						
+					}
+				});
+				skinsMenu.add(skinMenuItem);
     		}
     		optionsMenu.add(skinsMenu);
 	   		optionsMenu.add(new JMenuItem("Preferences"));
@@ -163,4 +179,25 @@ public class MainMenuBar extends JMenuBar {
     		helpSupport.setAction(parentFrame.getAppActionMap().get("showSupport"));
     	}		
 	}
+	
+	private ActionListener newSkinMenuAction(final String skinClassPath) {
+		return new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					UIManager.setLookAndFeel(skinClassPath);
+					SwingUtilities.updateComponentTreeUI(parentFrame);
+				} catch (ClassNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (InstantiationException e1) {
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					e1.printStackTrace();
+				} catch (UnsupportedLookAndFeelException e1) {
+					e1.printStackTrace();
+				}
+			}
+		};
+	}
+	
 }
