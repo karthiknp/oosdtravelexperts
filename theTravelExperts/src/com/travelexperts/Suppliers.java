@@ -44,4 +44,9 @@ public class Suppliers
 	{
 		return supName;
 	}
+	//Michelle added
+	public String toString()
+	{
+		return supName;
+	}
 }
