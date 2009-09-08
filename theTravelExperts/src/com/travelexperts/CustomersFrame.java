@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * 
@@ -65,12 +67,11 @@ public class CustomersFrame extends JInternalFrame {
 				cboAgents.addItem(new AgentComboBoxItem(rs.getInt("AgentId"), rs.getString("AgentName")));
 			}
 			rs.getStatement().close();
-			
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
 		
+		// 
 		ctmCustomers = new CustomersTableModel(rssCustomers);
 		tblCustomers = new JTable(ctmCustomers);
 		
@@ -97,8 +98,6 @@ public class CustomersFrame extends JInternalFrame {
 		});
 		
 		pack();
-		setVisible(true);
-		
 	}
 
 }

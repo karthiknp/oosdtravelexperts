@@ -37,7 +37,6 @@ public class TravelExpertsGUI extends JFrame {
     private StatusBar statusBar = new StatusBar();
     
     // MDI Internal frames (all extend a respective JInternalFrame)
-    private LoginFrame loginFrame = new LoginFrame();
     private PackagesFrame packagesFrame = new PackagesFrame();
     private SuppliersFrame suppliersFrame = new SuppliersFrame();
     private ProductsFrame productsFrame = new ProductsFrame();
@@ -69,7 +68,7 @@ public class TravelExpertsGUI extends JFrame {
     	desktopPane.add(customersFrame);
     	desktopPane.add(supportServerFrame);
     	desktopPane.setBackground(Color.BLACK);
-    	
+    	    	
     	// Add content to main JPanel
     	setJMenuBar(mainMenuBar);
 		// add(statusBar, BorderLayout.NORTH);
@@ -80,7 +79,9 @@ public class TravelExpertsGUI extends JFrame {
     	setExtendedState(JFrame.MAXIMIZED_BOTH);
     	setVisible(true);
     	
-    	while(!loginFrame.showLogin()) {}
+    	// Log the user on
+    		// while(LoginSystem.showForm() == false) {};
+
     }
     	
     @Action
@@ -110,7 +111,6 @@ public class TravelExpertsGUI extends JFrame {
     
     @Action
     public void showSupport() {
-    	// TODO: decide how to handle server
     	supportServerFrame.setVisible(true);
     }
     

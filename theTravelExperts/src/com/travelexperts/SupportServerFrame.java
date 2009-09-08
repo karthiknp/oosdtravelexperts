@@ -79,7 +79,7 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 	public SupportServerFrame() throws IOException, InterruptedException {
 		super("Travel Experts Online Support", true,  true, true, true);
 		
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
 
 		// Set up server socket to listen on
 		serverSocket = new ServerSocket(SERVER_PORT);
@@ -87,7 +87,7 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		
 		// Call the run method in new thread so that GUI is still usable
 		// (because it is an infinite loop)
-		// Run as daemon: server will exit automatically when all other threads are closed
+		// Run as daemon: server socket listener will exit automatically when all other threads are closed
 		Thread serverThread = new Thread(this);
 		serverThread.setDaemon(true);
 		serverThread.start();
@@ -95,7 +95,7 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		txtMessages.setFocusable(false);
 		pnlCenter.add(new JScrollPane(txtMessages));
 		
-		pnlSouth.add(cboSendTo);
+		// pnlSouth.add(cboSendTo);
 		pnlSouth.add(new JScrollPane(txtInput));
 		pnlSouth.add(btnSend);
 		
@@ -113,17 +113,6 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		
 		pack();		// Auto-size the frame based on computed size of components
 		setVisible(true);
-		
-		// Handler for frame disposal, confirms then ensures connections get closed  
-		addInternalFrameListener(new InternalFrameAdapter() {
-			@Override
-			public void internalFrameClosing(InternalFrameEvent e) {
-				if(JOptionPane.showConfirmDialog(null, "Any connected users will be disconnected!  Proceed?") == JOptionPane.OK_OPTION) {
-					serverOnline = false;
-					setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-				}
-			}
-		});
 	}
 	
 	// Just adds some event handling to chat frame components
@@ -201,7 +190,7 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 	// Called when run as a thread
 	@Override
 	public void run() {
-		// Set the timeout for the server socket to 5 seconds
+		// Set a timeout for the server socket
 		// This prevents the ServerSocket.accept() method from blocking indefinitely
 		// which will prevent it from closing
 		try {
@@ -224,7 +213,8 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 				refreshUsers();
 			}
 			catch (SocketTimeoutException e) {	// Must be caught before IOException
-				// Check if server should still be online then continue listening
+				// Timed out, so: 
+				// check if server should still be online then continue listening
 			}
 			catch (IOException e) {
 				e.printStackTrace();

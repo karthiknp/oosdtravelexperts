@@ -2,6 +2,7 @@ package com.travelexperts;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.JOptionPane;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -21,6 +22,7 @@ public class CustomersTableModel extends AbstractTableModel {
 	
 	public CustomersTableModel(ResultSet newTable) {
 		super();
+		
 		customers = newTable;
 		try {
 			customers.last();
@@ -91,8 +93,10 @@ public class CustomersTableModel extends AbstractTableModel {
 		if(columnIndex != 0) {
 			return true;
 		}
-		else
+		else {
+			JOptionPane.showMessageDialog(null, "You cannot change the customer id!");
 			return false;
+		}
 	}
 
 	@Override
@@ -100,8 +104,11 @@ public class CustomersTableModel extends AbstractTableModel {
 		try {
 			customers.absolute(rowIndex + 1);
 			customers.updateString(columnIndex + 1, String.valueOf(value));
-			customers.updateRow();
+			customers.updateRow();	// Save to underlying database
 			fireTableCellUpdated(rowIndex, columnIndex);
+			
+			customers.moveToInsertRow();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 public class TXConnection 
 {
 	Connection conn;
+	
 	public TXConnection() {
 
 	    try {
