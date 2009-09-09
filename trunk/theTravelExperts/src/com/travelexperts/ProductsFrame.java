@@ -101,9 +101,10 @@ public class ProductsFrame extends JInternalFrame {
 		
 		lstProducts.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
-				//supplierName.setText((String) lstSuppliers.getSelectedValue());
-				//lstProductsSuppliers.removeAll();
+				
 				productSupplierData.removeAllElements();
+				refreshSupplier();
+				
 				textID.setDisabledTextColor(Color.DARK_GRAY);
 				supplierName.setText(((Products)lstProducts.getSelectedValue()).getProdName());
 				textID.setText(((Products)lstProducts.getSelectedValue()).getProductID()+"");
@@ -112,25 +113,25 @@ public class ProductsFrame extends JInternalFrame {
 				try {
 					stmt1 = txdb.createStatement();
 					String sql = "SELECT supName, productsupplierid, suppliers.supplierid FROM Products_Suppliers join Suppliers on Products_Suppliers.supplierID = Suppliers.supplierID where Products_Suppliers.productId = '"+ textID.getText()+ "' order by supName";
-					//String sql = "SELECT supName, productsupplierid, suppliers.supplierid FROM Products_Suppliers join Suppliers on Products_Suppliers.supplierID = Suppliers.supplierID where Products_Suppliers.productId = '"+ textID.getText()+ "' order by supName"; 
+					
 				    
 				      ResultSet rs = stmt1.executeQuery(sql);
 				      while (rs.next())
 				      {
-				    	  //ProductData.addElement(new Products(rs.getInt(1), rs.getString(2)));
-				    	  productSupplierData.addElement(rs.getString(1));
+				    	  
+				    	  productSupplierData.addElement(new Suppliers(rs.getInt(3),rs.getString(1), rs.getInt(2)));
 
 				      }
 				     
 				      txdb.close();
 					
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 				for (int i =0;i<productSupplierData.getSize();i++ )
 				{
-					//System.out.println(productSupplierData.elementAt(i));
+					
 					for (int j=0;j<supplierData.getSize();j++)
 					{
 						lstSuppliers.setSelectedIndex(j);
@@ -160,9 +161,7 @@ public class ProductsFrame extends JInternalFrame {
 		editPanel.add(btnDelete);
 		btnUpdate.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
-				//productSupplierData.removeAllElements();
 				
-				//supplierData.removeAllElements();
 				ProductData.removeAllElements();
 				
 				Connection txdb = new TXConnection().getInstance();
@@ -170,10 +169,7 @@ public class ProductsFrame extends JInternalFrame {
 					
 					Statement stmt1 = txdb.createStatement();
 					
-					 /*String sql = "Update Products set prodName = '"
-						 + supplierName.getText()
-						 +"'where (productId = '"+ textID.getText() +")";*/
-
+					
 					   String sql = "Update Products set prodName = '"
 						   +supplierName.getText().toString() +"' where (productID = '" + textID.getText()+"')";					   
 						   int rs = stmt1.executeUpdate(sql);
@@ -203,21 +199,19 @@ public class ProductsFrame extends JInternalFrame {
 		
 		btnDelete.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
-				//productSupplierData.removeAllElements();
-				
-				//supplierData.removeAllElements();
-				ProductData.removeAllElements();
+				for (int i =0;i<productSupplierData.getSize();i++ )
+				{
+					
+					int psId = ((Suppliers)productSupplierData.get(i)).getProductsupplierId();
+					removeAllPS(psId);
+				}
+				//ProductData.removeAllElements();
 				
 				Connection txdb = new TXConnection().getInstance();
 				try {
 					
 					Statement stmt1 = txdb.createStatement();
-					
-					 /*String sql = "Update Products set prodName = '"
-						 + supplierName.getText()
-						 +"'where (productId = '"+ textID.getText() +")";*/
-
-					   String sql = "Delete from Products where (productID = '" + textID.getText()+"')";					   
+					String sql = "Delete from Products where (productID = '" + textID.getText()+"')";					   
 						   int rs = stmt1.executeUpdate(sql);
 
 				            // (5) Process the int.
@@ -238,10 +232,7 @@ public class ProductsFrame extends JInternalFrame {
 				refresh();
 				
 				System.out.println(lstProducts.getSelectionMode());
-				
-				
-				
-			}});
+				}});
 		
 		btnNew.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
@@ -326,11 +317,11 @@ public class ProductsFrame extends JInternalFrame {
 				reloadPSlist();
 				//refresh();
 			}});		
-		// CODE FOR THE MOVE RIGHT BUTTON
-		btnMoveRight.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
+		// delete from productsuppliers
+		btnMoveRight.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent evt) {
+			int psId = ((Suppliers)lstProductsSuppliers.getSelectedValue()).getProductsupplierId();
+				removeAllPS(psId);
 			}
 		});
 		
@@ -484,5 +475,35 @@ public class ProductsFrame extends JInternalFrame {
 				}
 			}
 		}
+	}
+	public void removeAllPS(int psId)
+	{
+		Connection txdb = new TXConnection().getInstance();
+		try {
+			
+			Statement stmt1 = txdb.createStatement();
+			//String sql = "Delete from products_suppliers where (PRODUCTSUPPLIERID = '" + ((Suppliers)lstProductsSuppliers.getSelectedValue()).getProductsupplierId()+"')";	
+			String sql = "Delete from products_suppliers where (PRODUCTSUPPLIERID = '" + psId +"')";
+																					
+			int rs = stmt1.executeUpdate(sql);
+
+		            // (5) Process the int.
+					if (rs == 0)
+					{
+					   System.out.println("no rows updated");
+					}
+		            System.out.println();
+
+		            // Cleanup
+		            txdb.commit();
+		            txdb.close();
+			     
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		supplierData.addElement((Suppliers)lstProductsSuppliers.getSelectedValue());
+		productSupplierData.removeElementAt(lstProductsSuppliers.getSelectedIndex());
 	}
 }
