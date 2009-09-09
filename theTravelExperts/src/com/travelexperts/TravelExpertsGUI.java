@@ -80,7 +80,7 @@ public class TravelExpertsGUI extends JFrame {
     	setVisible(true);
     	
     	// Log the user on
-    		// while(LoginSystem.showForm() == false) {};
+    	//	// while(LoginSystem.showForm() == false) {};
 
     }
     	
