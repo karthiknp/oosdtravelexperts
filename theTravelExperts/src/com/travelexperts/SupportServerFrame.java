@@ -123,7 +123,8 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				messageToAll(txtInput.getText());
+				// Send message to clients 
+				messageToAll(LoginSystem.getCurrentUsername() + ": " + txtInput.getText());
 				txtInput.setText("");
 			}
 		});
@@ -166,10 +167,9 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 	
 	private String formatMessage(String unformattedMessage) {
 		// Format with sender and date
-		return Thread.currentThread().getName() + "( " +
+		return "( " +
 			DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+ ") :" +
 			unformattedMessage + "\r\n";
-		
 	}
 	
 	private void messageToAll(String outgoingMessage) {
@@ -247,7 +247,7 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		// Method to print a message to this client from other threads
 		// Called from outside
 		public void sendMessage(String message) {
-			String output = Thread.currentThread().getName() + " : " + message + "\r\n"; 
+			String output = message; 
 			try {
 				clientWriter.write(output);
 				clientWriter.flush();
@@ -267,9 +267,9 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 				allClients.add(this);
 			}
 			try {
-				clientWriter.write("Welcome to Travel Experts online support!");
+				clientWriter.write("Welcome to Travel Experts online support!\r\n");
 				clientWriter.flush();
-				
+					
 				// Loop until client sends "/disc" (like IRC) 
 				do {
 					// Is there any input from client?
