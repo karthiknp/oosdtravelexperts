@@ -75,8 +75,13 @@ public class CustomersFrame extends JInternalFrame {
 		ctmCustomers = new CustomersTableModel(rssCustomers);
 		tblCustomers = new JTable(ctmCustomers);
 		
+		String lblUsage = "<html><strong>Insert</strong> - Create new customer<br/>" +
+				"<strong>Delete<strong> - Delete customer<br/>" +
+				"<strong>Edit</strog> Click on field to edit</html>";
+			
 		add(cboAgents, BorderLayout.NORTH);
 		add(new JScrollPane(tblCustomers), BorderLayout.CENTER);
+		add(new JLabel(lblUsage), BorderLayout.SOUTH);
 		
 		tblCustomers.addKeyListener(new KeyAdapter() {
 			
@@ -94,6 +99,7 @@ public class CustomersFrame extends JInternalFrame {
 						ex.printStackTrace();
 					}
 				}
+				else if(e.getKeyChar() == KeyEvent.VK_INSERT);
 			}
 		});
 		

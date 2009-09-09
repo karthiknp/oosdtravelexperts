@@ -34,6 +34,7 @@ public class MainMenuBar extends JMenuBar {
     private JMenu suppliersMenu = new JMenu("Suppliers");
     private JMenu packagesMenu = new JMenu("Packages");
     private JMenu fileMenu = new JMenu("File");
+    private JMenu supportMenu = new JMenu("Support");
     
     // Submenus
     private JMenu skinsMenu = new JMenu("Skins");
@@ -75,12 +76,13 @@ public class MainMenuBar extends JMenuBar {
     		// Packages->Manage
     		packagesMenu.add(packagesMenuEdit);
     		packagesMenuEdit.setAction(parentFrame.getAppActionMap().get("showPackages"));
+    		packagesMenuEdit.setText("Manage Packages");
     	}
     	add(suppliersMenu);
     	{
     		suppliersMenu.add(suppliersMenuEdit);
     		suppliersMenuEdit.setAction(parentFrame.getAppActionMap().get("showSuppliers"));
-    		suppliersMenuEdit.setText("Supplier Management");
+    		suppliersMenuEdit.setText("Manage Suppliers");
     		try {
 				suppliersMenuEdit.setIcon(new ImageIcon(new URL("http://t1.gstatic.com/images?q=tbn:2VZ5Jdb3EApnjM:http://www.aditnorth.org.uk/uploadedImages/partners_icon.gif")));
 			} catch (MalformedURLException e) {
@@ -91,8 +93,9 @@ public class MainMenuBar extends JMenuBar {
     	{
     		productsMenu.add(productsMenuEdit);
     		productsMenuEdit.setAction(parentFrame.getAppActionMap().get("showProducts"));
-    		productsMenuEdit.setText("Supplier Management");
+    		productsMenuEdit.setText("Manage Products");
     		try {
+    			// Steal an icon of google lol
 				productsMenuEdit.setIcon(new ImageIcon(new URL("http://t0.gstatic.com/images?q=tbn:Ez4gvTSY8ob0jM:http://www.istockphoto.com/file_thumbview_approve/6885224/2/istockphoto_6885224-palm-tree.jpg")));
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -102,19 +105,22 @@ public class MainMenuBar extends JMenuBar {
     	{
     		agentsMenu.add(agentsMenuEdit);
     		agentsMenuEdit.setAction(parentFrame.getAppActionMap().get("showAgents"));
+    		agentsMenuEdit.setText("Manage Agents");
     	}
     	add(customersMenu);
     	{
     		customersMenu.add(customersMenuEdit);
     		customersMenuEdit.setAction(parentFrame.getAppActionMap().get("showCustomers"));
     		customersMenuReport.setAction(parentFrame.getAppActionMap().get("printInvoice"));
+    		customersMenuEdit.setText("Manage Customers");
     	}
     	add(optionsMenu);
     	{
     		{
+    			// Look and Feels
     			// FINALLY FIXED!!!
-    			// I had to call static method SwingUtilities.refreshLookAndFeel
-    			// and pass it a reference to     			
+    			// Had to call SwingUtilities.refreshLookAndFeel
+    			// with reference to parent JFrame     			
     			
     			// Add already installed Looks and Feels
     			LookAndFeelInfo[] skins = UIManager.getInstalledLookAndFeels();
@@ -171,12 +177,17 @@ public class MainMenuBar extends JMenuBar {
     		optionsMenu.add(new JCheckBoxMenuItem("Verbose Debug Logging"));
     		
     	}
+    	add(supportMenu);
+    	{    		
+    		supportMenu.add(helpSupport);
+    		helpSupport.setAction(parentFrame.getAppActionMap().get("showSupport"));
+    		helpSupport.setText("Chat Interface");
+    	}
     	add(helpMenu);
     	{
     		helpMenu.add(helpFAQ);
     		helpMenu.add(helpAbout);
-    		helpMenu.add(helpSupport);
-    		helpSupport.setAction(parentFrame.getAppActionMap().get("showSupport"));
+    		
     	}		
 	}
 	
