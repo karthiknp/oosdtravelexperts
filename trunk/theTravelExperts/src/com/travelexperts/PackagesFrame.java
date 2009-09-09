@@ -303,13 +303,14 @@ public class PackagesFrame extends JInternalFrame
 						if (evt.getKeyChar() != KeyEvent.VK_ENTER)
 						{
 							evt.consume();
-							System.out.println("tblPackages.keyPressed, event="
-									+ evt);
-							int rowNum = tblPackages.getSelectedRow();
-							if (rowNum == pkgTblModel.getRowCount() - 1)
-							{
-								addNewRow();
-							}
+							return;
+						}
+						System.out.println("tblPackages.keyPressed, event="
+								+ evt);
+						int rowNum = tblPackages.getSelectedRow();
+						if (rowNum == pkgTblModel.getRowCount() - 1)
+						{
+							addNewRow();
 						}
 					}
 				});
