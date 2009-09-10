@@ -303,10 +303,7 @@ public class AgentsFrame extends JInternalFrame {
 			});
 			//add(new JScrollPane(agentsTable));
 			//agentsTable.setModel(jTableModel);
-	    } catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
+	    } catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
