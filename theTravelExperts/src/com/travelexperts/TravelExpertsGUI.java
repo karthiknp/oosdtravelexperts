@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import javax.swing.ActionMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -32,21 +34,15 @@ public class TravelExpertsGUI extends JFrame {
     
     // Menu bar
     private MainMenuBar mainMenuBar = new MainMenuBar(this);
-   
-    // Status bar
-    private StatusBar statusBar = new StatusBar();
-    
+       
     // MDI Internal frames (all extend a respective JInternalFrame)
     private PackagesFrame packagesFrame = new PackagesFrame();
     private SuppliersFrame suppliersFrame = new SuppliersFrame();
     private ProductsFrame productsFrame = new ProductsFrame();
     private AgentsFrame agentsFrame = new AgentsFrame();
     private CustomersFrame customersFrame = new CustomersFrame();
-    private SupportServerFrame supportServerFrame;
+    private SupportServerFrame supportServerFrame = new SupportServerFrame();
     
-    // Used by LookAndFeel 
-	String className = null;
-
     /**
      * Main constructor
      * @throws SQLException 
@@ -58,32 +54,38 @@ public class TravelExpertsGUI extends JFrame {
     	super("Travel Experts Management System");
     	setDefaultCloseOperation(EXIT_ON_CLOSE);
     	
-    	supportServerFrame = new SupportServerFrame();
-    	
-    	// Attach children forms to MDI parent, all not visible by default
+    	// Attach children frames to parent frame, all not visible by default
     	desktopPane.add(packagesFrame);
     	desktopPane.add(suppliersFrame);
     	desktopPane.add(productsFrame);
     	desktopPane.add(agentsFrame);
     	desktopPane.add(customersFrame);
     	desktopPane.add(supportServerFrame);
-    	desktopPane.setBackground(Color.BLACK);
+    	
+    	desktopPane.add(new JLabel("test"));
     	    	
     	// Add content to main JPanel
     	setJMenuBar(mainMenuBar);
 		// add(statusBar, BorderLayout.NORTH);
     	add(desktopPane, BorderLayout.CENTER);    	// Attach MDI parent to Main Frame
     	
+    	
+    	
     	// Maximize and show the main form
     	pack();
     	setExtendedState(JFrame.MAXIMIZED_BOTH);
     	setVisible(true);
     	
-    	// Log the user on
-    	//	// while(LoginSystem.showForm() == false) {};
-
+    	// Log the user on,
+    	/*
+    	while(LoginSystem.showForm() == false) {
+    		//  
+    		JOptionPane.showMessageDialog(null, "Authentication failed: Invalid username or password");
+    		
+    	};
+    	*/
     }
-    	
+    
     @Action
     public void showPackages() {
     	packagesFrame.setVisible(true);

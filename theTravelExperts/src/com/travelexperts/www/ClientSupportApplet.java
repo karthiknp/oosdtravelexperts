@@ -1,5 +1,8 @@
 /*
- <applet code="ChatApplet.class" width="600" height="400"
+ * To use: export package as a jar and use following html:
+ * 
+ <applet archive="client.jar" code="com.travelexpetrs.www.ClientSupportApplet" width="600" height="400">
+ </applet>
  */
 package com.travelexperts.www;
 
@@ -14,9 +17,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import javax.swing.BorderFactory;
 import javax.swing.JApplet;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -24,7 +31,7 @@ import javax.swing.JTextField;
  * Web Applet that customers can use to connect to the server
  * instantly via the webpage.
  * 
- * @author will_ad
+ * @author Will_Dixon
  *
  */
 @SuppressWarnings("serial")
@@ -32,10 +39,10 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 	
 	private static final String CHAT_HOST = "localhost";
 	private static final int CHAT_PORT = 3456;
-	private static final int TEXT_WIDTH = 50; 	
+	private static final int TEXT_WIDTH = 40; 	
 	
 	private static final int APPLET_WIDTH = 500; 	
-	private static final int APPLET_HEIGHT = 200; 	
+	private static final int APPLET_HEIGHT = 300; 	
 
 	// Username = GuestXXX if no auth info passed
 	String username = "Guest" + (int)((Math.random()*899)+100);
@@ -54,7 +61,8 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 	
 	/** 
 	 * Login info can passed from web form when applet is loaded
-	 * Ie. param username="delton" password="secret" in <applet> tag
+	 * Ie. param username="delton" password="secret" in <applet> params
+	 * the JSP will output null for these if session not set, so check for that
 	 * @param username The user to log in as
 	 * @param password Their password
 	 * 
@@ -62,14 +70,6 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 	 */
 	public ClientSupportApplet() {
 		super();
-
-		/* 
-		// Crashes if unknown source
-		if((getParameter("username") != null) && (getParameter("password") != null)) {
-			username = getParameter("username");
-			password = getParameter("password");
-		}
-		*/
 	}
 	
 	@Override
@@ -106,14 +106,30 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 		// TODO: implement server-side user/password authentication 
 	}
 	
+	/*
+	 * Build panel and add components
+	 */
 	public void initForm() 
 	{
-		pnlNorth.add(new JLabel("Connected as " + username));
+		String strHeader = 
+			"<html>" +
+			"<h3>Welcome to the Travel Experts Online Support System</h3><br/>" +
+			"<em>You are connected as:</em> <strong>" + username + "</strong><br/><html>";
+
+		if(((getParameter("username") != null) && (getParameter("password") != null))) {
+			username = getParameter("username");
+			password = getParameter("password");
+		}
+
+		pnlNorth.add(new JLabel(strHeader));
 		
-		txtChannel.setEditable(true);
-		pnlCenter.add(txtChannel);
+		txtChannel.setFocusable(false);		// Still let's user copy & paste
+		JScrollPane jspChannel = new JScrollPane(txtChannel);
+		jspChannel.setAutoscrolls(true);
+		pnlCenter.add(jspChannel);	// Chat window is scrollable obviously
 		
 		pnlSouth.add(txtInput);
+		pnlSouth.add(new JButton("Send"));	// Just looks professional (does same as txt action lol) 
 		txtInput.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -127,8 +143,15 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 		add(pnlNorth, BorderLayout.NORTH);
 		add(pnlCenter, BorderLayout.CENTER);
 		add(pnlSouth, BorderLayout.SOUTH);
+		
+		pnlNorth.setBorder(BorderFactory.createRaisedBevelBorder());
 
 		setSize(APPLET_WIDTH, APPLET_HEIGHT);
+	}
+	
+	// Fix this later, will be called from a javascript function triggered by an onClick event
+	public void reconnect() {
+		receiveMessage("\r\nAttemping to reconnect to server...\r\n");
 	}
 
 	@Override
