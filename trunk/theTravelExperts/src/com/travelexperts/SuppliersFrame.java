@@ -155,6 +155,7 @@ public class SuppliersFrame extends JInternalFrame {
 		// Add components to Edit panel
 		editPanel.add(new JLabel("Supplier ID"));
 		editPanel.add(textID);
+		textID.setEnabled(false);
 		//editPanel.add(new JTextField("432231"));
 		editPanel.add(new JLabel("Supplier Name"));
 		editPanel.add(supplierName);

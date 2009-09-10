@@ -58,8 +58,8 @@ public class ProductsFrame extends JInternalFrame {
 	JButton btnMoveRight = new JButton(">");
 	JButton btnMoveAllLeft = new JButton("<<");
 	JButton btnMoveAllRight = new JButton(">>");
-	JTextField textID = new JTextField("test");
-	JTextField supplierName = new JTextField("test");
+	JTextField textID = new JTextField("");
+	JTextField supplierName = new JTextField("");
 	JButton btnNew = new JButton("New");
 	JButton btnUpdate = new JButton("Update");
 	JButton btnClear = new JButton("Clear");
