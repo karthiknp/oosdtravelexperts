@@ -263,8 +263,9 @@ public class AgentsFrame extends JInternalFrame {
 	{
 		String colNames[] = {"Agent ID", "First Name", "Initial", "Last Name", "Phone", "Email", "Position", "Agency"};
         try {
-			Class.forName(driver);
-	        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+        	// Changed to use TXConnection - Will
+			//Class.forName(driver);
+	        Connection connection = TXConnection.getConnection();
 	        Statement stmt = connection.createStatement();
 	        String sql = "SELECT * FROM Agents";
 	        ResultSet rs = stmt.executeQuery(sql);
