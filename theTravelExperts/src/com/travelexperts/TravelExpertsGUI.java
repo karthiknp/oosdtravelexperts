@@ -1,7 +1,6 @@
 package com.travelexperts;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.Connection;
@@ -11,7 +10,6 @@ import javax.swing.ActionMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
