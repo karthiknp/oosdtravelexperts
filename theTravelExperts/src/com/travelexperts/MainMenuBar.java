@@ -158,6 +158,7 @@ public class MainMenuBar extends JMenuBar {
     			skinMenuItem.addActionListener(newSkinMenuAction("ch.randelshofer.quaqua.QuaquaLookAndFeel"));
 				skinsMenu.add(skinMenuItem);
 				
+				/*
     			skinMenuItem = new JMenuItem("NimROD");
     			skinMenuItem.addActionListener(new ActionListener() {
 					@Override
@@ -171,6 +172,7 @@ public class MainMenuBar extends JMenuBar {
 					}
 				});
 				skinsMenu.add(skinMenuItem);
+				*/
     		}
     		optionsMenu.add(skinsMenu);
 	   		optionsMenu.add(new JMenuItem("Preferences"));
