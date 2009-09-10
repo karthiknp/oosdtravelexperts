@@ -1,7 +1,6 @@
 package com.travelexperts;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.FocusEvent;
@@ -10,15 +9,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -40,7 +36,9 @@ import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
@@ -215,6 +213,8 @@ public class PackagesFrame extends JInternalFrame
 				initTable(pkgTblModel, -1);
 				final TableRowSorter sorter = new TableRowSorter(pkgTblModel);
 				tblPackages.setRowSorter(sorter);
+
+
 				tblPackages.getSelectionModel().addListSelectionListener(
 						new ListSelectionListener()
 						{
@@ -229,8 +229,8 @@ public class PackagesFrame extends JInternalFrame
 				 cellNumeric = new JTextField();
 				tblPackages.getColumnModel().getColumn(pkgTblModel.PRICE).setCellEditor(
 						new DefaultCellEditor(cellNumeric));
-				tblPackages.getColumnModel().getColumn(pkgTblModel.COMISSION).setCellEditor(
-						new DefaultCellEditor(cellNumeric));
+//				tblPackages.getColumnModel().getColumn(pkgTblModel.COMISSION).setCellEditor(
+//						new DefaultCellEditor(cellNumeric));
 				// Column 5 and 6 only accept numeric input
 				cellNumeric.addKeyListener(new KeyAdapter()
 				{
@@ -329,14 +329,20 @@ public class PackagesFrame extends JInternalFrame
 				});				
 				tblPackages.setBounds(32, 12, 700, 203);
 				tblPackages.setPreferredSize(new java.awt.Dimension(682, 199));
-				tblPackages.addKeyListener(new KeyAdapter() {
-					public void keyTyped(KeyEvent evt) {
-						System.out.println("tblPackages.keyTyped, event="+tblPackages.hasFocus());
-						//TODO add your code for tblPackages.keyTyped
-						//if (evt.getSource())
-						
-					}
-				});
+
+//				tblPackages.addKeyListener(new KeyAdapter() {
+//					public void keyTyped(KeyEvent evt) {
+//						System.out.println("tblPackages.keyTyped, event="+tblPackages.hasFocus());
+//						//if (evt.getSource())
+//						
+//					}
+//				});
+//			    TableColumnModel tcm = tblPackages.getColumnModel(); 
+//			    TableColumn tc = tcm.getColumn(6); 
+//			    NumericTextField ntf = new NumericTextField();
+////			    ntf.addKeyListener();
+//			    tc.setCellRenderer(ntf); 
+
 			}
 		}
 		{
@@ -461,6 +467,13 @@ public class PackagesFrame extends JInternalFrame
 				.injectComponents(this);
 		getAllProdList("");
 		initCboProdFilter();
+		tblPackages.getColumn(pkgTblModel.getColumnName(0)).setPreferredWidth(15);
+		tblPackages.getColumn(pkgTblModel.getColumnName(1)).setPreferredWidth(80);
+		tblPackages.getColumn(pkgTblModel.getColumnName(2)).setPreferredWidth(40);
+		tblPackages.getColumn(pkgTblModel.getColumnName(3)).setPreferredWidth(40);
+		tblPackages.getColumn(pkgTblModel.getColumnName(4)).setPreferredWidth(100);
+		tblPackages.getColumn(pkgTblModel.getColumnName(5)).setPreferredWidth(80);
+		tblPackages.getColumn(pkgTblModel.getColumnName(6)).setPreferredWidth(80);
 	}
 
 	protected void clearForm()
@@ -773,7 +786,11 @@ public class PackagesFrame extends JInternalFrame
 	// add a new row to the end of jtable and insert into database
 	private void addNewRow()
 	{
-		pkgTblModel.addEmptyRow();
+		if ((tblPackages.getValueAt(tblPackages.getSelectedRow(), 1))==null)
+		{
+			return;
+		}
+		
 	}
 
 	// validate inputs in jtable
