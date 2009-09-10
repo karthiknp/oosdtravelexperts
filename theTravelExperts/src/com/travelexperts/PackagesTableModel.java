@@ -37,7 +37,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 	private int columns;
 
 	private Connection sqlConn = new TXConnection().getInstance();
-	private int editableRow = -1;
+
+	private int newRow;
 	//
 	// Instance Variables
 	//
@@ -101,6 +102,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 
 	public Object getValueAt(int rowIndex, int columnIndex)
 	{
+		if (rowIndex == newRow)
+			return null;
 		try
 		{
 			// Result sets start at 1,1 instead of 0,0
@@ -145,10 +148,10 @@ public class PackagesTableModel extends AbstractTableModel implements
 		{
 			return false;
 		}
-//		else if (editableRow == rowIndex)
-//		{
-//			return	true;
-//		}
+		// else if (editableRow == rowIndex)
+		// {
+		// return true;
+		// }
 		else
 		{
 			return true;
@@ -158,6 +161,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex)
 	{
+		if (rowIndex == newRow)
+			return;
 		try
 		{
 			rs_packages.absolute(rowIndex + 1);
@@ -193,7 +198,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				rs_packages.absolute(aryRows[i] + 1);
 				rs_packages.deleteRow();
 
-				 stmt1.executeQuery(sql1);
+				stmt1.executeQuery(sql1);
 				sqlConn.commit();
 				sqlConn.setAutoCommit(true);
 				fireTableRowsDeleted(aryRows[i], aryRows[i]);
@@ -214,23 +219,41 @@ public class PackagesTableModel extends AbstractTableModel implements
 		}
 	}
 
-	public void addEmptyRow()
+	public int addEmptyRow(int newRowIndex)
 	{
 		// dataVector.add(new Vector());
+		// try
+		// {
+		// rs_packages.afterLast();
+		// rs_packages.insertRow();
+		// }
+		// catch (SQLException e)
+		// {
+		// e.printStackTrace();
+		// }
+
+		String sql1 = "SELECT max(package_id) FROM Packages";
+		Statement stmt1;
+		int maxPkgID=0;
 		try
 		{
-			rs_packages.afterLast();
-			rs_packages.insertRow();
+			stmt1 = sqlConn.createStatement();
+			ResultSet rs1 = stmt1.executeQuery(sql1);
+			maxPkgID=rs1.getInt(1);
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
 		}
+		rows += 1;
 		fireTableRowsInserted(rows - 1, rows - 1);
+		newRow = newRowIndex;
+		return maxPkgID+1;
 	}
 
 	public boolean hasEmptyRow()
 	{
+
 		if (dataVector.size() == 0)
 			return false;
 		Object obj = dataVector.get(dataVector.size() - 1);
@@ -242,9 +265,6 @@ public class PackagesTableModel extends AbstractTableModel implements
 			return false;
 	}
 
-	public void setEditableRow(int rowIndex)
-	{
-		editableRow = rowIndex;
-	}
+
 
 }
