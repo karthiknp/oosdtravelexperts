@@ -12,7 +12,13 @@ public class Agents
 	private String agtPosition;
 	private int agencyID;
 	
-	// Agents class constructor
+	// Agents class constructors
+	public Agents()
+	{
+		super();
+	}
+	
+	
 	public Agents(int agtID, String agtFName, String agtMInitial, String agtLName, String agtBPhone, String agtEmail, String agtPos, int agID)
 	{
 		this.setAgentID(agtID);
@@ -151,5 +157,11 @@ public class Agents
 	public int getAgencyID()
 	{
 		return agencyID;
+	}
+	
+	public String toString()
+	{
+		return(this.getAgentID() + "\n" + this.getAgtFirstName() + " " + (this.getAgtMiddleInitial() == null ? "" : (this.getAgtMiddleInitial() + " ")) +
+			   this.getAgtLastName() + "\n" + this.getAgtBusPhone() + "\n" + this.getAgtEmail() + "\n" + this.getAgtPosition() + "\n" + this.getAgentID()) + "\n";
 	}
 }
