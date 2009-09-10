@@ -108,7 +108,6 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		add(pnlEast, BorderLayout.EAST);
 		
 		pack();		// Auto-size the frame based on computed size of components
-		setVisible(true);
 	}
 	
 	// Just adds some event handling to chat frame components
@@ -161,10 +160,15 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		}
 	}
 	
+	/**
+	 * Adds a timestamp to a message
+	 * @param unformattedMessage
+	 * @return	Returns the message with a date prefix
+	 */
 	private String formatMessage(String unformattedMessage) {
-		// Format with sender and date
 		return "( " +
-			DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date())+ ") :" +
+			"HH:MM" +
+			")" +
 			unformattedMessage + "\r\n";
 	}
 	
@@ -206,6 +210,7 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 				// Create thread, add to group and use IP address as thread name
 				Thread clientThread = new Thread(clientThreads, new handleClient(clientSocket), clientSocket.getRemoteSocketAddress().toString());
 				clientThread.start();
+				
 				refreshUsers();
 			}
 			catch (SocketTimeoutException e) {	// Must be caught before IOException
@@ -230,6 +235,7 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 		private BufferedWriter clientWriter = null;
 		
 		public String username = "anonymous";
+		public String password = "";
 		Socket clientSocket;
 		
 		public handleClient(Socket newClientSocket) throws IOException {
@@ -273,11 +279,35 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 						
 						// Read the message from the stream
 						receivedMessage = clientReader.readLine().trim();
-						messageToAll(receivedMessage);
+						
+						// Identifies the user (ie. /id WildWilly )
+						// Should be sent automatically by applet
+						// TODO: fix to match for only start of message, mabey regex?
+						if(receivedMessage.contains("/id ")) {
+							String splitMessage[] = receivedMessage.split(" ");
+							if(splitMessage.length > 2) {
+								username = splitMessage[1].trim();
+								password = splitMessage[2].trim();
+							}
+							
+							System.out.println("Username now:" + username);
+							receivedMessage = "";	// Clear
+							
+							// Already locked, but add refresh to event queue
+							EventQueue.invokeLater(new Runnable() {
+								@Override public void run() {	refreshUsers();	}
+							});
+						}
+						else {
+							// No /id found, so send message
+							messageToAll(receivedMessage);
+						}
+
 					}
 					else
 						// Yield since there's nothing to do  
 						Thread.yield();
+					
 				} while(receivedMessage.compareTo("/quit") != 0);
 
 				clientWriter.close();
