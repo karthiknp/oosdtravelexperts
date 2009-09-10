@@ -277,13 +277,11 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 						
 						// Read the message from the stream
 						receivedMessage = clientReader.readLine().trim();
-						
 						messageToAll(receivedMessage);
 					}
 					else
 						// Yield since there's nothing to do  
 						Thread.yield();
-					
 				} while(receivedMessage.compareTo("/quit") != 0);
 
 				clientWriter.close();

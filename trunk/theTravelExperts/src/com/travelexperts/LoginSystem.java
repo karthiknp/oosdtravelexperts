@@ -1,6 +1,7 @@
 package com.travelexperts;
 
-import java.awt.CardLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,17 +17,15 @@ import javax.swing.JTextField;
  * This class uses all static methods so other objects may easily
  * find the current user logged in. 
  * 
- * @author will_ad
+ * @author Will_Dixon
  *
  */
-@SuppressWarnings("serial")
 public class LoginSystem {
-	
-	private static int agentID = 0;
 	
 	private static final int TEXTFIELD_WIDTH = 25; 
 	
-	private static String currentUser = "Not logged in";
+	private static String currentUsername = "Travel Experts Agent";
+	private static int currentAgentID = 0;
 
 	// Stuff for the login form
 	private static JTextField txtUsername = new JTextField(TEXTFIELD_WIDTH);
@@ -38,28 +37,30 @@ public class LoginSystem {
 		mainPanel.add(txtUsername);
 		mainPanel.add(new JLabel("Password:"));
 		mainPanel.add(txtPassword);
+		mainPanel.setLayout(new GridBagLayout());
 	}
 	
+	// Method to show popup and return if authentication successfull
 	static public boolean showForm() {
-		
-		//JOptionPane.showMessageDialog(null, mainPanel, "Please Log In", JOptionPane.PLAIN_MESSAGE);
 		JOptionPane.showMessageDialog(null, mainPanel);
 		
-		return authenticateUser(txtUsername.getText(), txtPassword.getPassword().toString());
+		return authenticateUser(txtUsername.getText(), String.copyValueOf(txtPassword.getPassword()) );
 	}
 	
 	static public boolean authenticateUser(String username, String password) {
 		
-		PreparedStatement authStatement;		
+		PreparedStatement authStatement;
+		boolean isAuthenticated = false;
 		try {
-			authStatement = new TXConnection().getInstance()
-			.prepareStatement("SELECT * FROM Agents WHERE AgtLastName = 'Dalton'");
+			authStatement = TXConnection.getConnection()
+				.prepareStatement("SELECT * FROM Agents WHERE AgtLastName = ? AND Password = ?");
 			authStatement.setString(1, username);
+			authStatement.setString(2, password);
 			ResultSet rs = authStatement.executeQuery();
 			
 			if(rs.next()) {		// Any results? 
 				System.out.println("Found: " + rs.getString("AgtLastName"));
-				return true;	// Auth passed!
+				isAuthenticated = true;	// Auth passed!
 			}
 			
 			authStatement.getConnection().close();
@@ -69,11 +70,15 @@ public class LoginSystem {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;	// Auth failed otherwise
+		return isAuthenticated;	// Auth failed otherwise
 	}
 
-	public static int getAgentID() {
-		return agentID;
+	public static int getCurrentAgentID() {
+		return currentAgentID;
+	}
+	
+	public static String getCurrentUsername() {
+		return currentUsername;
 	}
 
 }
