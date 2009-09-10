@@ -40,28 +40,13 @@ public class TXConnection
 	private Connection conn;
 	public TXConnection() {
 	    try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
+			Class.forName(dbDriverClassname);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	    
 	    try {
-			conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "ictoosd", "ictoosd");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	// Deprecated
-	public TXConnection(String driverName, String connectionString) {
-
-	    try {
-			Class.forName(driverName);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	    
-	    try {
-			conn = DriverManager.getConnection(connectionString, "ictoosd", "ictoosd");
+			conn = DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
