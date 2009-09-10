@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="lib/skins/nimrodlf.jar"/>
 	<classpathentry kind="lib" path="lib/skins/quaqua.jar"/>
 	<classpathentry kind="lib" path="lib/skins/swing-layout.jar"/>
+	<classpathentry kind="lib" path="lib/ojdbc14.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
