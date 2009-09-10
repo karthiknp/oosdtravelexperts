@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
 
 /***
  * Web Applet that customers can use to connect to the server
@@ -38,17 +39,18 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 	
 	private static final String CHAT_HOST = "localhost";
 	private static final int CHAT_PORT = 3456;
-	private static final int TEXT_WIDTH = 40; 	
+	private static final int TEXT_WIDTH = 45; 	
 	
 	private static final int APPLET_WIDTH = 500; 	
 	private static final int APPLET_HEIGHT = 300; 	
 
 	// Username = GuestXXX if no auth info passed
 	String username = "Guest" + (int)((Math.random()*899)+100);
-	String password = "";
+	String password = "nopass";
 	
+	JLabel	lblHeader = new JLabel();
 	static JTextArea txtChannel = new JTextArea(8, TEXT_WIDTH);	// Chat window
-	JTextField txtInput = new JTextField(TEXT_WIDTH);		// Input
+	JTextField txtInput = new JTextField(30);		// Input
 	
 	JPanel pnlNorth = new JPanel();		// Info
 	JPanel pnlCenter = new JPanel();	// Chat Text
@@ -87,6 +89,11 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 		listener.setDaemon(true);
 		listener.start();
 	}
+
+	@Override
+	public void run() {
+		connect();
+	}
 	
 	@Override
 	public void stop() {
@@ -102,7 +109,8 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 	 * Authentiate login info from server
 	 */
 	public void authCustomer() {
-		// TODO: implement server-side user/password authentication 
+		// TODO: implement server-side user/password authentication
+		// Easily spoofed through fake applet parameters
 	}
 	
 	/*
@@ -110,23 +118,25 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 	 */
 	public void initForm() 
 	{
-		String strHeader = 
-			"<html>" +
-			"<h3>Welcome to the Travel Experts Online Support System</h3><br/>" +
-			"<em>You are connected as:</em> <strong>" + username + "</strong><br/><html>";
-
 		if(((getParameter("username") != null) && (getParameter("password") != null))) {
 			username = getParameter("username");
 			password = getParameter("password");
+			System.out.println("Parameters found: " + username + " " + password);
 		}
+		else
+			System.out.println("No parameters found, logging in as " + username);
+		
+		String headerConnecting = "Attempting to connect as " + username + "...";
+		
+		lblHeader.setText(headerConnecting);
 
-		pnlNorth.add(new JLabel(strHeader));
+		pnlNorth.add(lblHeader);
 		
 		txtChannel.setFocusable(false);		// Still let's user copy & paste
 		JScrollPane jspChannel = new JScrollPane(txtChannel);
-		jspChannel.setAutoscrolls(true);
 		pnlCenter.add(jspChannel);	// Chat window is scrollable obviously
 		
+		pnlSouth.add(new JLabel("Type here:"));
 		pnlSouth.add(txtInput);
 		pnlSouth.add(new JButton("Send"));	// Just looks professional (does same as txt action lol) 
 		txtInput.addActionListener(new ActionListener() {
@@ -143,23 +153,31 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 		add(pnlCenter, BorderLayout.CENTER);
 		add(pnlSouth, BorderLayout.SOUTH);
 		
-		pnlNorth.setBorder(BorderFactory.createRaisedBevelBorder());
+		pnlSouth.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 
 		setSize(APPLET_WIDTH, APPLET_HEIGHT);
 	}
 	
-	// Fix this later, will be called from a javascript function triggered by an onClick event
-	public void reconnect() {
-		receiveMessage("\r\nAttemping to reconnect to server...\r\n");
-	}
-
-	@Override
-	public void run() {
+	// Called by thread run() to connect listen for incoming mesages
+	public void connect() {
 		// Listens for incoming messages and updates applet
 		try {
 			Socket sktIncoming = new Socket(CHAT_HOST, CHAT_PORT);
 			bfrIncoming = new BufferedReader(new InputStreamReader(sktIncoming.getInputStream()));
 			bfrOutgoing = new BufferedWriter(new OutputStreamWriter(sktIncoming.getOutputStream()));
+			
+			// Output that connection is succesfull (because exception not thrown)
+			String headerConnected = 
+				"<html>" +
+				"<h3>Welcome to the Travel Experts Online Support System</h3><br/>" +
+				"You are connected as: <strong>" + username + "</strong><br/><html>";
+			
+			lblHeader.setText(headerConnected);
+			
+			// Send username to server for identification
+			bfrOutgoing.write("/id " + username + " " + password + " \r\n");
+			bfrOutgoing.flush();
+			
 			while(true) {
 				// Anything coming in?
 				if(bfrIncoming.ready()) {
@@ -175,6 +193,13 @@ public class ClientSupportApplet extends JApplet implements Runnable {
 			receiveMessage("Server Offline: Sorry, no Travel Experts agents are available to help you right now");
 			ex.printStackTrace(); 
 		}
+	}
+
+	// Callable through javascript to reset connection
+	public void reconnect() {
+		Thread listener = new Thread(this);
+		listener.setDaemon(true);
+		listener.start();
 	}
 	
 	// Simply echos to channel, server echo's back our messages too 
