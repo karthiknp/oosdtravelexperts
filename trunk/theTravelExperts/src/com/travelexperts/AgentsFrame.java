@@ -77,6 +77,8 @@ public class AgentsFrame extends JInternalFrame {
 	public AgentsFrame() {
 		super("Agent Management", true, true, true, true);
 		
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
+		
 		//add(new JScrollPane(agentsTable));
 		
 		//JCheckBox active = new JCheckBox();
@@ -325,8 +327,8 @@ public class AgentsFrame extends JInternalFrame {
 		
 		//load agent's customers
 		try {
-			Class.forName(driver);
-	        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+			// Changed again
+	        Connection connection = TXConnection.getConnection();
 	        Statement stmt = connection.createStatement();
 	        String sql = "SELECT CustomerID, CustFirstName, CustLastName FROM Customers WHERE AgentID = " + jTextField1.getText();
 	        ResultSet rs = stmt.executeQuery(sql);
@@ -358,9 +360,6 @@ public class AgentsFrame extends JInternalFrame {
 			add(customerPanel, BorderLayout.EAST);*/
 			//lstCustomers.setVisible(true);
 			//lstCustomers.repaint();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -368,12 +367,4 @@ public class AgentsFrame extends JInternalFrame {
 		
 	}
 	
-	private void initGUI() {
-		try {
-			Application.getInstance().getContext().getResourceMap(getClass()).injectComponents(this);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }
