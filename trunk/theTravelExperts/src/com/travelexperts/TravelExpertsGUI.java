@@ -1,15 +1,14 @@
 package com.travelexperts;
 
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.swing.ActionMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -20,12 +19,6 @@ import org.jdesktop.application.Application;
 public class TravelExpertsGUI extends JFrame {
 
 	private static final long serialVersionUID = -7769502223714046401L;
-
-	// The connection string
-	public static Connection connection = null;
-	static {
-		connection = new TXConnection().getInstance();
-	}
 
 	// The MDI "parent container"
     private JDesktopPane desktopPane = new JDesktopPane();
@@ -52,7 +45,20 @@ public class TravelExpertsGUI extends JFrame {
     	super("Travel Experts Management System");
     	setDefaultCloseOperation(EXIT_ON_CLOSE);
     	
+    	desktopPane.add(new LoginSystem(this));
+    	
+    	// Maximize and show the main form
+    	add(desktopPane, BorderLayout.CENTER);    	// Attach MDI parent to Main Frame    	
+    	pack();
+    	setExtendedState(JFrame.MAXIMIZED_BOTH);
+    	setVisible(true);
+    	
+    }
+    
+    // Called from the Login System if login is successful
+    public void loadAllForms() {
     	// Attach children frames to parent frame, all not visible by default
+    	setJMenuBar(mainMenuBar);
     	desktopPane.add(packagesFrame);
     	desktopPane.add(suppliersFrame);
     	desktopPane.add(productsFrame);
@@ -60,81 +66,59 @@ public class TravelExpertsGUI extends JFrame {
     	desktopPane.add(customersFrame);
     	desktopPane.add(supportServerFrame);
     	
-    	desktopPane.add(new JLabel("test"));
-    	    	
-    	// Add content to main JPanel
-    	setJMenuBar(mainMenuBar);
-		// add(statusBar, BorderLayout.NORTH);
-    	add(desktopPane, BorderLayout.CENTER);    	// Attach MDI parent to Main Frame
-        	
-    	
-    	// Maximize and show the main form
-    	pack();
-    	setExtendedState(JFrame.MAXIMIZED_BOTH);
-    	setVisible(true);
-    	
-    	// Log the user on,
-    	/*
-    	while(LoginSystem.showForm() == false) {
-    		//  
-    		JOptionPane.showMessageDialog(null, "Authentication failed: Invalid username or password");
-    		
-    	};
-    	*/
     }
     
-    @Action
-    public void showPackages() {
+    @Action public void showPackages() {
     	packagesFrame.setVisible(true);
     }
 
-    @Action
-    public void showSuppliers() {
+    @Action public void showSuppliers() {
     	suppliersFrame.setVisible(true);
     }
     
-    @Action
-    public void showProducts() {
+    @Action public void showProducts() {
     	productsFrame.setVisible(true);
     }
 
-    @Action
-    public void showAgents() {
+    @Action public void showAgents() {
     	agentsFrame.setVisible(true);
     }
 
-    @Action
-    public void showCustomers() {
+    @Action public void showCustomers() {
     	customersFrame.setVisible(true);
     }
     
-    @Action
-    public void showSupport() {
+    @Action public void showSupport() {
     	supportServerFrame.setVisible(true);
     }
     
-    @Action
-    public void printInvoice() {
-    	// Do stuff here
-    	// Write invoice to xml file then use xslt to generate html or printable output
-    }
-
     public ActionMap getAppActionMap() {
         return Application.getInstance().getContext().getActionMap(this);
     }
     
     public static void main(String[] args) {
-        try {
-        	new TravelExpertsGUI();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-        finally {}
+    	EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+		        try {
+		        	new TravelExpertsGUI();
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+					TXLogger.logError(e.getMessage());
+				} catch (SQLException e) {
+					e.printStackTrace();
+					TXLogger.logError(e.getMessage());
+				} catch (IOException e) {
+					e.printStackTrace();
+					TXLogger.logError(e.getMessage());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					TXLogger.logError(e.getMessage());
+				}
+		        finally {
+		        	TXLogger.logInfo("Application launched");
+		        }
+			}
+		});
     }
 }
