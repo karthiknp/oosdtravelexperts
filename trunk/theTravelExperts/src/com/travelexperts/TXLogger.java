@@ -3,14 +3,12 @@ package com.travelexperts;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 /**
  * 
@@ -29,7 +27,7 @@ public class TXLogger {
 	
 	private static final String[] EVENT_NAMES = { "", "Error", "Warning", "Notice", "Info" };
 
-	private static String LOG_FILENAME = "errorlog.xml";
+	private static String LOG_FILENAME = "errorlog.txt";
 	
 	private static BufferedWriter bfwLogger;
 	
@@ -38,7 +36,7 @@ public class TXLogger {
 				
 		try {			
 			bfwLogger = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(LOG_FILENAME, true)));
-			
+			logEvent(EVENT_INFO, "Log started");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (FactoryConfigurationError e) {
@@ -46,14 +44,25 @@ public class TXLogger {
 		}
  	}
  	
- 	public static void logEvent(int eventLevel, String eventMessage) {
+ 	private static void logEvent(int eventLevel, String eventMessage) {
  		try {
- 			if(eventLevel > EVENT_NAMES.length) bfwLogger.write("Internal logger error: invalid error code");
- 			 	bfwLogger.write(EVENT_NAMES[eventLevel] );
+ 			if(eventLevel >= EVENT_NAMES.length) {
+ 				bfwLogger.write("Internal logger error: invalid error code");
+ 				return;
+ 			}
+ 			String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+ 			bfwLogger.write(timeStamp + ": " + EVENT_NAMES[eventLevel] + ": " + eventMessage);
 	 		bfwLogger.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+ 	}
+ 	
+ 	@Override
+ 	protected void finalize() throws Throwable {
+ 		super.finalize();
+ 		logInfo("Log closed");
+ 		bfwLogger.close();
  	}
  	
  	public static void logError(String errorMessage) {
