@@ -39,7 +39,6 @@ import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
@@ -75,7 +74,6 @@ public class PackagesFrame extends JInternalFrame
 	private JLabel jLabel8;
 	private JComboBox cmbPkgFilter;
 	private JLabel jLabel7;
-	private JLabel jLabel6;
 	private JLabel jLabel5;
 	private JLabel jLabel4;
 	private JScrollPane jScrollPane2;
@@ -107,12 +105,14 @@ public class PackagesFrame extends JInternalFrame
 	static Logger logger = Logger.getLogger(TXLogger.class.getName());
 	private DefaultListModel dlmInc = new DefaultListModel();
 	private DefaultListModel dlmAvi;
-	private TableRowSorter<PackagesTableModel> sorter = null;
+	//private TableRowSorter<PackagesTableModel> sorter = null;
 	private DefaultComboBoxModel cmbProdFilterModel;
 
 	private JPopupMenu popupMenu;
 
 	private DefaultComboBoxModel cmbPkgFilterModel;
+
+	private JMenuItem copyItem;
 
 	// Build the form
 	public PackagesFrame()
@@ -136,7 +136,7 @@ public class PackagesFrame extends JInternalFrame
 		{
 			jScrollPane1 = new JScrollPane();
 			getContentPane().add(jScrollPane1);
-			jScrollPane1.setBounds(12, 34, 774, 179);
+			jScrollPane1.setBounds(12, 34, 774, 223);
 			btnNew.setBounds(304, 415, 35, 21);
 			btnNew.addActionListener(new ActionListener(){
 
@@ -195,20 +195,10 @@ public class PackagesFrame extends JInternalFrame
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
-					// TODO Auto-generated method stub
 					btnDeleteMouseClicked(e);
-					
 				}
 				
 			});
-//			btnDelete.addMouseListener(new MouseAdapter()
-//			{
-//				public void mouseClicked(MouseEvent evt)
-//				{
-//					System.out.println("btnDelete.mouseClicked, event=" + evt);
-//					btnDeleteMouseClicked(evt);
-//				}
-//			});
 			{
 				tblPackages = new JTable();
 				jScrollPane1.setViewportView(tblPackages);
@@ -270,7 +260,8 @@ public class PackagesFrame extends JInternalFrame
 						});
 				tblPackages.setModel(pkgTblModel);
 				initTable(pkgTblModel, -1);
-				sorter = new TableRowSorter<PackagesTableModel>(pkgTblModel);
+				//sorter = new TableRowSorter<PackagesTableModel>(pkgTblModel);
+				// sorter confuses my table model
 				// tblPackages.setRowSorter(sorter);
 
 				tblPackages.getSelectionModel().addListSelectionListener(
@@ -287,7 +278,7 @@ public class PackagesFrame extends JInternalFrame
 				final NumericTextField ntf = new NumericTextField();
 				// tblPackages.getColumnModel().getColumn(pkgTblModel.COMISSION).setCellRenderer(ntf);
 				tblPackages.getColumnModel().getColumn(
-						PackagesTableModel.COMISSION).setCellEditor(
+						PackagesTableModel.COMMISSION).setCellEditor(
 						new DefaultCellEditor(ntf));
 				tblPackages.getColumnModel()
 						.getColumn(PackagesTableModel.PRICE).setCellEditor(
@@ -399,10 +390,10 @@ public class PackagesFrame extends JInternalFrame
 					}
 				});
 				tblPackages.setBounds(32, 12, 700, 203);
-				tblPackages.setPreferredSize(new java.awt.Dimension(682, 275));
+				tblPackages.setPreferredSize(new java.awt.Dimension(756, 422));
 				popupMenu = new JPopupMenu();
 
-				JMenuItem copyItem = new JMenuItem(
+				 copyItem = new JMenuItem(
 						"Copy and create a new package");
 				copyItem.addActionListener(new ActionListener()
 				{
@@ -569,7 +560,6 @@ public class PackagesFrame extends JInternalFrame
 			getContentPane().add(jScrollPane2);
 			getContentPane().add(getJLabel4());
 			getContentPane().add(getJLabel5());
-			getContentPane().add(getJLabel6());
 			getContentPane().add(getJLabel7());
 			getContentPane().add(getCmbPkgFilter());
 			getContentPane().add(getJLabel8());
@@ -1013,24 +1003,13 @@ public class PackagesFrame extends JInternalFrame
 		return jLabel5;
 	}
 
-	private JLabel getJLabel6()
-	{
-		if (jLabel6 == null)
-		{
-			jLabel6 = new JLabel();
-			jLabel6.setBounds(522, 244, 119, 14);
-			jLabel6.setName("jLabel6");
-		}
-		return jLabel6;
-	}
-
 	private JLabel getJLabel7()
 	{
 		if (jLabel7 == null)
 		{
 			jLabel7 = new JLabel();
 			jLabel7.setName("jLabel6");
-			jLabel7.setBounds(90, 248, 119, 14);
+			jLabel7.setBounds(34, 274, 119, 14);
 		}
 		return jLabel7;
 	}
@@ -1078,10 +1057,13 @@ public class PackagesFrame extends JInternalFrame
 								}
 								cmbPkgFilter.setSelectedIndex(0);
 								btnNew.setEnabled(false);
+								copyItem.setEnabled(false);
+								
 							}
 							else
 							{
 								btnNew.setEnabled(true);
+								copyItem.setEnabled(true);
 							}
 						}
 					});
