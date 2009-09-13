@@ -58,6 +58,8 @@ import com.toedter.calendar.JCalendar;
 @SuppressWarnings("serial")
 public class PackagesFrame extends JInternalFrame
 {
+	protected static final String VALUE_REQUIRED = "value required";
+
 	// List that will show the product/suppliers in a package (connect to
 	// database later)
 	JList lstProdInc = new JList();
@@ -147,14 +149,6 @@ public class PackagesFrame extends JInternalFrame
 				}
 				
 			});
-//			btnNew.addMouseListener(new MouseAdapter()
-//			{
-//				public void mouseClicked(MouseEvent evt)
-//				{
-//					// add new row to jtable
-//					addNewRow();
-//				}
-//			});
 			btnEdit.setBounds(350, 415, 32, 21);
 			btnEdit.addActionListener(new ActionListener(){
 
@@ -165,13 +159,6 @@ public class PackagesFrame extends JInternalFrame
 				}
 				
 			});
-//			btnEdit.addMouseListener(new MouseAdapter()
-//			{
-//				public void mouseClicked(MouseEvent evt)
-//				{
-//					btnEditMouseClicked(evt);
-//				}
-//			});
 			btnSave.setBounds(393, 415, 38, 21);
 			btnSave.addActionListener(new ActionListener(){
 
@@ -182,13 +169,6 @@ public class PackagesFrame extends JInternalFrame
 				}
 				
 			});
-//			btnSave.addMouseListener(new MouseAdapter()
-//			{
-//				public void mouseClicked(MouseEvent evt)
-//				{
-//					btnSaveMouseClicked(evt);
-//				}
-//			});
 			btnDelete.setBounds(442, 415, 45, 21);
 			btnDelete.addActionListener(new ActionListener(){
 
@@ -273,10 +253,9 @@ public class PackagesFrame extends JInternalFrame
 								listSelectionChaged(e);
 							}
 						});
-				// tblPackages.setDefaultRenderer(Object.class,
-				// new EvenOddRenderer());
+				 tblPackages.setDefaultRenderer(Object.class,
+				 new EvenOddRenderer());
 				final NumericTextField ntf = new NumericTextField();
-				// tblPackages.getColumnModel().getColumn(pkgTblModel.COMISSION).setCellRenderer(ntf);
 				tblPackages.getColumnModel().getColumn(
 						PackagesTableModel.COMMISSION).setCellEditor(
 						new DefaultCellEditor(ntf));
@@ -298,9 +277,24 @@ public class PackagesFrame extends JInternalFrame
 					}
 
 				});
+				ntf.addFocusListener(new FocusListener(){
 
-				// ((NumericTextField)(tblPackages.getColumnModel().getColumn(pkgTblModel.COMISSION).getCellRenderer())).addKeyListener(new
-				// KeyAdapter(){
+					@Override
+					public void focusGained(FocusEvent e)
+					{
+						String txt = ((JTextField) (e.getComponent())).getText();
+						if ((txt.equals(VALUE_REQUIRED)))
+						{
+							((JTextField) (e.getComponent())).setText("");
+						}						
+					}
+
+					@Override
+					public void focusLost(FocusEvent e)
+					{
+					}
+					
+				});
 				ntf.addKeyListener(new KeyAdapter()
 				{
 					public void keyTyped(KeyEvent e)
@@ -376,7 +370,7 @@ public class PackagesFrame extends JInternalFrame
 					public void focusGained(FocusEvent e)
 					{
 						if (((JTextField) e.getComponent()).getText().trim()
-								.equals("value required"))
+								.equals(VALUE_REQUIRED))
 						{
 							((JTextField) e.getComponent()).setText("");
 						}
