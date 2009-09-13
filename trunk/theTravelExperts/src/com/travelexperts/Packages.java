@@ -24,7 +24,16 @@ public class Packages
 		this.setPkgBasePrice(pkgBasePrice);
 		this.setPkgAgentComm(pkgAgentComm);
 	}
-	
+	public Packages(int pkgID)
+	{
+		this.setPackageID(pkgID);
+		this.setPkgName("");
+		this.setPkgStartDate(null);
+		this.setPkgEndDate(null);
+		this.setPkgDesc("");
+		this.setPkgBasePrice(0);
+		this.setPkgAgentComm(0);
+	}	
 	/**
 	 * @param pkgID the packageID to set
 	 */
