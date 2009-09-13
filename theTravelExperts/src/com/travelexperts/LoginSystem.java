@@ -1,14 +1,15 @@
 package com.travelexperts;
 
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -19,65 +20,86 @@ import javax.swing.JTextField;
  * @author Will_Dixon
  *
  */
-public class LoginSystem {
+public class LoginSystem extends JInternalFrame {
 	
-	private static final int TEXTFIELD_WIDTH = 25; 
-	
-	private static String currentUsername = "Travel Experts Agent";
-	private static int currentAgentID = 0;
+	private static final long serialVersionUID = -3491761888255913589L;
 
-	// Stuff for the login form
-	private static JTextField txtUsername = new JTextField(TEXTFIELD_WIDTH);
-	private static JPasswordField txtPassword = new JPasswordField(TEXTFIELD_WIDTH);
-	private static JPanel mainPanel = new JPanel(new GridLayout(2, 2));
+	public static int POSITION_INACTIVE = 0; 
+	public static int POSITION_JUNIOR = 1; 
+	public static int POSITION_INTERMEDIATE = 2; 
+	public static int POSITION_SENIOR = 3; 
 
-	static {
-		mainPanel.add(new JLabel("Username:"));
-		mainPanel.add(txtUsername);
-		mainPanel.add(new JLabel("Password:"));
-		mainPanel.add(txtPassword);
-		mainPanel.setLayout(new GridBagLayout());
-	}
+	public static int INPUT_WIDTH = 15; 
+
+	private static String username = null;
 	
-	// Method to show popup and return if authentication successfull
-	static public boolean showForm() {
-		JOptionPane.showMessageDialog(null, mainPanel);
-		
-		return authenticateUser(txtUsername.getText(), String.copyValueOf(txtPassword.getPassword()) );
-	}
+	JTextField txtUsername = new JTextField(INPUT_WIDTH);
+	JPasswordField txtPassword = new JPasswordField(INPUT_WIDTH);
 	
-	static public boolean authenticateUser(String username, String password) {
+	public LoginSystem(final TravelExpertsGUI parentFrame) {
+		super("Agent Authentication", false, false, false, false);
+
+		setLayout(new GridLayout(3, 2));	// Will auto-cCenter items
+
+		add(new JLabel("Username"), "help");
+		add(txtUsername);
+		add(new JLabel("Password:"));
+		add(txtPassword);
+		add(new JLabel("Hint: Password is disabled, enter any active agent last name"));
 		
-		PreparedStatement authStatement;
-		boolean isAuthenticated = false;
-		try {
-			authStatement = TXConnection.getConnection()
-				.prepareStatement("SELECT * FROM Agents WHERE AgtLastName = ? AND Password = ?");
-			authStatement.setString(1, username);
-			authStatement.setString(2, password);
-			ResultSet rs = authStatement.executeQuery();
-			
-			if(rs.next()) {		// Any results? 
-				System.out.println("Found: " + rs.getString("AgtLastName"));
-				isAuthenticated = true;	// Auth passed!
+		JButton btnLogin = new JButton("Log In");
+		add(btnLogin);
+
+		// Code for login validation
+		btnLogin.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				try {
+					
+					// Login not case sensitive
+					// Use JDBC lcase function for compatability
+					PreparedStatement pst = TXConnection.getConnection().prepareStatement("SELECT * FROM Agents WHERE {fn LCASE(AgtLastName)} = ? AND AgtPosition <> 'Inactive'" );
+					pst.setString(1, txtUsername.getText().toLowerCase());
+					// Password checking disabled until table design is finalized with a password field
+					/*
+					 * pst.setString(2, String.copyValueOf(txtPassword.getPassword()));
+					 */
+					ResultSet rs = pst.executeQuery();
+					
+					// If login successfull
+					if(rs.next()) {
+						parentFrame.loadAllForms();
+						setUsername(rs.getString("AgtLastName"));
+						TXLogger.logInfo("Logged in as " + username);
+					}
+					else {
+						TXLogger.logInfo("Login attempt failed for: " + txtUsername.getText() );
+					}
+					// Clean up
+					rs.getStatement().close();
+					rs.close();
+					
+					if(getCurrentUsername() != null) dispose();	// Done, so close frame if login successful
+
+				} catch (SQLException e1) {
+					TXLogger.logError(e1.getMessage());
+					e1.printStackTrace();
+				}
+				
 			}
-			
-			authStatement.getConnection().close();
-			authStatement.close();
-			rs.close();
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return isAuthenticated;	// Auth failed otherwise
-	}
-
-	public static int getCurrentAgentID() {
-		return currentAgentID;
+		});
+		
+		pack();
+		setLocation(200, 200);
+		setVisible(true);
 	}
 	
-	public static String getCurrentUsername() {
-		return currentUsername;
+	private static void setUsername(String s) {
+		username = s;
+	}
+	
+	static String getCurrentUsername() {
+		if(username == null) return null;
+		return username;
 	}
 
 }
