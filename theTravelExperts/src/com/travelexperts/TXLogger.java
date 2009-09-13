@@ -14,8 +14,7 @@ import javax.xml.stream.FactoryConfigurationError;
  * 
  * @author Will_Dixon
  *
- * 
- *	Logger that saves errors/warnings in XML
+ *	Simple logger that appends timestamped message with error level to file 
  */
 public class TXLogger {
 	
@@ -25,9 +24,9 @@ public class TXLogger {
 	public static final int EVENT_NOTICE = 3;
 	public static final int EVENT_INFO = 4;
 	
-	private static final String[] EVENT_NAMES = { "", "Error", "Warning", "Notice", "Info" };
+	private static final String[] EVENT_NAMES = { "Unknown", "Error", "Warning", "Notice", "Info" };
 
-	private static String LOG_FILENAME = "errorlog.txt";
+	private static String LOG_FILENAME = "txlog.txt";
 	
 	private static BufferedWriter bfwLogger;
 	
@@ -51,19 +50,14 @@ public class TXLogger {
  				return;
  			}
  			String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
- 			bfwLogger.write(timeStamp + ": " + EVENT_NAMES[eventLevel] + ": " + eventMessage);
+ 			bfwLogger.write(EVENT_NAMES[eventLevel] + " @ " + timeStamp + ": " + eventMessage);
+ 			bfwLogger.write("\r\n");
 	 		bfwLogger.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
  	}
- 	
- 	@Override
- 	protected void finalize() throws Throwable {
- 		super.finalize();
- 		logInfo("Log closed");
- 		bfwLogger.close();
- 	}
+
  	
  	public static void logError(String errorMessage) {
  		logEvent(EVENT_ERROR, errorMessage);
