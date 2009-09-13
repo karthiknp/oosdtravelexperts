@@ -52,29 +52,12 @@ public class PackagesTableModel extends AbstractTableModel implements
 	public static final int END_DATE = 3;
 	public static final int DESCRIPTION = 4;
 	public static final int PRICE = 5;
-	public static final int COMISSION = 6;
+	public static final int COMMISSION = 6;
 
 	public PackagesTableModel()
 	{
 		super();
-		String sql1 = "SELECT PACKAGEID ID," + "PKGNAME Name, "
-				+ "PKGSTARTDATE StartDate, " + "PKGENDDATE EndDate, "
-				+ "PKGDESC Description, " + "PKGBASEPRICE Price,"
-				+ "PKGAGENCYCOMMISSION Commission FROM packages ORDER BY ID";
-		try
-		{
-			rs_packages = sqlConn
-					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-							ResultSet.CONCUR_UPDATABLE).executeQuery(sql1);
-			rs_packages.last();
-			rows = rs_packages.getRow();
-			columns = rs_packages.getMetaData().getColumnCount();
-			sqlConn.commit();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
+		reload_rs_packages();
 	}
 
 	public Class<?> getColumnClass(int arg0)
@@ -122,25 +105,29 @@ public class PackagesTableModel extends AbstractTableModel implements
 			rs_packages.absolute(rowIndex);
 			if (columnIndex == START_DATE + 1 || columnIndex == END_DATE + 1)
 			{
-//				NumberFormat nf = NumberFormat.getNumberInstance();
-//				nf.format(00); 
+				// NumberFormat nf = NumberFormat.getNumberInstance();
+				// nf.format(00);
 				// get formatted string for Date
 				if (rs_packages.getString(columnIndex) != null)
 				{
 					o = rs_packages.getString(columnIndex).split(" ")[0];
-					String[] strDate= o.split("-");
-					if(strDate[1].length()==1)
-					{ strDate[1] = "0"+strDate[1];}
-					if(strDate[2].length()==1)
-					{ strDate[2] = "0"+strDate[2];}
-					o = strDate[0]+"-"+strDate[1]+"-"+strDate[2];
+					String[] strDate = o.split("-");
+					if (strDate[1].length() == 1)
+					{
+						strDate[1] = "0" + strDate[1];
+					}
+					if (strDate[2].length() == 1)
+					{
+						strDate[2] = "0" + strDate[2];
+					}
+					o = strDate[0] + "-" + strDate[1] + "-" + strDate[2];
 				}
 				else
 				{
-					o="";
+					o = "";
 				}
 			}
-			else if (columnIndex == PRICE + 1 || columnIndex == COMISSION + 1)
+			else if (columnIndex == PRICE + 1 || columnIndex == COMMISSION + 1)
 			{
 				if (rs_packages.getString(columnIndex) == null
 						|| rs_packages.getString(columnIndex) == "")
@@ -154,7 +141,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 			else
 			{
-				System.out.println("columnIndex:"+columnIndex+"rowIndex:"+rowIndex);
+				System.out.println("columnIndex:" + columnIndex + "rowIndex:"
+						+ rowIndex);
 				o = rs_packages.getString(columnIndex);
 			}
 			sqlConn.commit();
@@ -198,10 +186,14 @@ public class PackagesTableModel extends AbstractTableModel implements
 		{
 			rs_packages.absolute(rowIndex + 1);
 			if (columnIndex == START_DATE || columnIndex == END_DATE)
-				if(value!=null && (!value.toString().equals("")))
-				{rs_packages.updateDate(columnIndex + 1, (Date) value);}
+				if (value != null && (!value.toString().equals("")))
+				{
+					rs_packages.updateDate(columnIndex + 1, (Date) value);
+				}
 				else
-				{rs_packages.updateDate(columnIndex+1,null);}
+				{
+					rs_packages.updateDate(columnIndex + 1, null);
+				}
 			else
 			{
 				rs_packages
@@ -255,18 +247,14 @@ public class PackagesTableModel extends AbstractTableModel implements
 
 	public void addEmptyRow(int newRowIndex)
 	{
-//		System.out.println("addEmptyRow------------------started");
+		// System.out.println("addEmptyRow------------------started");
 		if (hasEmptyRow())
 		{
 			return;
 		}
 		String sql1 = "SELECT max(packageid) FROM Packages";
 		Statement stmt1;
-		 maxPkgID  = 0;
-		String sql2 = "SELECT PACKAGEID ID," + "PKGNAME Name, "
-				+ "PKGSTARTDATE StartDate, " + "PKGENDDATE EndDate, "
-				+ "PKGDESC Description, " + "PKGBASEPRICE Price,"
-				+ "PKGAGENCYCOMMISSION Commission FROM packages ORDER BY ID";
+		maxPkgID = 0;
 		try
 		{
 			stmt1 = sqlConn.createStatement();
@@ -282,22 +270,20 @@ public class PackagesTableModel extends AbstractTableModel implements
 			rs_packages.updateString(5, "");
 			rs_packages.updateInt(6, 0);
 			rs_packages.updateInt(7, 0);
-//			System.out.println("addEmptyRow------------------1");
+			// System.out.println("addEmptyRow------------------1");
 			rs_packages.insertRow();
 			sqlConn.commit();
-			fireTableRowsInserted(newRowIndex-1, newRowIndex-1);
-//			System.out.println("addEmptyRow------------------2");
+			fireTableRowsInserted(newRowIndex - 1, newRowIndex - 1);
+			// System.out.println("addEmptyRow------------------2");
 
 			rows++;
-			rs_packages = sqlConn
-					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-							ResultSet.CONCUR_UPDATABLE).executeQuery(sql2);
-		}
+			reload_rs_packages();
+			}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
 		}
-		//System.out.println("addEmptyRow------------------ended");
+		// System.out.println("addEmptyRow------------------ended");
 	}
 
 	public boolean hasEmptyRow()
@@ -359,9 +345,6 @@ public class PackagesTableModel extends AbstractTableModel implements
 						rowIndex, END_DATE).toString().split("-")[2]));
 				if (startDate.compareTo(endDate) > 0)
 				{
-					JOptionPane.showMessageDialog(null, Messages
-							.getValidateMsg_A_CANT_GREATERTHAN_B("Start Date",
-									"End Date"));
 					flgValidate = false;
 					validationMsg = Messages
 							.getValidateMsg_A_CANT_GREATERTHAN_B("Start Date",
@@ -371,7 +354,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 			break;
 		case END_DATE:
 			if (getValueAt(rowIndex, START_DATE) != null
-					&& getValueAt(rowIndex, START_DATE) != "" && value != null&& value !="")
+					&& getValueAt(rowIndex, START_DATE) != "" && value != null
+					&& value != "")
 			{
 				Calendar startDate = Calendar.getInstance();
 				startDate.set(Calendar.YEAR, Integer.parseInt(getValueAt(
@@ -404,7 +388,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				value = 0;
 			}
 			price = new BigDecimal(value.toString());
-			commission = new BigDecimal(getValueAt(rowIndex, COMISSION)
+			commission = new BigDecimal(getValueAt(rowIndex, COMMISSION)
 					.toString());
 			if (commission.compareTo(price) > 0)
 			{
@@ -413,7 +397,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 						"Commission", "Package Price");
 			}
 			break;
-		case COMISSION:
+		case COMMISSION:
 			if (value == null || value.toString().trim().equals(""))
 			{
 				value = 0;
@@ -439,74 +423,128 @@ public class PackagesTableModel extends AbstractTableModel implements
 
 	public Vector<Object> getRowValueFrom(int rowIndex)
 	{
-//		System.out.println("getRowValueFrom------------------started");
+		// System.out.println("getRowValueFrom------------------started");
 		Vector<Object> rowVector = new Vector<Object>();
 		for (int i = 0; i < columns; i++)
 		{
 			rowVector.addElement(getValueAt(rowIndex, i));
 		}
-//		System.out.println("getRowValueFrom------------------ended");
+		// System.out.println("getRowValueFrom------------------ended");
 		return rowVector;
 	}
 
 	public void setRowValueTo(Vector<Object> rowVector,
 			Vector<Products_Suppliers> v_psInc, int rowIndex)
 	{
-//		System.out.println("setRowValueTo------------------started");
-		for (int i = 1; i < columns; i++)
-		{
-			if (i == START_DATE || i == END_DATE)
-			{
-				if(!rowVector.elementAt(i).equals(""))
-				{
-					String[] strDate = rowVector.elementAt(i).toString().split("-");
-					Calendar cal = Calendar.getInstance();
-					cal.set(Integer.parseInt(strDate[0]), Integer
-							.parseInt(strDate[1]), Integer.parseInt(strDate[2]));
-					java.sql.Date d = new java.sql.Date(cal.getTimeInMillis());
-					setValueAt(d, rowIndex, i);
-				}
-				else
-				{
-					setValueAt("", rowIndex, i);
-				}
-			}
-			else
-			{
-				setValueAt(rowVector.elementAt(i), rowIndex, i);
-			}
-		}
-		// add products to the new package
-		if(v_psInc==null ||v_psInc.size()==0)
-		{
-			return;
-		}
-		int pkgIdTo = maxPkgID+1;
-		Vector<String> v_sql1 = new Vector<String>();
+		// System.out.println("setRowValueTo------------------started");
+		// set table display
+		// for (int i = 1; i < columns; i++)
+		// {
+		// if (i == START_DATE || i == END_DATE)
+		// {
+		// if(!rowVector.elementAt(i).equals(""))
+		// {
+		// String[] strDate = rowVector.elementAt(i).toString().split("-");
+		// Calendar cal = Calendar.getInstance();
+		// cal.set(Integer.parseInt(strDate[0]), Integer
+		// .parseInt(strDate[1]), Integer.parseInt(strDate[2]));
+		// java.sql.Date d = new java.sql.Date(cal.getTimeInMillis());
+		// setValueAt(d, rowIndex, i);
+		// }
+		// else
+		// {
+		// setValueAt("", rowIndex, i);
+		// }
+		// }
+		// else
+		// {
+		// setValueAt(rowVector.elementAt(i), rowIndex, i);
+		// }
+		// }
 
-		for (int i = 0; i < v_psInc.size(); i++)
+		int pkgIdTo = maxPkgID + 1;
+		String sql1 = "UPDATE packages SET PKGNAME = '"
+				+ rowVector.elementAt(PACKAGE_NAME) 
+				+ "', PKGSTARTDATE= to_date('" 
+				+ rowVector.elementAt(START_DATE) 
+				+ "','yyyy-mm-dd'),PKGENDDATE = to_date('"
+				+ rowVector.elementAt(END_DATE) 
+				+ "','yyyy-mm-dd'),PKGDESC = '"
+				+ rowVector.elementAt(DESCRIPTION) 
+				+ "',PKGBASEPRICE = "
+				+ rowVector.elementAt(PRICE) 
+				+ ",PKGAGENCYCOMMISSION = "
+				+ rowVector.elementAt(COMMISSION) 
+				+ " WHERE PACKAGEID = " + pkgIdTo;
+		System.out.println(sql1);
+		// add products to the new package
+		Vector<String> v_sql1 = new Vector<String>();
+		if (v_psInc != null)
 		{
-			v_sql1
-					.addElement("INSERT INTO Packages_Products_Suppliers VALUES ("
-							+ pkgIdTo
-							+ ","
-							+ v_psInc.elementAt(i).getProductSupplierID() + ")");
+			for (int i = 0; i < v_psInc.size(); i++)
+			{
+				v_sql1
+						.addElement("INSERT INTO Packages_Products_Suppliers VALUES ("
+								+ pkgIdTo
+								+ ","
+								+ v_psInc.elementAt(i).getProductSupplierID()
+								+ ")");
+			}
 		}
 
 		try
 		{
-			for (int i = 0; i < v_sql1.size(); i++)
+			sqlConn.setAutoCommit(false);
+			sqlConn.createStatement().execute(sql1);
+			if (v_sql1.size() > 0)
 			{
-				System.out.println(v_sql1.elementAt(i));
-				sqlConn.createStatement().executeUpdate(v_sql1.elementAt(i));
-				sqlConn.commit();
+				for (int i = 0; i < v_sql1.size(); i++)
+				{
+					System.out.println(v_sql1.elementAt(i));
+					sqlConn.createStatement()
+							.executeUpdate(v_sql1.elementAt(i));
+					sqlConn.commit();
+				}
 			}
+			sqlConn.commit();
+			sqlConn.setAutoCommit(true);
+			reload_rs_packages();
+		}
+		catch (SQLException e)
+		{
+			try
+			{
+				sqlConn.rollback();
+			}
+			catch (SQLException e1)
+			{
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+		// System.out.println("setRowValueTo------------------ended");
+	}
+
+	private void reload_rs_packages()
+	{
+		String sql1 = "SELECT PACKAGEID ID," + "PKGNAME Name, "
+				+ "PKGSTARTDATE StartDate, " + "PKGENDDATE EndDate, "
+				+ "PKGDESC Description, " + "PKGBASEPRICE Price,"
+				+ "PKGAGENCYCOMMISSION Commission FROM packages ORDER BY ID";
+		try
+		{
+			rs_packages = sqlConn
+					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							ResultSet.CONCUR_UPDATABLE).executeQuery(sql1);
+			rs_packages.last();
+			rows = rs_packages.getRow();
+			columns = rs_packages.getMetaData().getColumnCount();
+			sqlConn.commit();
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
 		}
-//		System.out.println("setRowValueTo------------------ended");
 	}
 
 	public void searchPackages(String keyWords)
