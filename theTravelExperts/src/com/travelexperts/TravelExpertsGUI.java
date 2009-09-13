@@ -18,9 +18,9 @@ import org.jdesktop.application.Application;
  * 	The main frame
  */
 public class TravelExpertsGUI extends JFrame {
-	
+
 	private static final long serialVersionUID = -7769502223714046401L;
-	
+
 	// The connection string
 	public static Connection connection = null;
 	static {
@@ -29,10 +29,10 @@ public class TravelExpertsGUI extends JFrame {
 
 	// The MDI "parent container"
     private JDesktopPane desktopPane = new JDesktopPane();
-    
+
     // Menu bar
     private MainMenuBar mainMenuBar = new MainMenuBar(this);
-       
+
     // MDI Internal frames (all extend a respective JInternalFrame)
     private PackagesFrame packagesFrame = new PackagesFrame();
     private SuppliersFrame suppliersFrame = new SuppliersFrame();
