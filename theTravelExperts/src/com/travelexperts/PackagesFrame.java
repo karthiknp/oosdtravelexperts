@@ -40,7 +40,6 @@ import javax.swing.ListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 
 import com.toedter.calendar.JCalendar;
@@ -104,10 +103,9 @@ public class PackagesFrame extends JInternalFrame
 	private Statement stmt1;
 	private ResultSet rs1;
 	private PackagesTableModel pkgTblModel;
-	static Logger logger = Logger.getLogger(TXLogger.class.getName());
 	private DefaultListModel dlmInc = new DefaultListModel();
 	private DefaultListModel dlmAvi;
-	//private TableRowSorter<PackagesTableModel> sorter = null;
+	// private TableRowSorter<PackagesTableModel> sorter = null;
 	private DefaultComboBoxModel cmbProdFilterModel;
 
 	private JPopupMenu popupMenu;
@@ -140,44 +138,43 @@ public class PackagesFrame extends JInternalFrame
 			getContentPane().add(jScrollPane1);
 			jScrollPane1.setBounds(12, 34, 774, 223);
 			btnNew.setBounds(304, 415, 35, 21);
-			btnNew.addActionListener(new ActionListener(){
-
+			btnNew.addActionListener(new ActionListener()
+			{
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
-					addNewRow();					
+					addNewRow();
 				}
-				
 			});
 			btnEdit.setBounds(350, 415, 32, 21);
-			btnEdit.addActionListener(new ActionListener(){
+			btnEdit.addActionListener(new ActionListener()
+			{
 
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
-					btnEditMouseClicked(e);					
+					btnEditMouseClicked(e);
 				}
-				
 			});
 			btnSave.setBounds(393, 415, 38, 21);
-			btnSave.addActionListener(new ActionListener(){
+			btnSave.addActionListener(new ActionListener()
+			{
 
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
 					btnSaveMouseClicked(e);
 				}
-				
 			});
 			btnDelete.setBounds(442, 415, 45, 21);
-			btnDelete.addActionListener(new ActionListener(){
+			btnDelete.addActionListener(new ActionListener()
+			{
 
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
 					btnDeleteMouseClicked(e);
 				}
-				
 			});
 			{
 				tblPackages = new JTable();
@@ -186,7 +183,6 @@ public class PackagesFrame extends JInternalFrame
 				pkgTblModel = new PackagesTableModel();
 				tblPackages.setSurrendersFocusOnKeystroke(true);
 				tblPackages.setBorder(BorderFactory.createBevelBorder(1));
-
 				tblPackages.addMouseListener(new MouseAdapter()
 				{
 					public void mousePressed(MouseEvent evt)
@@ -225,7 +221,6 @@ public class PackagesFrame extends JInternalFrame
 							public void valueChanged(ListSelectionEvent e)
 							{
 								listSelectionChaged(e);
-
 							}
 
 						});
@@ -240,10 +235,9 @@ public class PackagesFrame extends JInternalFrame
 						});
 				tblPackages.setModel(pkgTblModel);
 				initTable(pkgTblModel, -1);
-				//sorter = new TableRowSorter<PackagesTableModel>(pkgTblModel);
+				// sorter = new TableRowSorter<PackagesTableModel>(pkgTblModel);
 				// sorter confuses my table model
 				// tblPackages.setRowSorter(sorter);
-
 				tblPackages.getSelectionModel().addListSelectionListener(
 						new ListSelectionListener()
 						{
@@ -253,8 +247,8 @@ public class PackagesFrame extends JInternalFrame
 								listSelectionChaged(e);
 							}
 						});
-				 tblPackages.setDefaultRenderer(Object.class,
-				 new EvenOddRenderer());
+				tblPackages.setDefaultRenderer(Object.class,
+						new EvenOddRenderer());
 				final NumericTextField ntf = new NumericTextField();
 				tblPackages.getColumnModel().getColumn(
 						PackagesTableModel.COMMISSION).setCellEditor(
@@ -264,7 +258,6 @@ public class PackagesFrame extends JInternalFrame
 								new DefaultCellEditor(ntf));
 				ntf.addFocusListener(new FocusListener()
 				{
-
 					@Override
 					public void focusGained(FocusEvent e)
 					{
@@ -275,33 +268,33 @@ public class PackagesFrame extends JInternalFrame
 					public void focusLost(FocusEvent e)
 					{
 					}
-
 				});
-				ntf.addFocusListener(new FocusListener(){
-
+				ntf.addFocusListener(new FocusListener()
+				{
 					@Override
 					public void focusGained(FocusEvent e)
 					{
-						String txt = ((JTextField) (e.getComponent())).getText();
+						String txt = ((JTextField) (e.getComponent()))
+								.getText();
 						if ((txt.equals(VALUE_REQUIRED)))
 						{
 							((JTextField) (e.getComponent())).setText("");
-						}						
+						}
 					}
 
 					@Override
 					public void focusLost(FocusEvent e)
 					{
 					}
-					
 				});
 				ntf.addKeyListener(new KeyAdapter()
 				{
 					public void keyTyped(KeyEvent e)
 					{
-
-						System.out.println("NumericTextFiled: "
-								+ e.getKeyChar());
+						TXLogger.getLogger().debug(
+								"NumericTextFiled: " + e.getKeyChar());
+						// System.out.println("NumericTextFiled: "
+						// + e.getKeyChar());
 						String txtOld = ((JTextField) e.getComponent())
 								.getText();
 						if (e.getKeyChar() >= KeyEvent.VK_0
@@ -320,9 +313,13 @@ public class PackagesFrame extends JInternalFrame
 							if (((JTextField) e.getComponent()).getText()
 									.indexOf('.') > -1)
 								e.consume();
-							System.out.println("index of ."
-									+ ((JTextField) e.getComponent()).getText()
-											.indexOf('.'));
+							TXLogger.getLogger().debug(
+									"index of ."
+											+ ((JTextField) e.getComponent())
+													.getText().indexOf('.'));
+							// System.out.println("index of ."
+							// + ((JTextField) e.getComponent()).getText()
+							// .indexOf('.'));
 						}
 						else
 						{
@@ -330,7 +327,6 @@ public class PackagesFrame extends JInternalFrame
 						}
 					}
 				});
-
 				JTextField cellNotNull = new JTextField();
 				tblPackages.getColumnModel().getColumn(
 						PackagesTableModel.PACKAGE_NAME).setCellEditor(
@@ -343,7 +339,8 @@ public class PackagesFrame extends JInternalFrame
 				{
 					public void keyTyped(KeyEvent e)
 					{
-						System.out.println(e.getKeyChar());
+						TXLogger.getLogger().debug(e.getKeyChar());
+						// System.out.println(e.getKeyChar());
 						if (((JTextField) e.getComponent()).getText().length() >= 100)
 						{
 							e.consume();
@@ -387,8 +384,7 @@ public class PackagesFrame extends JInternalFrame
 				tblPackages.setPreferredSize(new java.awt.Dimension(756, 422));
 				popupMenu = new JPopupMenu();
 
-				 copyItem = new JMenuItem(
-						"Copy and create a new package");
+				copyItem = new JMenuItem("Copy and create a new package");
 				copyItem.addActionListener(new ActionListener()
 				{
 
@@ -435,7 +431,6 @@ public class PackagesFrame extends JInternalFrame
 						btnSaveMouseClicked(null);
 					}
 				});
-
 				popupMenu.add(copyItem);
 				popupMenu.addSeparator();
 				popupMenu.add(deleteItem);
@@ -486,7 +481,8 @@ public class PackagesFrame extends JInternalFrame
 			{
 				public void mouseClicked(MouseEvent evt)
 				{
-					System.out.println("btnInc.mouseClicked, event=" + evt);
+					TXLogger.getLogger().debug("btnInc.mouseClicked, event");
+					// System.out.println("btnInc.mouseClicked, event=" + evt);
 					btnIncMouseClicked(evt);
 				}
 			});
@@ -615,7 +611,8 @@ public class PackagesFrame extends JInternalFrame
 				+ "%' "
 				+ " AND ps.SupplierId = sup.SupplierId "
 				+ "ORDER BY ProdName, SupName";
-		System.out.println(sql1);
+		TXLogger.getLogger().debug(sql1);
+		// System.out.println(sql1);
 		try
 		{
 			stmt1 = sqlConn.createStatement();
@@ -644,7 +641,8 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			TXLogger.getLogger().error(e.getMessage());
+			// e.printStackTrace();
 		}
 
 	}
@@ -656,7 +654,8 @@ public class PackagesFrame extends JInternalFrame
 		cmbProdFilterModel.addElement("");
 		String sql1 = "Select ProdName cboProd,'1' FROM Products " + " UNION "
 				+ "Select SupName cboProd,'2' FROM Suppliers " + "ORDER BY 2,1";
-		System.out.println(sql1);
+		TXLogger.getLogger().debug(sql1);
+		// System.out.println(sql1);
 		try
 		{
 			rs1 = stmt1.executeQuery(sql1);
@@ -668,7 +667,8 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			TXLogger.getLogger().error(e.getMessage());
+			// e.printStackTrace();
 		}
 		cmbProdFilter.setSelectedIndex(0);
 	}
@@ -727,7 +727,8 @@ public class PackagesFrame extends JInternalFrame
 
 	private void btnIncAllMouseClicked(MouseEvent evt)
 	{
-		System.out.println("btnIncAll.mouseClicked, event=" + evt);
+		TXLogger.getLogger().debug("btnIncAll.mouseClicked, event");
+		// System.out.println("btnIncAll.mouseClicked, event=" + evt);
 		int[] indeices = new int[dlmAvi.size()];
 		for (int i = 0; i < indeices.length; i++)
 		{
@@ -740,7 +741,8 @@ public class PackagesFrame extends JInternalFrame
 
 	private void btnExcAllMouseClicked(MouseEvent evt)
 	{
-		System.out.println("btnExcAll.mouseClicked, event=" + evt);
+		TXLogger.getLogger().debug("btnExcAll.mouseClicked, event");
+		// System.out.println("btnExcAll.mouseClicked, event=" + evt);
 		int[] indeices = new int[dlmInc.size()];
 		for (int i = 0; i < indeices.length; i++)
 		{
@@ -766,7 +768,8 @@ public class PackagesFrame extends JInternalFrame
 		{
 			return;
 		}
-		System.out.println("btnSave.mouseClicked, event=" + evt);
+		TXLogger.getLogger().debug("btnSave.mouseClicked, event");
+		// System.out.println("btnSave.mouseClicked, event=" + evt);
 		String sql1 = "DELETE from Packages_Products_Suppliers "
 				+ "WHERE PackageId = "
 				+ tblPackages.getValueAt(tblPackages.getSelectedRows()[0],
@@ -791,14 +794,16 @@ public class PackagesFrame extends JInternalFrame
 		{
 			return;
 		}
-		System.out.println(sql1);
+		TXLogger.getLogger().debug(sql1);
+		// System.out.println(sql1);
 		try
 		{
 			sqlConn.setAutoCommit(false);
 			stmt1.execute(sql1);
 			for (int i = 0; i < v_sql2.size(); i++)
 			{
-				System.out.println(v_sql2.elementAt(i));
+				TXLogger.getLogger().debug(v_sql2.elementAt(i));
+				// System.out.println(v_sql2.elementAt(i));
 				stmt1.executeUpdate(v_sql2.elementAt(i));
 			}
 			pkgTblModel.fireTableRowsUpdated(tblPackages.getSelectedRow(),
@@ -809,14 +814,16 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			TXLogger.getLogger().error(e.getMessage());
+			// e.printStackTrace();
 			try
 			{
 				sqlConn.rollback();
 			}
 			catch (SQLException e1)
 			{
-				e1.printStackTrace();
+				TXLogger.getLogger().error(e1.getMessage());
+				// e1.printStackTrace();
 			}
 		}
 	}
@@ -835,7 +842,8 @@ public class PackagesFrame extends JInternalFrame
 
 	private void stopCellEditting()
 	{
-		if (tblPackages.getSelectedRow() < 0 || tblPackages.getSelectedColumn()<0)
+		if (tblPackages.getSelectedRow() < 0
+				|| tblPackages.getSelectedColumn() < 0)
 			return;
 		if (pkgTblModel.isCellEditable(tblPackages.getSelectedRow(),
 				tblPackages.getSelectedColumn()))
@@ -898,10 +906,14 @@ public class PackagesFrame extends JInternalFrame
 				+ tblPackages.getValueAt(tblPackages.getSelectedRow(),
 						PackagesTableModel.PACKAGE_ID)
 				+ " ORDER BY ProdName, SupName";
-		if(tblPackages.getValueAt(tblPackages.getSelectedRow(),
-				PackagesTableModel.PACKAGE_ID)==null || tblPackages.getValueAt(tblPackages.getSelectedRow(),
-						PackagesTableModel.PACKAGE_ID)=="")
-		{return;}
+		if (tblPackages.getValueAt(tblPackages.getSelectedRow(),
+				PackagesTableModel.PACKAGE_ID) == null
+				|| tblPackages.getValueAt(tblPackages.getSelectedRow(),
+						PackagesTableModel.PACKAGE_ID) == "")
+		{
+			return;
+		}
+		TXLogger.getLogger().debug(sql1);
 		System.out.println(sql1);
 		try
 		{
@@ -921,21 +933,20 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException ex)
 		{
-			ex.printStackTrace();
+			TXLogger.getLogger().error(ex.getMessage());
+			// ex.printStackTrace();
 		}
 	}
 
 	private void btnEditMouseClicked(ActionEvent evt)
 	{
+		TXLogger.getLogger().debug("btnEdit.mouseClicked, event=");
+		// System.out.println("btnEdit.mouseClicked, event=" + evt);
 		stopCellEditting();
 		tblPackages.setRowSelectionInterval(tblPackages.getSelectedRow(),
 				tblPackages.getSelectedRow());
-		System.out.println("btnEdit.mouseClicked, event=" + evt);
 		tblPackages.editCellAt(tblPackages.getSelectedRow(),
 				PackagesTableModel.PACKAGE_NAME);
-		// ((JTextField)tblPackages.getCellEditor(tblPackages.getSelectedRow(),
-		// 1).getTableCellEditorComponent(tblPackages, null, true,
-		// tblPackages.setValueAt("", tblPackages.getSelectedRow(), 1);
 		tblPackages.editCellAt(tblPackages.getSelectedRow(), 1);
 	}
 
@@ -943,9 +954,10 @@ public class PackagesFrame extends JInternalFrame
 	private void copyAndCreate(int selectedRow)
 	{
 
-		if(pkgTblModel.hasEmptyRow())
+		if (pkgTblModel.hasEmptyRow())
 		{
-			tblPackages.setRowSelectionInterval(tblPackages.getRowCount()-1, tblPackages.getRowCount()-1);
+			tblPackages.setRowSelectionInterval(tblPackages.getRowCount() - 1,
+					tblPackages.getRowCount() - 1);
 			return;
 		}
 		Vector<Products_Suppliers> v_psInc = new Vector<Products_Suppliers>();
@@ -964,7 +976,8 @@ public class PackagesFrame extends JInternalFrame
 	// trim off the first charactor non-numeric input
 	public void eraseNonNumeric(FocusEvent e)
 	{
-		System.out.println("eraseNonNumeric" + e.getComponent());
+		TXLogger.getLogger().debug("eraseNonNumeric" + e.getComponent());
+//		System.out.println("eraseNonNumeric" + e.getComponent());
 		String txt = ((JTextField) (e.getComponent())).getText();
 
 		if ((txt.charAt(txt.length() - 1) < '0' || txt.charAt(txt.length() - 1) > '9')
@@ -1026,14 +1039,16 @@ public class PackagesFrame extends JInternalFrame
 							String regex = ((JTextField) (cmbPkgFilter
 									.getEditor().getEditorComponent()))
 									.getText().toString().trim();
-							System.out.println("Filter regex:"
+							TXLogger.getLogger().debug("Filter regex:"
 									+ cmbPkgFilterModel.getSize());
+//							System.out.println("Filter regex:"
+//									+ cmbPkgFilterModel.getSize());
 							pkgTblModel.searchPackages(regex);
 							if (cmbPkgFilterModel.getSize() == 0)
 							{
 								cmbPkgFilterModel.addElement(regex);
 							}
-							 if (!regex.equals(""))
+							if (!regex.equals(""))
 							{
 								boolean hasKey = false;
 								for (int i = 0; i < cmbPkgFilterModel.getSize(); i++)
@@ -1052,7 +1067,7 @@ public class PackagesFrame extends JInternalFrame
 								cmbPkgFilter.setSelectedIndex(0);
 								btnNew.setEnabled(false);
 								copyItem.setEnabled(false);
-								
+
 							}
 							else
 							{
@@ -1075,5 +1090,4 @@ public class PackagesFrame extends JInternalFrame
 		}
 		return jLabel8;
 	}
-
 }
