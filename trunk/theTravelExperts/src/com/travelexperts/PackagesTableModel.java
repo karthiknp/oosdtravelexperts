@@ -141,15 +141,18 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 			else
 			{
-				System.out.println("columnIndex:" + columnIndex + "rowIndex:"
+				TXLogger.getLogger().debug("columnIndex:" + columnIndex + "rowIndex:"
 						+ rowIndex);
+//				System.out.println("columnIndex:" + columnIndex + "rowIndex:"
+//						+ rowIndex);
 				o = rs_packages.getString(columnIndex);
 			}
 			sqlConn.commit();
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			TXLogger.getLogger().error(e.getMessage());
+			//e.printStackTrace();
 		}
 		return o == null ? "" : o;
 	}
@@ -178,8 +181,10 @@ public class PackagesTableModel extends AbstractTableModel implements
 	{
 		if (!validateTable(value, rowIndex, columnIndex))
 		{
-			System.out.println("validateTable failed: " + rowIndex + ","
+			TXLogger.getLogger().debug("validateTable failed: " + rowIndex + ","
 					+ columnIndex);
+//			System.out.println("validateTable failed: " + rowIndex + ","
+//					+ columnIndex);
 			return;
 		}
 		try
@@ -206,7 +211,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			TXLogger.getLogger().error(e.getMessage());
+			//e.printStackTrace();
 		}
 	}
 
@@ -232,14 +238,16 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 			catch (SQLException e)
 			{
-				e.printStackTrace();
+				TXLogger.getLogger().error(e.getMessage());
+				//e.printStackTrace();
 				try
 				{
 					sqlConn.rollback();
 				}
 				catch (SQLException e1)
 				{
-					e1.printStackTrace();
+					TXLogger.getLogger().error(e1.getMessage());
+					//e1.printStackTrace();
 				}
 			}
 		}
@@ -281,7 +289,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			TXLogger.getLogger().error(e.getMessage());
+//			e.printStackTrace();
 		}
 		// System.out.println("addEmptyRow------------------ended");
 	}
@@ -305,8 +314,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 	public boolean validateTable(Object value, int rowIndex, int columnIndex)
 	{
 		String validationMsg = "";
-
-		System.out.println("validateTable");
+		TXLogger.getLogger().debug("validate table");
+//		System.out.println("validateTable");
 		boolean flgValidate = true;
 		BigDecimal price;
 		BigDecimal commission;
@@ -476,7 +485,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 				+ ",PKGAGENCYCOMMISSION = "
 				+ rowVector.elementAt(COMMISSION) 
 				+ " WHERE PACKAGEID = " + pkgIdTo;
-		System.out.println(sql1);
+		TXLogger.getLogger().debug(sql1);
+//		System.out.println(sql1);
 		// add products to the new package
 		Vector<String> v_sql1 = new Vector<String>();
 		if (v_psInc != null)
@@ -500,7 +510,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 			{
 				for (int i = 0; i < v_sql1.size(); i++)
 				{
-					System.out.println(v_sql1.elementAt(i));
+					TXLogger.getLogger().debug(v_sql1.elementAt(i));
+//					System.out.println(v_sql1.elementAt(i));
 					sqlConn.createStatement()
 							.executeUpdate(v_sql1.elementAt(i));
 					sqlConn.commit();
@@ -518,9 +529,11 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 			catch (SQLException e1)
 			{
-				e1.printStackTrace();
+				TXLogger.getLogger().error(e1.getMessage());
+//				e1.printStackTrace();
 			}
-			e.printStackTrace();
+			TXLogger.getLogger().error(e.getMessage());
+//			e.printStackTrace();
 		}
 		// System.out.println("setRowValueTo------------------ended");
 	}
@@ -543,7 +556,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			TXLogger.getLogger().error(e.getMessage());
+//			e.printStackTrace();
 		}
 	}
 
@@ -559,7 +573,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 				+ "WHERE PKGNAME ||to_char(PKGSTARTDATE,'yyyy-mm-dd') || to_char(PKGENDDATE,'yyyy-mm-dd') "
 				+ "|| PKGDESC || PKGBASEPRICE || PKGAGENCYCOMMISSION LIKE '%"
 				+ keyWords + "%' ORDER BY ID";
-		System.out.println(sql1);
+//		System.out.println(sql1);
+		TXLogger.getLogger().debug(sql1);
 		try
 		{
 			rs_packages = sqlConn
@@ -568,10 +583,13 @@ public class PackagesTableModel extends AbstractTableModel implements
 			rs_packages.last();
 			rows = rs_packages.getRow();
 			columns = rs_packages.getMetaData().getColumnCount();
+			TXLogger.getInstance("tm").debug(Messages.INVALID_USER_PW);
+			
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			TXLogger.getLogger().error(e.getMessage());
+//			e.printStackTrace();
 		}
 		fireTableDataChanged();
 	}
