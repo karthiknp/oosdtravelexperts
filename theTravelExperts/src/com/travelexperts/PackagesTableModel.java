@@ -583,7 +583,6 @@ public class PackagesTableModel extends AbstractTableModel implements
 			rs_packages.last();
 			rows = rs_packages.getRow();
 			columns = rs_packages.getMetaData().getColumnCount();
-			TXLogger.getInstance("tm").debug(Messages.INVALID_USER_PW);
 			
 		}
 		catch (SQLException e)
