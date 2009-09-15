@@ -87,9 +87,32 @@ public class Products_Suppliers
 	{
 		return supplierID;
 	}
+	public Products_Suppliers(String name, int psID, int suppID)
+	{
+		this.setPsSuppName(name);
+		this.setProductSupplierID(psID);
+		this.setProductID(suppID);
+		
+	}
+	public Products_Suppliers(int psID, String name, int suppID)
+	{
+		this.setPsProdName(name);
+		this.setProductSupplierID(psID);
+		this.setProductID(suppID);
+		
+	}
 	public String toString()
 	{
 		String strProdSupp= this.psProdName+"--"+this.psSuppName;
 		return strProdSupp;
 	}
+	public String toString2()
+	{
+		
+		return this.psSuppName;
+	}
+
 }
+
+
+
