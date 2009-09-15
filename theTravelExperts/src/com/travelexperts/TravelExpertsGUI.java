@@ -88,6 +88,9 @@ public class TravelExpertsGUI extends JFrame {
     	customersFrame.setVisible(true);
     }
     
+    @Action public void showUnassigned() {
+    }
+    
     @Action public void showSupport() {
     	supportServerFrame.setVisible(true);
     }
