@@ -13,6 +13,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -431,12 +432,39 @@ public class PackagesFrame extends JInternalFrame
 						btnSaveMouseClicked(null);
 					}
 				});
+				JMenuItem printItem = new JMenuItem("Print");
+				printItem.addActionListener(new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent e)
+					{
+						// TODO Auto-generated method stub
+						try
+						{
+						//	openURL("http://google.com");
+							openURL("http://localhost:8081/CrystalWeb2/crystalreportviewers/CrystalReport1-viewer.jsp");
+						}
+						catch (RuntimeException e1)
+						{
+							TXLogger.getLogger().error(e1.getMessage());
+							//e1.printStackTrace();
+						}
+						catch (IOException e2)
+						{
+							TXLogger.getLogger().error(e2.getMessage());
+							//e2.printStackTrace();
+						}
+					}
+					
+				});
 				popupMenu.add(copyItem);
 				popupMenu.addSeparator();
 				popupMenu.add(deleteItem);
 				popupMenu.add(saveItem);
 				popupMenu.add(editItem);
 				popupMenu.add(newItem);
+				popupMenu.addSeparator();
+				popupMenu.add(printItem);
 			}
 		}
 		{
@@ -1090,4 +1118,13 @@ public class PackagesFrame extends JInternalFrame
 		}
 		return jLabel8;
 	}
+	public  void openURL (String url)throws RuntimeException,IOException{
+		  String urlx=null;
+		  urlx="rundll32   url.dll,FileProtocolHandler  "+url;   
+		 
+		   
+		 Process   p=Runtime.getRuntime().exec(""+urlx);
+		  
+		   }
+
 }

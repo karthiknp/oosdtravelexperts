@@ -141,8 +141,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 			else
 			{
-				TXLogger.getLogger().debug("columnIndex:" + columnIndex + "rowIndex:"
-						+ rowIndex);
+//				TXLogger.getLogger().debug("columnIndex:" + columnIndex + "rowIndex:"
+//						+ rowIndex);
 //				System.out.println("columnIndex:" + columnIndex + "rowIndex:"
 //						+ rowIndex);
 				o = rs_packages.getString(columnIndex);
@@ -544,6 +544,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				+ "PKGSTARTDATE StartDate, " + "PKGENDDATE EndDate, "
 				+ "PKGDESC Description, " + "PKGBASEPRICE Price,"
 				+ "PKGAGENCYCOMMISSION Commission FROM packages ORDER BY ID";
+		String sqlCreateView = "CREATE OR REPLACE VIEW v_packages AS "+ sql1;
 		try
 		{
 			rs_packages = sqlConn
@@ -552,6 +553,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 			rs_packages.last();
 			rows = rs_packages.getRow();
 			columns = rs_packages.getMetaData().getColumnCount();
+			sqlConn.createStatement().execute(sqlCreateView);
 			sqlConn.commit();
 		}
 		catch (SQLException e)
@@ -592,4 +594,5 @@ public class PackagesTableModel extends AbstractTableModel implements
 		}
 		fireTableDataChanged();
 	}
+
 }
