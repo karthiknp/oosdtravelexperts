@@ -46,6 +46,7 @@ public class MainMenuBar extends JMenuBar {
     public JMenuItem suppliersMenuEdit = new JMenuItem("Edit Suppliers", 'S');
     public JMenuItem agentsMenuEdit = new JMenuItem("Manage Agents", 'A');
     public JMenuItem customersMenuEdit = new JMenuItem("Manage Customers", 'C');
+    public JMenuItem customersMenuUnassigned = new JMenuItem("View Unassigned Customers");
     public JMenuItem customersMenuReport = new JMenuItem("Print Invoices", 'I');
     public JMenuItem helpFAQ = new JMenuItem("FAQ");
     public JMenuItem helpAbout = new JMenuItem("About");
@@ -111,8 +112,11 @@ public class MainMenuBar extends JMenuBar {
     	{
     		customersMenu.add(customersMenuEdit);
     		customersMenuEdit.setAction(parentFrame.getAppActionMap().get("showCustomers"));
-    		customersMenuReport.setAction(parentFrame.getAppActionMap().get("printInvoice"));
     		customersMenuEdit.setText("Manage Customers");
+    		
+    		customersMenu.add(customersMenuUnassigned);
+    		customersMenuUnassigned.setAction(parentFrame.getAppActionMap().get("showUnassigned"));
+    		customersMenuUnassigned.setText("View Unassigned Customers");
     	}
     	add(optionsMenu);
     	{
