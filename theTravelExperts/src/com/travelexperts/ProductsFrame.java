@@ -12,6 +12,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -102,50 +103,7 @@ public class ProductsFrame extends JInternalFrame {
 		lstProducts.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
 				
-				productSupplierData.removeAllElements();
-				refreshSupplier();
-				
-				textID.setDisabledTextColor(Color.DARK_GRAY);
-				supplierName.setText(((Products)lstProducts.getSelectedValue()).getProdName());
-				textID.setText(((Products)lstProducts.getSelectedValue()).getProductID()+"");
-				Connection txdb = new TXConnection().getInstance();
-				Statement stmt1;
-				try {
-					stmt1 = txdb.createStatement();
-					String sql = "SELECT supName, productsupplierid, suppliers.supplierid FROM Products_Suppliers join Suppliers on Products_Suppliers.supplierID = Suppliers.supplierID where Products_Suppliers.productId = '"+ textID.getText()+ "' order by supName";
-					
-				    
-				      ResultSet rs = stmt1.executeQuery(sql);
-				      while (rs.next())
-				      {
-				    	  
-				    	  productSupplierData.addElement(new Suppliers(rs.getInt(3),rs.getString(1), rs.getInt(2)));
-
-				      }
-				     
-				      txdb.close();
-					
-				} catch (SQLException e) {
-					
-					e.printStackTrace();
-				}
-				for (int i =0;i<productSupplierData.getSize();i++ )
-				{
-					
-					for (int j=0;j<supplierData.getSize();j++)
-					{
-						lstSuppliers.setSelectedIndex(j);
-						String psTemp = productSupplierData.elementAt(i).toString();
-						String tempName = ((Suppliers)lstSuppliers.getSelectedValue()).getSupName();
-						if (tempName.contains(psTemp))
-						{
-						//if(supplierName.setText(((Products)lstProducts.getSelectedValue()).getProdName());)
-						supplierData.removeElementAt(j);
-						}
-					}
-				}
-				 
-			
+				reloadPSlist();
 			}
 		});
 
@@ -187,6 +145,7 @@ public class ProductsFrame extends JInternalFrame {
 					     
 				} catch (SQLException e) {
 					e.printStackTrace();
+					JOptionPane.showMessageDialog(null,"Update was unsuccessful");
 				}
 				clear();
 				refresh();
@@ -199,13 +158,8 @@ public class ProductsFrame extends JInternalFrame {
 		
 		btnDelete.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
-				for (int i =0;i<productSupplierData.getSize();i++ )
-				{
-					
-					int psId = ((Suppliers)productSupplierData.get(i)).getProductsupplierId();
-					removeAllPS(psId);
-				}
-				//ProductData.removeAllElements();
+				
+				
 				
 				Connection txdb = new TXConnection().getInstance();
 				try {
@@ -217,7 +171,8 @@ public class ProductsFrame extends JInternalFrame {
 				            // (5) Process the int.
 							if (rs == 0)
 							{
-							   System.out.println("no rows updated");
+							   
+								JOptionPane.showMessageDialog(null,Messages.getValidateMsg_Delete(supplierName.getText()));
 							}
 				            System.out.println();
 
@@ -227,42 +182,66 @@ public class ProductsFrame extends JInternalFrame {
 					     
 				} catch (SQLException e) {
 					e.printStackTrace();
+					JOptionPane.showMessageDialog(null,"Delete was unsuccessful");
 				}
 				clear();
 				refresh();
 				
-				System.out.println(lstProducts.getSelectionMode());
+				//System.out.println(lstProducts.getSelectionMode());
 				}});
 		
 		btnNew.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
-				Connection txdb = new TXConnection().getInstance();
-				try {
+				
+				if (supplierName.getText().equals(""))
+				{
 					
-					Statement stmt1 = txdb.createStatement();
-					
-					 String sql = "Insert Into Products (PRODUCTID,PRODNAME) Values(S_110_1_PRODUCTS.nextval,'"
-						 + supplierName.getText()
-						 +"')";
-
-					   
-					      int rs = stmt1.executeUpdate(sql);
-
-				            // (5) Process the int.
-							if (rs == 0)
-							{
-							   System.out.println("no rows inserted");
-							}
-				            System.out.println();
-
-				            // Cleanup
-				            txdb.commit();
-				            txdb.close();
-					     
-				} catch (SQLException e) {
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null,Messages.VALUE_REQUIRED);
 				}
-				refresh();
+				
+				else 
+				{
+					for (int j=0;j<ProductData.getSize();j++)
+					{
+												
+						String tempName = ((Products)ProductData.elementAt(j)).getProdName();
+
+
+							if (supplierName.getText().contains(tempName))
+							{
+								JOptionPane.showMessageDialog(null,"This product already exists");
+								return;
+							}
+							
+					}
+							Connection txdb = new TXConnection().getInstance();
+							try {
+								
+								Statement stmt1 = txdb.createStatement();
+								//
+								 String sql = "Insert Into Products (PRODUCTID,PRODNAME) Values(S_110_1_PRODUCTS.nextval,'"
+									 + supplierName.getText()
+									 +"')";
+
+								   
+								      int rs = stmt1.executeUpdate(sql);
+								      if (rs == 0)
+								      {
+								    	  System.out.println("Insert was unsuccessful");
+								      }
+							            txdb.commit();
+							            txdb.close();
+								     
+							} catch (SQLException e) {
+								e.printStackTrace();
+								JOptionPane.showMessageDialog(null,"Insert was unsuccessful");
+							}
+							refresh();
+							clear();
+							}
+						
+					
+				
 			}});
 		
 		btnClear.addMouseListener(new MouseAdapter() {
@@ -270,11 +249,7 @@ public class ProductsFrame extends JInternalFrame {
 				clear();
 			}});		
 				
-		// Add buttons to CRUD panel
-		//crudPanel.add(new JButton("New"));
-		//crudPanel.add(new JButton("Edit"));
-		//crudPanel.add(new JButton("Update"));
-		//crudPanel.add(new JButton("Delete"));
+		
 		
 		// Buttons to transfer between lists
 		pnlLeftButtons.add(btnMoveLeft);
@@ -311,6 +286,7 @@ public class ProductsFrame extends JInternalFrame {
 					     
 				} catch (SQLException e) {
 					e.printStackTrace();
+					JOptionPane.showMessageDialog(null,"Insert was unsuccessful");
 				}
 				
 				refreshSupplier();
@@ -320,8 +296,9 @@ public class ProductsFrame extends JInternalFrame {
 		// delete from productsuppliers
 		btnMoveRight.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
-			int psId = ((Suppliers)lstProductsSuppliers.getSelectedValue()).getProductsupplierId();
-				removeAllPS(psId);
+			int psId = ((Products_Suppliers)lstProductsSuppliers.getSelectedValue()).getProductSupplierID();
+			System.out.println(psId);	
+			removeAllPS(psId);
 			}
 		});
 		
@@ -351,9 +328,8 @@ public class ProductsFrame extends JInternalFrame {
 	}
 	public void refresh()
 	{
-		System.out.println("I'm made it to the refresh method");
+		//System.out.println("I'm made it to the refresh method");
 		ProductData.removeAllElements();
-		supplierData.removeAllElements();
 		
 		Connection txdb = new TXConnection().getInstance();
 		
@@ -362,32 +338,23 @@ public class ProductsFrame extends JInternalFrame {
 		try {
 			
 			Statement stmt1 = txdb.createStatement();
-			 String sql = "SELECT * FROM Products order by prodName";
-			 String sql2 = "SELECT * FROM Suppliers order by supName";
+			 String sql = "SELECT * FROM Products ORDER BY prodName";
 			    
 			      ResultSet rs = stmt1.executeQuery(sql);
 			      while (rs.next())
 			      {
-			    	  //p1.setProdName(rs.getString(2));
-			    	  //p1.setProductID(rs.getInt(1));
-			    	  //ProductData.addElement(p1);
+			    	
 			    	  ProductData.addElement(new Products(rs.getInt(1), rs.getString(2)));
 
 			      }
-			      ResultSet rs2 = stmt1.executeQuery(sql2);
-			      while (rs2.next())
-			      {
-
-			    	  supplierData.addElement(new Suppliers(rs2.getInt(1), rs2.getString(2)));
-
-			      }
-			      
+			    		    
 			      txdb.close();
 			     
 		} catch (SQLException e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,"Select was unsuccessful");
 		}
-
+		refreshSupplier();
 		
 		
 		
@@ -397,13 +364,11 @@ public class ProductsFrame extends JInternalFrame {
 		supplierData.removeAllElements();
 		
 		Connection txdb = new TXConnection().getInstance();
-		
-		
-		
+
 		try {
 			
 			Statement stmt1 = txdb.createStatement();
-			 //String sql = "SELECT * FROM Products order by prodName";
+			
 			 String sql2 = "SELECT * FROM Suppliers order by supName";
 			    
 			      ResultSet rs2 = stmt1.executeQuery(sql2);
@@ -418,6 +383,7 @@ public class ProductsFrame extends JInternalFrame {
 			     
 		} catch (SQLException e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,"Select was unsuccessful");
 		}
 	}
 	public void clear()
@@ -425,17 +391,14 @@ public class ProductsFrame extends JInternalFrame {
 				
 		textID.setText("");
 		supplierName.setText("");
-
 		productSupplierData.removeAllElements();
-		//ProductData.removeAllElements();
-		//lstProducts.removeAll();
-		//supplierData.removeAllElements();
-		System.out.println("I'm made it to the clear method");
-		
+		refreshSupplier();
 	}
 	public void reloadPSlist()
 	{
 		productSupplierData.removeAllElements();
+		refreshSupplier();
+		
 		textID.setDisabledTextColor(Color.DARK_GRAY);
 		supplierName.setText(((Products)lstProducts.getSelectedValue()).getProdName());
 		textID.setText(((Products)lstProducts.getSelectedValue()).getProductID()+"");
@@ -443,48 +406,42 @@ public class ProductsFrame extends JInternalFrame {
 		Statement stmt1;
 		try {
 			stmt1 = txdb.createStatement();
-			String sql = "SELECT supName FROM Products_Suppliers join Suppliers on Products_Suppliers.supplierID = Suppliers.supplierID where Products_Suppliers.productId = '"+ textID.getText()+ "' order by supName";
-			 
+			String sql = "SELECT supName, productsupplierid, suppliers.supplierid FROM Products_Suppliers join Suppliers on Products_Suppliers.supplierID = Suppliers.supplierID where Products_Suppliers.productId = '"+ textID.getText()+ "' order by supName";
+			
 		    
 		      ResultSet rs = stmt1.executeQuery(sql);
 		      while (rs.next())
 		      {
-
-		    	  productSupplierData.addElement(rs.getString(1));
+		    	  
+		    	  productSupplierData.addElement(new Products_Suppliers(rs.getString(1),rs.getInt(2),rs.getInt(3)) {public String toString() { return this.getPsSuppName(); } });
 
 		      }
 		     
 		      txdb.close();
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
-		for (int i =0;i<productSupplierData.getSize();i++ )
-		{
-			//System.out.println(productSupplierData.elementAt(i));
-			for (int j=0;j<supplierData.getSize();j++)
-			{
-				lstSuppliers.setSelectedIndex(j);
-				String psTemp = productSupplierData.elementAt(i).toString();
-				String tempName = ((Suppliers)lstSuppliers.getSelectedValue()).getSupName();
-				if (tempName.contains(psTemp))
-				{
-				//if(supplierName.setText(((Products)lstProducts.getSelectedValue()).getProdName());)
-				supplierData.removeElementAt(j);
-				}
-			}
-		}
+	
+		
+		assignedSup();
 	}
+	/**
+	 * @param psId
+	 */
 	public void removeAllPS(int psId)
 	{
+		
 		Connection txdb = new TXConnection().getInstance();
 		try {
 			
 			Statement stmt1 = txdb.createStatement();
-			//String sql = "Delete from products_suppliers where (PRODUCTSUPPLIERID = '" + ((Suppliers)lstProductsSuppliers.getSelectedValue()).getProductsupplierId()+"')";	
+			//PreparedStatement pst = txdb.prepareStatement("DELETE FROM products_suppliers WHERE productsupplierid = ?");
+			//pst.setInt(1, psId);
+			//pst.executeQuery();
 			String sql = "Delete from products_suppliers where (PRODUCTSUPPLIERID = '" + psId +"')";
-																					
+			System.out.println(psId);																		
 			int rs = stmt1.executeUpdate(sql);
 
 		            // (5) Process the int.
@@ -500,10 +457,42 @@ public class ProductsFrame extends JInternalFrame {
 			     
 		} catch (SQLException e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,"Delete was unsuccessful");
 		}
+		refreshSupplier();
+		assignedSup();
 		
-		
-		supplierData.addElement((Suppliers)lstProductsSuppliers.getSelectedValue());
+		//supplierData.addElement((Products_Suppliers)lstProductsSuppliers.getSelectedValue());
 		productSupplierData.removeElementAt(lstProductsSuppliers.getSelectedIndex());
+	
 	}
+	public void assignedSup()
+	{
+		for (int i =0;i<productSupplierData.getSize();i++ )
+		{
+			
+			
+			String psTemp = ((Products_Suppliers)productSupplierData.elementAt(i)).getPsSuppName();
+
+			for (int j=0;j<supplierData.getSize();j++)
+			{
+										
+				String tempName = ((Suppliers)supplierData.elementAt(j)).getSupName();
+
+				if (tempName != null)
+				{
+
+					if (psTemp.contains(tempName))
+					{
+						supplierData.removeElementAt(j);
+						
+					}
+					
+				}
+				
+			}
+		}
+		 
+	}
+	
 }
