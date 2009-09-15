@@ -32,27 +32,15 @@ public class CustomersFrame extends JInternalFrame {
 	JTable tblCustomers;
 
 	JComboBox cboAgents = new JComboBox();
-
 	
-	class AgentComboBoxItem {
-		
-		private int agentId;
-		private String agentName;
-		
-		public AgentComboBoxItem(int id, String name) {
-			this.agentId = id;
-			this.agentName = name;
-		}
-		
-		@Override
-		public String toString() {
-			return this.agentName;
-		}
-	}
 	
 	public CustomersFrame() {
 		super("Customers", true, true, true, true);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
+		
+	
+		
+		
 		
 		try {
 			rssCustomers = dbConnection
@@ -65,7 +53,6 @@ public class CustomersFrame extends JInternalFrame {
 			ResultSet rs = dbConnection.createStatement()
 			.executeQuery("SELECT AgentId, {fn concat(AgtFirstName, AgtLastName)} AS AgentName FROM Agents");
 			while(rs.next()) {
-				cboAgents.addItem(new AgentComboBoxItem(rs.getInt("AgentId"), rs.getString("AgentName")));
 			}
 			rs.getStatement().close();
 		} catch (SQLException e) {
