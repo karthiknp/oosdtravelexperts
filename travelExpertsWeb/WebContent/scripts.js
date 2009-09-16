@@ -1,6 +1,6 @@
 
 /*
- * Simple AJAX and JS library written by Will Dixon
+ * Simple AJAX and validation library written by Will Dixon
  * 
  * Too many hours spent debugging :( :(
  */
@@ -49,7 +49,6 @@ function appletReconnect() {
 	supportApplet.reconnect();
 }
 
-
 // Display region menu options based on which country selected
 function loadRegions(country) {
 	var request = ajaxInit();
@@ -81,7 +80,7 @@ function doPost(url, formId) {
 	alert("Thanks for choosing Travel Experts: " + postData);
 }
 
-// Builds string for post data
+// Builds string for AJAX get/post from form data 
 function getPostData(formId) {
 	var form = document.getElementById(formId);
 	var dataString="";

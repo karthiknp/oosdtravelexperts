@@ -4,7 +4,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+	<!-- NEW SITE BY WILL DIXON -->
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	
+	<meta name="keywords" content="travel, vacation, flights, cruises, discount, packages" />
+	<meta name="description" content="Travel Experts - Book Your Vacations Online Today!" />
+	
 	<title>The Travel Experts</title>
 	<link rel="stylesheet" href="styles.css" />
 	<script type="text/javascript" src="scripts.js">
@@ -12,14 +17,12 @@
 </head>
 <body onload="">
 <div id="wrapper">
+	
 	<div id="header">
 		<img src="pics/txlogo.png" />
 	</div>
+	 
 
-	<%	// request processing
-	
-	
-	%>
 	<div id="menu">
 		<ul>
 			<li><a href="#home" onclick="loadContent('home.jsp')">Home</a></li>

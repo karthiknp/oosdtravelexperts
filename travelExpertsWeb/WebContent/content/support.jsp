@@ -10,7 +10,6 @@
 	width="650px"
 	height="350px"
 	name="supportApplet">
-	
 	<%
 	if(session.getAttribute("username") != null && session.getAttribute("password") != null) {
 	%>

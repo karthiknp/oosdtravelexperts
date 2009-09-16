@@ -4,7 +4,14 @@
 	import="java.sql.*,txweb.*"
  %>
 <%
-	if(request.getParameter("username") != null && request.getParameter("password") != null) {
+	if(session.getAttribute("username") != null && session.getAttribute("password") != null) {
+		String username = session.getAttribute("username").toString();
+		String password = session.getAttribute("password").toString();
+		%>
+		<p>Logged in as <%= username %></p>
+		<%
+	}
+	else if(request.getParameter("username") != null && request.getParameter("password") != null) {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		
@@ -32,7 +39,7 @@
 <legend>Customer Log-In</legend>
 <table>
 <tr>
-	<td>Username: </td>
+	<td>Email: </td>
 	<td><input type="text" name="username" /></td>
 </tr>
 <tr>
