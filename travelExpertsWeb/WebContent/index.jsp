@@ -17,10 +17,37 @@
 </head>
 <body onload="">
 <div id="wrapper">
-	
 	<div id="header">
 		<img src="pics/txlogo.png" />
 	</div>
+	 
+	 	<!-- 
+	 <div id="header">
+	 	<div id="login">
+			<form id='custLogin' >
+			<fieldset>
+			<legend class="loginLabel">Customer Log-In</legend>
+			<table>
+			<tr>
+				<td>Email:</td>
+				<td><input class="loginInput" type="text" name="username" /></td>
+			</tr>
+			<tr>
+				<td>Password:</td>
+				<td><input class="loginInput" type="password" name="password" /></td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><button onclick="doPost('customers.jsp', 'custLogin');" 
+					style="font: bold small 'trebuchet ms',helvetica,sans-serif; color:#050; "
+					name="btnLogin" value="true">Log in</button></td>
+			</tr>	
+			</table>
+			</fieldset>
+			</form>
+	 	</div>
+	 </div>
+	 	 -->
 	 
 
 	<div id="menu">
