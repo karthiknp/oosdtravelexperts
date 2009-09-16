@@ -187,6 +187,7 @@ public class PackagesFrame extends JInternalFrame
 			{
 				tblPackages = new JTable();
 				jScrollPane1.setViewportView(tblPackages);
+				tblPackages.setRowHeight(25);
 				// initialize package table with result set
 				pkgTblModel = new PackagesTableModel();
 				tblPackages.setSurrendersFocusOnKeystroke(true);
@@ -451,7 +452,7 @@ public class PackagesFrame extends JInternalFrame
 						try
 						{
 							// openURL("http://google.com");
-							openURL("http://localhost:8081/CrystalWeb2/crystalreportviewers/CrystalReport1-viewer.jsp");
+							openURL("http://localhost:8081/CrystalWeb2/PackageList.rpt-viewer.jsp");
 						}
 						catch (RuntimeException e1)
 						{
@@ -620,6 +621,7 @@ public class PackagesFrame extends JInternalFrame
 				40);
 		tblPackages.getColumn(pkgTblModel.getColumnName(6)).setPreferredWidth(
 				40);
+		tblPackages.setName("tblPackages");
 		setButtonState(false);
 	}
 
