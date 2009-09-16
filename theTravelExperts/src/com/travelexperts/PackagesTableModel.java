@@ -583,6 +583,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				+ keyWords + "%' ORDER BY " + orderByCol;
 		String sqlCreateView = "CREATE OR REPLACE VIEW v_packages AS " + sql1;
 		TXLogger.logger.debug("reload_rs_packages:" + sql1);
+		TXLogger.logger.debug("reload_rs_packages:" + sqlCreateView);
 		try
 		{
 			rs_packages = sqlConn
