@@ -370,7 +370,7 @@ public class AgentsFrame extends JInternalFrame {
         try {
 			Class.forName(driver);
 			// Connecting to the database...
-	        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+	        Connection connection = TXConnection.getConnection();
 	        Statement stmt = connection.createStatement();
 	        // Retrieve agents data from the database
 	        String sql = "SELECT * FROM Agents";
@@ -513,7 +513,7 @@ public class AgentsFrame extends JInternalFrame {
 		{
 			try {
 				Class.forName(driver);
-		        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+		        Connection connection = TXConnection.getConnection();
 		        Integer NextAgentNo = getNextAgentNum();
 		        String sql = "INSERT INTO Agents VALUES ('" + NextAgentNo + "','" + jTextAgtFName.getText() + "','" 
 		        	+ jTextAgtInitial.getText() + "','" + jTextAgtLName.getText() + "','"
