@@ -44,7 +44,7 @@ public class TXConnection
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-	    
+    
 	    try {
 			conn = DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword);
 		} catch (SQLException e) {
