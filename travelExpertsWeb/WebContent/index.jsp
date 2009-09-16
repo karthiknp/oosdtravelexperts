@@ -32,7 +32,6 @@
 		</ul>
 	</div>
 
-
 	<div id="content">
 	<noscript>Sorry, you must enable JavaScript to use this website!</noscript>
 	</div>
