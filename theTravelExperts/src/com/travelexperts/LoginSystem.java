@@ -1,5 +1,6 @@
 package com.travelexperts;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,11 +8,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
 
 /**
  * This class uses all static methods so other objects may easily
@@ -33,22 +39,43 @@ public class LoginSystem extends JInternalFrame {
 
 	private static String username = null;
 	
+	JPanel pnlNorth = new JPanel();
+	JPanel pnlCenter = new JPanel();
+	JPanel pnlSouth = new JPanel();
+	JButton btnLogin = new JButton("Log In");
 	JTextField txtUsername = new JTextField(INPUT_WIDTH);
 	JPasswordField txtPassword = new JPasswordField(INPUT_WIDTH);
 	
 	public LoginSystem(final TravelExpertsGUI parentFrame) {
-		super("Agent Authentication", false, false, false, false);
+		super("Employee Log-In", false, false, false, false);
 
-		setLayout(new GridLayout(3, 2));	// Will auto-cCenter items
+		pnlNorth.add(new JLabel
+				("<html><em>Access to this system is for authorized users only.</em><br/><br/>" +
+						"Any unauthorized entry or attempt to enter is strictly forbidden <br/>" +
+						"and will result in prosecution to the maximum extent allowable<br/>" +
+						" by applicable law. <br/><br/>" +
+						"Users are reminded not to share passwords and to choose<br/> " +
+						"passwords that are unique and difficult to guess.<br/><br/><html>"));
+		pnlNorth.setSize(400, 300);
+		pnlNorth.revalidate();
 
-		add(new JLabel("Username"), "help");
-		add(txtUsername);
-		add(new JLabel("Password:"));
-		add(txtPassword);
-		add(new JLabel("Hint: Password is disabled, enter any active agent last name"));
+		pnlCenter.setLayout(new GridLayout(5, 1));
+		pnlCenter.add(new JLabel("Username"), "help");
+		pnlCenter.add(txtUsername);
+		pnlCenter.add(new JLabel("Password:"));
+		pnlCenter.add(txtPassword);
+
+		pnlCenter.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+		pnlSouth.add(btnLogin);
 		
-		JButton btnLogin = new JButton("Log In");
-		add(btnLogin);
+		add(pnlNorth, BorderLayout.NORTH);
+		add(pnlCenter, BorderLayout.CENTER);
+		add(pnlSouth, BorderLayout.SOUTH);
+		pack();
+		
+		setLocation(300, 200);
+		setVisible(true);
+		
 
 		// Code for login validation
 		btnLogin.addActionListener(new ActionListener() {
@@ -69,16 +96,22 @@ public class LoginSystem extends JInternalFrame {
 					if(rs.next()) {
 						parentFrame.loadAllForms();
 						setUsername(rs.getString("AgtLastName"));
+						setVisible(false);
+						JOptionPane.showMessageDialog(null, 
+								"Logged in succesfully as " + rs.getString("AgtFirstName") + " " + rs.getString("AgtLastName"));
 						TXLogger.logInfo("Logged in as " + username);
 					}
 					else {
+						JOptionPane.showMessageDialog(null, "Invalid username or password.");
 						TXLogger.logInfo("Login attempt failed for: " + txtUsername.getText() );
 					}
 					// Clean up
 					rs.getStatement().close();
 					rs.close();
 					
-					if(getCurrentUsername() != null) dispose();	// Done, so close frame if login successful
+					if(getCurrentUsername() != null) {
+						dispose();	// Done, so close frame if login successful
+					}
 
 				} catch (SQLException e1) {
 					TXLogger.logError(e1.getMessage());
@@ -87,10 +120,7 @@ public class LoginSystem extends JInternalFrame {
 				
 			}
 		});
-		
-		pack();
-		setLocation(200, 200);
-		setVisible(true);
+
 	}
 	
 	private static void setUsername(String s) {
