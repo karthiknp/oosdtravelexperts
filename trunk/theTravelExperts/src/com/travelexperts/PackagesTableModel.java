@@ -61,7 +61,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 	public PackagesTableModel()
 	{
 		super();
-		reload_rs_packages();
+		reload_rs_packages("", "");
 	}
 
 	public Class<?> getColumnClass(int arg0)
@@ -139,7 +139,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				{
 					o = rs_packages.getString(columnIndex);
 				}
-				o = currency.format(Float.parseFloat(o.toString()));
+				o = currency.format(Double.parseDouble(o.toString()));
 			}
 			else
 			{
@@ -190,7 +190,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 			// + columnIndex);
 			return;
 		}
-		NumberFormat currency = NumberFormat.getCurrencyInstance(Locale.CANADA);
+		// NumberFormat currency =
+		// NumberFormat.getCurrencyInstance(Locale.CANADA);
 
 		try
 		{
@@ -206,8 +207,19 @@ public class PackagesTableModel extends AbstractTableModel implements
 				}
 			else if (columnIndex == PRICE || columnIndex == COMMISSION)
 			{
-				BigDecimal bgValue = new BigDecimal(currency.parse(value.toString()).doubleValue());
-				rs_packages.updateBigDecimal(columnIndex + 1, bgValue);
+				if (value == null || value.toString().trim().equals(""))
+				{
+					rs_packages.updateBigDecimal(columnIndex + 1,
+							new BigDecimal(0));
+				}
+				else
+				{
+					// BigDecimal bgValue = new
+					// BigDecimal(currency.parse(value.toString()).doubleValue());
+					BigDecimal bgValue = new BigDecimal(Double
+							.parseDouble(value.toString()));
+					rs_packages.updateBigDecimal(columnIndex + 1, bgValue);
+				}
 			}
 			else
 			{
@@ -223,11 +235,6 @@ public class PackagesTableModel extends AbstractTableModel implements
 		{
 			TXLogger.logger.error(e.getMessage());
 			// e.printStackTrace();
-		}
-		catch (ParseException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -268,7 +275,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 		}
 	}
 
-	public void addEmptyRow(int newRowIndex)
+	public void addEmptyRow(int newRowIndex, String orderByCol, String keyWords)
 	{
 		// System.out.println("addEmptyRow------------------started");
 		if (hasEmptyRow())
@@ -276,12 +283,10 @@ public class PackagesTableModel extends AbstractTableModel implements
 			return;
 		}
 		String sql1 = "SELECT max(packageid) FROM Packages";
-		Statement stmt1;
 		maxPkgID = 0;
 		try
 		{
-			stmt1 = sqlConn.createStatement();
-			ResultSet rs1 = stmt1.executeQuery(sql1);
+			ResultSet rs1 = sqlConn.createStatement().executeQuery(sql1);
 			rs1.next();
 			maxPkgID = rs1.getInt(1);
 			rs1.close();
@@ -300,7 +305,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 			// System.out.println("addEmptyRow------------------2");
 
 			rows++;
-			reload_rs_packages();
+			reload_rs_packages(orderByCol, keyWords);
 		}
 		catch (SQLException e)
 		{
@@ -409,17 +414,21 @@ public class PackagesTableModel extends AbstractTableModel implements
 			{
 				value = 0;
 			}
+			// price = new
+			// BigDecimal(currency.parse(value.toString()).doubleValue());
 			try
 			{
-				price = new BigDecimal(currency.parse(value.toString()).doubleValue());
-				commission = new BigDecimal(currency.parse(getValueAt(rowIndex, COMMISSION)
-						.toString()).doubleValue());
+				commission = new BigDecimal(currency.parse(
+						getValueAt(rowIndex, COMMISSION).toString())
+						.doubleValue());
 			}
-			catch (ParseException e)
+			catch (ParseException e1)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e1.printStackTrace();
 			}
+			price = new BigDecimal(Double.parseDouble((value.toString())));
+			// commission = new BigDecimal((Double.parseDouble(getValueAt(
+			// rowIndex, COMMISSION).toString())));
 
 			if (commission.compareTo(price) > 0)
 			{
@@ -434,16 +443,20 @@ public class PackagesTableModel extends AbstractTableModel implements
 				value = 0;
 			}
 			try
-				{
-					price = new BigDecimal(currency.parse(getValueAt(rowIndex, PRICE)
-							.toString()).doubleValue());
-					commission = new BigDecimal(currency.parse(value.toString()).doubleValue());
-				}
-				catch (ParseException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			{
+				price = new BigDecimal(currency.parse(
+						getValueAt(rowIndex, PRICE).toString()).doubleValue());
+				commission = new BigDecimal(Double
+						.parseDouble(value.toString()));
+			}
+			catch (ParseException e)
+			{
+				e.printStackTrace();
+			}
+			// commission = new BigDecimal(currency.parse(value.toString())
+			// .doubleValue());
+			// price = new BigDecimal(Double.parseDouble(getValueAt(rowIndex,
+			// PRICE).toString()));
 			if (commission.compareTo(price) > 0)
 			{
 				flgValidate = false;
@@ -472,8 +485,22 @@ public class PackagesTableModel extends AbstractTableModel implements
 	}
 
 	public void setRowValueTo(Vector<Object> rowVector,
-			Vector<Products_Suppliers> v_psInc, int rowIndex)
+			Vector<Products_Suppliers> v_psInc, int rowIndex,String keyWords)
 	{
+		NumberFormat currency = NumberFormat.getCurrencyInstance(Locale.CANADA);
+		double dblPrice = 0;
+		double dblCommission = 0;
+		try
+		{
+			dblPrice = currency.parse(rowVector.elementAt(PRICE).toString())
+					.doubleValue();
+			dblCommission = currency.parse(
+					rowVector.elementAt(COMMISSION).toString()).doubleValue();
+		}
+		catch (ParseException e2)
+		{
+			e2.printStackTrace();
+		}
 		int pkgIdTo = maxPkgID + 1;
 		String sql1 = "UPDATE packages SET PKGNAME = '"
 				+ rowVector.elementAt(PACKAGE_NAME)
@@ -482,9 +509,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 				+ "','yyyy-mm-dd'),PKGENDDATE = to_date('"
 				+ rowVector.elementAt(END_DATE) + "','yyyy-mm-dd'),PKGDESC = '"
 				+ rowVector.elementAt(DESCRIPTION) + "',PKGBASEPRICE = "
-				+ rowVector.elementAt(PRICE) + ",PKGAGENCYCOMMISSION = "
-				+ rowVector.elementAt(COMMISSION) + " WHERE PACKAGEID = "
-				+ pkgIdTo;
+				+ dblPrice + ",PKGAGENCYCOMMISSION = " + dblCommission
+				+ " WHERE PACKAGEID = " + pkgIdTo;
 		TXLogger.logger.debug(sql1);
 		// System.out.println(sql1);
 		// add products to the new package
@@ -519,7 +545,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 			sqlConn.commit();
 			sqlConn.setAutoCommit(true);
-			reload_rs_packages();
+			reload_rs_packages( "ID",keyWords);
 		}
 		catch (SQLException e)
 		{
@@ -530,21 +556,33 @@ public class PackagesTableModel extends AbstractTableModel implements
 			catch (SQLException e1)
 			{
 				TXLogger.logger.error(e1.getMessage());
-				// e1.printStackTrace();
+				e1.printStackTrace();
 			}
 			TXLogger.logger.error(e.getMessage());
-			// e.printStackTrace();
+			e.printStackTrace();
 		}
 		// System.out.println("setRowValueTo------------------ended");
 	}
 
-	private void reload_rs_packages()
+	protected void reload_rs_packages(String orderByCol, String keyWords)
 	{
-		String sql1 = "SELECT PACKAGEID ID," + "PKGNAME Name, "
-				+ "PKGSTARTDATE StartDate, " + "PKGENDDATE EndDate, "
-				+ "PKGDESC Description, " + "PKGBASEPRICE Price,"
-				+ "PKGAGENCYCOMMISSION Commission FROM packages ORDER BY ID";
+		if (orderByCol.equals(""))
+		{
+			orderByCol = "ID";
+		}
+
+		String sql1 = "SELECT PACKAGEID ID,"
+				+ "PKGNAME Name, "
+				+ "PKGSTARTDATE StartDate, "
+				+ "PKGENDDATE EndDate, "
+				+ "PKGDESC Description, "
+				+ "PKGBASEPRICE Price,"
+				+ "PKGAGENCYCOMMISSION Commission FROM packages "
+				+ "WHERE PKGNAME ||to_char(PKGSTARTDATE,'yyyy-mm-dd') || to_char(PKGENDDATE,'yyyy-mm-dd') "
+				+ "|| PKGDESC || PKGBASEPRICE || PKGAGENCYCOMMISSION LIKE '%"
+				+ keyWords + "%' ORDER BY " + orderByCol;
 		String sqlCreateView = "CREATE OR REPLACE VIEW v_packages AS " + sql1;
+		TXLogger.logger.debug("reload_rs_packages:" + sql1);
 		try
 		{
 			rs_packages = sqlConn
@@ -555,37 +593,6 @@ public class PackagesTableModel extends AbstractTableModel implements
 			columns = rs_packages.getMetaData().getColumnCount();
 			sqlConn.createStatement().execute(sqlCreateView);
 			sqlConn.commit();
-		}
-		catch (SQLException e)
-		{
-			TXLogger.logger.error(e.getMessage());
-			// e.printStackTrace();
-		}
-	}
-
-	public void searchPackages(String keyWords)
-	{
-		String sql1 = "SELECT PACKAGEID ID,"
-				+ "PKGNAME Name, "
-				+ "PKGSTARTDATE StartDate, "
-				+ "PKGENDDATE EndDate, "
-				+ "PKGDESC Description, "
-				+ "PKGBASEPRICE Price,"
-				+ "PKGAGENCYCOMMISSION Commission FROM packages "
-				+ "WHERE PKGNAME ||to_char(PKGSTARTDATE,'yyyy-mm-dd') || to_char(PKGENDDATE,'yyyy-mm-dd') "
-				+ "|| PKGDESC || PKGBASEPRICE || PKGAGENCYCOMMISSION LIKE '%"
-				+ keyWords + "%' ORDER BY ID";
-		// System.out.println(sql1);
-		TXLogger.logger.debug(sql1);
-		try
-		{
-			rs_packages = sqlConn
-					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-							ResultSet.CONCUR_UPDATABLE).executeQuery(sql1);
-			rs_packages.last();
-			rows = rs_packages.getRow();
-			columns = rs_packages.getMetaData().getColumnCount();
-
 		}
 		catch (SQLException e)
 		{
