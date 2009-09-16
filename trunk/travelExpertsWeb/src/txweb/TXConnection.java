@@ -14,6 +14,7 @@ public class TXConnection
 	// TODO: load from properties file
 	private static String dbDriverClassname = "oracle.jdbc.driver.OracleDriver";
 	private static String dbConnectionString = "jdbc:oracle:thin:@localhost:1521:xe";
+	private static String linuxConnectionString = "jdbc:oracle:thin:@localhost:1521:orant11g";
 	private static String dbUsername = "ictoosd";
 	private static String dbPassword = "ictoosd";
 	
@@ -29,6 +30,12 @@ public class TXConnection
 	    try {
 			dbConnection = DriverManager.getConnection(dbConnectionString, dbUsername, dbPassword);
 		} catch (SQLException e) {
+			try {
+				dbConnection = DriverManager.getConnection(linuxConnectionString, dbUsername, dbPassword);
+			}
+			catch(Exception e2) {
+				e2.printStackTrace();
+			}
 			e.printStackTrace();
 		}		
 	}
