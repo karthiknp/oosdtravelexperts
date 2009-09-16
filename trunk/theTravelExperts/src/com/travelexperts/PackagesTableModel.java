@@ -7,13 +7,18 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
-// copied from Default Table Model only changed a lit bit
+import ch.randelshofer.quaqua.panther.filechooser.SidebarListModel;
+
 public class PackagesTableModel extends AbstractTableModel implements
 		Serializable
 {
@@ -105,22 +110,15 @@ public class PackagesTableModel extends AbstractTableModel implements
 			rs_packages.absolute(rowIndex);
 			if (columnIndex == START_DATE + 1 || columnIndex == END_DATE + 1)
 			{
-				// NumberFormat nf = NumberFormat.getNumberInstance();
+				//NumberFormat nf = NumberFormat.;
 				// nf.format(00);
 				// get formatted string for Date
-				if (rs_packages.getString(columnIndex) != null)
+				if (rs_packages.getString(columnIndex) != null && rs_packages.getString(columnIndex) != "")
 				{
-					o = rs_packages.getString(columnIndex).split(" ")[0];
-					String[] strDate = o.split("-");
-					if (strDate[1].length() == 1)
-					{
-						strDate[1] = "0" + strDate[1];
-					}
-					if (strDate[2].length() == 1)
-					{
-						strDate[2] = "0" + strDate[2];
-					}
-					o = strDate[0] + "-" + strDate[1] + "-" + strDate[2];
+					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+					Calendar cal = Calendar.getInstance();
+					rs_packages.getDate(columnIndex, cal);
+					o = df.format((cal.getTime())).toString();
 				}
 				else
 				{
@@ -141,7 +139,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 			else
 			{
-//				TXLogger.getLogger().debug("columnIndex:" + columnIndex + "rowIndex:"
+//				TXLogger.logger.debug("columnIndex:" + columnIndex + "rowIndex:"
 //						+ rowIndex);
 //				System.out.println("columnIndex:" + columnIndex + "rowIndex:"
 //						+ rowIndex);
@@ -151,7 +149,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 		}
 		catch (SQLException e)
 		{
-			TXLogger.getLogger().error(e.getMessage());
+			TXLogger.logger.error(e.getMessage());
 			//e.printStackTrace();
 		}
 		return o == null ? "" : o;
@@ -181,7 +179,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 	{
 		if (!validateTable(value, rowIndex, columnIndex))
 		{
-			TXLogger.getLogger().debug("validateTable failed: " + rowIndex + ","
+			TXLogger.logger.debug("validateTable failed: " + rowIndex + ","
 					+ columnIndex);
 //			System.out.println("validateTable failed: " + rowIndex + ","
 //					+ columnIndex);
@@ -211,7 +209,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 		}
 		catch (SQLException e)
 		{
-			TXLogger.getLogger().error(e.getMessage());
+			TXLogger.logger.error(e.getMessage());
 			//e.printStackTrace();
 		}
 	}
@@ -238,7 +236,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 			catch (SQLException e)
 			{
-				TXLogger.getLogger().error(e.getMessage());
+				TXLogger.logger.error(e.getMessage());
 				//e.printStackTrace();
 				try
 				{
@@ -246,7 +244,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				}
 				catch (SQLException e1)
 				{
-					TXLogger.getLogger().error(e1.getMessage());
+					TXLogger.logger.error(e1.getMessage());
 					//e1.printStackTrace();
 				}
 			}
@@ -289,7 +287,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 		catch (SQLException e)
 		{
-			TXLogger.getLogger().error(e.getMessage());
+			TXLogger.logger.error(e.getMessage());
 //			e.printStackTrace();
 		}
 		// System.out.println("addEmptyRow------------------ended");
@@ -314,7 +312,9 @@ public class PackagesTableModel extends AbstractTableModel implements
 	public boolean validateTable(Object value, int rowIndex, int columnIndex)
 	{
 		String validationMsg = "";
-		TXLogger.getLogger().debug("validate table");
+		TXLogger.logger.debug("validate table");
+		SimpleDateFormat dfStart = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat dfEnd = new SimpleDateFormat("yyyy-MM-dd");
 //		System.out.println("validateTable");
 		boolean flgValidate = true;
 		BigDecimal price;
@@ -338,20 +338,18 @@ public class PackagesTableModel extends AbstractTableModel implements
 			if (value != null && getValueAt(rowIndex, END_DATE) != null
 					&& getValueAt(rowIndex, END_DATE) != "")
 			{
-				Calendar startDate = Calendar.getInstance();
-				startDate.set(Calendar.YEAR, Integer.parseInt(value.toString()
-						.split("-")[0]));
-				startDate.set(Calendar.MONTH, Integer.parseInt(value.toString()
-						.split("-")[1]));
-				startDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(value
-						.toString().split("-")[2]));
-				Calendar endDate = Calendar.getInstance();
-				endDate.set(Calendar.YEAR, Integer.parseInt(getValueAt(
-						rowIndex, END_DATE).toString().split("-")[0]));
-				endDate.set(Calendar.MONTH, Integer.parseInt(getValueAt(
-						rowIndex, END_DATE).toString().split("-")[1]));
-				endDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(getValueAt(
-						rowIndex, END_DATE).toString().split("-")[2]));
+				try
+				{
+					dfStart.parse(value.toString());
+					dfEnd.parse(getValueAt(rowIndex, END_DATE).toString());
+				}
+				catch (ParseException e)
+				{
+					TXLogger.logger.error(e.getMessage());
+//					e.printStackTrace();
+				}
+				Calendar startDate = dfStart.getCalendar();
+				Calendar endDate = dfEnd.getCalendar();
 				if (startDate.compareTo(endDate) > 0)
 				{
 					flgValidate = false;
@@ -366,21 +364,18 @@ public class PackagesTableModel extends AbstractTableModel implements
 					&& getValueAt(rowIndex, START_DATE) != "" && value != null
 					&& value != "")
 			{
-				Calendar startDate = Calendar.getInstance();
-				startDate.set(Calendar.YEAR, Integer.parseInt(getValueAt(
-						rowIndex, START_DATE).toString().split("-")[0]));
-				startDate.set(Calendar.MONTH, Integer.parseInt(getValueAt(
-						rowIndex, START_DATE).toString().split("-")[1]));
-				startDate.set(Calendar.DAY_OF_MONTH, Integer
-						.parseInt(getValueAt(rowIndex, START_DATE).toString()
-								.split("-")[2]));
-				Calendar endDate = Calendar.getInstance();
-				endDate.set(Calendar.YEAR, Integer.parseInt(value.toString()
-						.split("-")[0]));
-				endDate.set(Calendar.MONTH, Integer.parseInt(value.toString()
-						.split("-")[1]));
-				endDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(value
-						.toString().split("-")[2]));
+				try
+				{
+					dfStart.parse(getValueAt(rowIndex, START_DATE).toString());
+					dfEnd.parse(value.toString());
+				}
+				catch (ParseException e)
+				{
+					TXLogger.logger.error(e.getMessage());
+//					e.printStackTrace();
+				}
+				Calendar startDate = dfStart.getCalendar();
+				Calendar endDate = dfEnd.getCalendar();
 				if (startDate.compareTo(endDate) > 0)
 				{
 					flgValidate = false;
@@ -432,45 +427,17 @@ public class PackagesTableModel extends AbstractTableModel implements
 
 	public Vector<Object> getRowValueFrom(int rowIndex)
 	{
-		// System.out.println("getRowValueFrom------------------started");
 		Vector<Object> rowVector = new Vector<Object>();
 		for (int i = 0; i < columns; i++)
 		{
 			rowVector.addElement(getValueAt(rowIndex, i));
 		}
-		// System.out.println("getRowValueFrom------------------ended");
 		return rowVector;
 	}
 
 	public void setRowValueTo(Vector<Object> rowVector,
 			Vector<Products_Suppliers> v_psInc, int rowIndex)
 	{
-		// System.out.println("setRowValueTo------------------started");
-		// set table display
-		// for (int i = 1; i < columns; i++)
-		// {
-		// if (i == START_DATE || i == END_DATE)
-		// {
-		// if(!rowVector.elementAt(i).equals(""))
-		// {
-		// String[] strDate = rowVector.elementAt(i).toString().split("-");
-		// Calendar cal = Calendar.getInstance();
-		// cal.set(Integer.parseInt(strDate[0]), Integer
-		// .parseInt(strDate[1]), Integer.parseInt(strDate[2]));
-		// java.sql.Date d = new java.sql.Date(cal.getTimeInMillis());
-		// setValueAt(d, rowIndex, i);
-		// }
-		// else
-		// {
-		// setValueAt("", rowIndex, i);
-		// }
-		// }
-		// else
-		// {
-		// setValueAt(rowVector.elementAt(i), rowIndex, i);
-		// }
-		// }
-
 		int pkgIdTo = maxPkgID + 1;
 		String sql1 = "UPDATE packages SET PKGNAME = '"
 				+ rowVector.elementAt(PACKAGE_NAME) 
@@ -485,7 +452,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				+ ",PKGAGENCYCOMMISSION = "
 				+ rowVector.elementAt(COMMISSION) 
 				+ " WHERE PACKAGEID = " + pkgIdTo;
-		TXLogger.getLogger().debug(sql1);
+		TXLogger.logger.debug(sql1);
 //		System.out.println(sql1);
 		// add products to the new package
 		Vector<String> v_sql1 = new Vector<String>();
@@ -510,7 +477,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 			{
 				for (int i = 0; i < v_sql1.size(); i++)
 				{
-					TXLogger.getLogger().debug(v_sql1.elementAt(i));
+					TXLogger.logger.debug(v_sql1.elementAt(i));
 //					System.out.println(v_sql1.elementAt(i));
 					sqlConn.createStatement()
 							.executeUpdate(v_sql1.elementAt(i));
@@ -529,10 +496,10 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 			catch (SQLException e1)
 			{
-				TXLogger.getLogger().error(e1.getMessage());
+				TXLogger.logger.error(e1.getMessage());
 //				e1.printStackTrace();
 			}
-			TXLogger.getLogger().error(e.getMessage());
+			TXLogger.logger.error(e.getMessage());
 //			e.printStackTrace();
 		}
 		// System.out.println("setRowValueTo------------------ended");
@@ -558,7 +525,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 		}
 		catch (SQLException e)
 		{
-			TXLogger.getLogger().error(e.getMessage());
+			TXLogger.logger.error(e.getMessage());
 //			e.printStackTrace();
 		}
 	}
@@ -576,7 +543,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				+ "|| PKGDESC || PKGBASEPRICE || PKGAGENCYCOMMISSION LIKE '%"
 				+ keyWords + "%' ORDER BY ID";
 //		System.out.println(sql1);
-		TXLogger.getLogger().debug(sql1);
+		TXLogger.logger.debug(sql1);
 		try
 		{
 			rs_packages = sqlConn
@@ -589,10 +556,9 @@ public class PackagesTableModel extends AbstractTableModel implements
 		}
 		catch (SQLException e)
 		{
-			TXLogger.getLogger().error(e.getMessage());
+			TXLogger.logger.error(e.getMessage());
 //			e.printStackTrace();
 		}
 		fireTableDataChanged();
 	}
-
 }
