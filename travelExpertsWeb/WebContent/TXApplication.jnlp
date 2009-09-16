@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+	Web Launcher for Travel Experts project
+	by Will Dixon
+	
+	fixed: all contents in jar file must be signed since full access to system is required
+	ex: jarsigner -keystore oosdKeystore txapp.jar oosd
+	repeat for all required .jars 
+	fixed: used fat-jar to put all required libraries into 1 signable jar
+-->
+
+<jnlp spec="1.0+"
+  codebase="http://localhost:7080/travelExpertsWWW"
+  href="TXApplication.jnlp">
+
+  <information>
+    <title>TXApp</title>
+    <vendor>OOSD</vendor>
+    <homepage href="http://oosdtravelexperts.googlecode.com/"/>
+    <description>long desc here.</description>
+    <description kind="short">Project for Java</description>
+    <offline-allowed/>
+  </information>
+
+  <security>
+    <all-permissions/>
+  </security>
+
+  <resources>
+    <j2se version="1.5+"/>
+    <jar href="TXApplication.jar" main="true"/>
+    <extension href="http://download.java.net/media/java3d/webstart/release/java3d-latest.jnlp"/>
+  </resources>
+
+  <application-desc main-class="com.travelexperts.TravelExpertsGUI"/>
+
+</jnlp>
