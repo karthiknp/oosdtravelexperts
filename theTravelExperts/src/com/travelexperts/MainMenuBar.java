@@ -37,7 +37,7 @@ public class MainMenuBar extends JMenuBar {
     private JMenu supportMenu = new JMenu("Support");
     
     // Submenus
-    private JMenu skinsMenu = new JMenu("Skins");
+    private JMenu skinsMenu = new JMenu("Look and Feel");
 
     // Menu items
     public JMenuItem fileMenuExit = new JMenuItem("Exit", 'X');
@@ -161,8 +161,7 @@ public class MainMenuBar extends JMenuBar {
     			JMenuItem skinMenuItem = new JMenuItem("Mac");
     			skinMenuItem.addActionListener(newSkinMenuAction("ch.randelshofer.quaqua.QuaquaLookAndFeel"));
 				skinsMenu.add(skinMenuItem);
-				
-				/*
+								
     			skinMenuItem = new JMenuItem("NimROD");
     			skinMenuItem.addActionListener(new ActionListener() {
 					@Override
@@ -176,11 +175,8 @@ public class MainMenuBar extends JMenuBar {
 					}
 				});
 				skinsMenu.add(skinMenuItem);
-				*/
     		}
     		optionsMenu.add(skinsMenu);
-	   		optionsMenu.add(new JMenuItem("Preferences"));
-    		optionsMenu.add(new JCheckBoxMenuItem("Verbose Debug Logging"));
     		
     	}
     	add(supportMenu);
