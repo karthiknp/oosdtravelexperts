@@ -18,8 +18,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.Format;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -41,6 +41,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -76,6 +78,8 @@ public class PackagesFrame extends JInternalFrame
 	JButton btnNew = new JButton("New");
 	JButton btnEdit = new JButton("Edit");
 	JButton btnSave = new JButton("Save");
+	private JComboBox cmbOrderBy;
+	private JLabel jLabel6;
 	private JLabel jLabel8;
 	private JComboBox cmbPkgFilter;
 	private JLabel jLabel7;
@@ -224,8 +228,10 @@ public class PackagesFrame extends JInternalFrame
 							@Override
 							public void valueChanged(ListSelectionEvent e)
 							{
-								if(e.getValueIsAdjusting()&&(e.getFirstIndex()!=e.getLastIndex()))
-								listSelectionChaged(e);
+//								if (e.getValueIsAdjusting()
+//										&& (e.getFirstIndex() != e
+//												.getLastIndex()))
+									listSelectionChaged(e);
 							}
 
 						});
@@ -238,7 +244,7 @@ public class PackagesFrame extends JInternalFrame
 
 				tblPackages.setDefaultRenderer(Object.class,
 						new EvenOddRenderer());
-//				final NumericTextField ntf = new NumericTextField(currency);
+				// final NumericTextField ntf = new NumericTextField(currency);
 				final NumericTextField ntf = new NumericTextField();
 				tblPackages.getColumnModel().getColumn(
 						PackagesTableModel.COMMISSION).setCellEditor(
@@ -252,6 +258,20 @@ public class PackagesFrame extends JInternalFrame
 					public void focusGained(FocusEvent e)
 					{
 						eraseNonNumeric(e);
+						NumberFormat currency = NumberFormat
+								.getCurrencyInstance(Locale.CANADA);
+						try
+						{
+							Double dblValue = currency.parse(
+									((JTextField) e.getComponent()).getText())
+									.doubleValue();
+							((JTextField) e.getComponent()).setText(dblValue
+									.toString());
+						}
+						catch (ParseException e1)
+						{
+							e1.printStackTrace();
+						}
 					}
 
 					@Override
@@ -263,8 +283,8 @@ public class PackagesFrame extends JInternalFrame
 				{
 					public void keyTyped(KeyEvent e)
 					{
-						TXLogger.logger.debug(
-								"NumericTextFiled: " + e.getKeyCode());
+						TXLogger.logger.debug("NumericTextFiled: "
+								+ e.getKeyCode());
 						// System.out.println("NumericTextFiled: "
 						// + e.getKeyChar());
 						String txtOld = ((JTextField) e.getComponent())
@@ -285,15 +305,14 @@ public class PackagesFrame extends JInternalFrame
 							if (((JTextField) e.getComponent()).getText()
 									.indexOf('.') > -1)
 								e.consume();
-							TXLogger.logger.debug(
-									"index of ."
-											+ ((JTextField) e.getComponent())
-													.getText().indexOf('.'));
+							TXLogger.logger.debug("index of ."
+									+ ((JTextField) e.getComponent()).getText()
+											.indexOf('.'));
 							// System.out.println("index of ."
 							// + ((JTextField) e.getComponent()).getText()
 							// .indexOf('.'));
 						}
-						else if(e.getKeyCode() != '\n')
+						else if (e.getKeyCode() != '\n')
 						{
 							e.consume();
 						}
@@ -313,7 +332,7 @@ public class PackagesFrame extends JInternalFrame
 					{
 						String txt = ((JTextField) (e.getComponent()))
 								.getText();
-						if ((txt.indexOf((VALUE_REQUIRED))>=0))
+						if ((txt.indexOf((VALUE_REQUIRED)) >= 0))
 						{
 							((JTextField) (e.getComponent())).setText("");
 						}
@@ -422,7 +441,8 @@ public class PackagesFrame extends JInternalFrame
 					}
 				});
 				JMenuItem printItem = new JMenuItem("Print");
-				printItem.addActionListener(new ActionListener(){
+				printItem.addActionListener(new ActionListener()
+				{
 
 					@Override
 					public void actionPerformed(ActionEvent e)
@@ -430,21 +450,21 @@ public class PackagesFrame extends JInternalFrame
 						// TODO Auto-generated method stub
 						try
 						{
-						//	openURL("http://google.com");
+							// openURL("http://google.com");
 							openURL("http://localhost:8081/CrystalWeb2/crystalreportviewers/CrystalReport1-viewer.jsp");
 						}
 						catch (RuntimeException e1)
 						{
 							TXLogger.logger.error(e1.getMessage());
-							//e1.printStackTrace();
+							// e1.printStackTrace();
 						}
 						catch (IOException e2)
 						{
 							TXLogger.logger.error(e2.getMessage());
-							//e2.printStackTrace();
+							// e2.printStackTrace();
 						}
 					}
-					
+
 				});
 				popupMenu.add(copyItem);
 				popupMenu.addSeparator();
@@ -570,6 +590,8 @@ public class PackagesFrame extends JInternalFrame
 			getContentPane().add(getJLabel7());
 			getContentPane().add(getCmbPkgFilter());
 			getContentPane().add(getJLabel8());
+			getContentPane().add(getJLabel6());
+			getContentPane().add(getCmbOrderBy());
 			jScrollPane2.setBounds(34, 303, 286, 166);
 			jScrollPane2.setViewportView(lstProdInc);
 		}
@@ -628,7 +650,7 @@ public class PackagesFrame extends JInternalFrame
 				+ "%' "
 				+ " AND ps.SupplierId = sup.SupplierId "
 				+ "ORDER BY ProdName, SupName";
-		TXLogger.logger.debug("getAllProdList:"+sql1);
+		TXLogger.logger.debug("getAllProdList:" + sql1);
 		// System.out.println(sql1);
 		try
 		{
@@ -849,7 +871,9 @@ public class PackagesFrame extends JInternalFrame
 	private void addNewRow()
 	{
 		stopCellEditting();
-		pkgTblModel.addEmptyRow(tblPackages.getRowCount());
+		String filterKey=cmbPkgFilter.getSelectedItem()==null?"":cmbPkgFilter.getSelectedItem().toString();
+		String orderBy = cmbOrderBy.getSelectedItem().toString();
+		pkgTblModel.addEmptyRow(tblPackages.getRowCount(),orderBy,filterKey);
 		tblPackages.updateUI();
 		// tblPackages.editCellAt(tblPackages.getRowCount()-1, 1);
 		tblPackages.setRowSelectionInterval(tblPackages.getRowCount() - 1,
@@ -899,13 +923,12 @@ public class PackagesFrame extends JInternalFrame
 
 	private void listSelectionChaged(ListSelectionEvent e)
 	{
+		dlmInc.clear();
 		if (tblPackages.getSelectedRow() == -1)
 		{
-			dlmInc.clear();
 			// dlmInc.removeRange(0, dlmInc.size() - 1);
 			return;
 		}
-		dlmInc.clear();
 		if (tblPackages.getSelectedRow() == -1)
 		{
 			setButtonState(false);
@@ -930,8 +953,8 @@ public class PackagesFrame extends JInternalFrame
 		{
 			return;
 		}
-		TXLogger.logger.debug(sql1);
-		System.out.println(sql1);
+		TXLogger.logger.debug("tblPackages listSelectionChaged:"+sql1);
+//		System.out.println(sql1);
 		try
 		{
 			rs1 = stmt1.executeQuery(sql1);
@@ -971,6 +994,7 @@ public class PackagesFrame extends JInternalFrame
 	private void copyAndCreate(int selectedRow)
 	{
 
+		String filterKey=cmbPkgFilter.getSelectedItem()==null?"":cmbPkgFilter.getSelectedItem().toString();
 		if (pkgTblModel.hasEmptyRow())
 		{
 			tblPackages.setRowSelectionInterval(tblPackages.getRowCount() - 1,
@@ -984,21 +1008,23 @@ public class PackagesFrame extends JInternalFrame
 		}
 		addNewRow();
 		pkgTblModel.setRowValueTo(pkgTblModel.getRowValueFrom(selectedRow),
-				v_psInc, tblPackages.getRowCount() - 1);
+				v_psInc, tblPackages.getRowCount() - 1,filterKey);
 		tblPackages.clearSelection();
 		tblPackages.setRowSelectionInterval(tblPackages.getRowCount() - 1,
 				tblPackages.getRowCount() - 1);
+		cmbOrderBy.setSelectedIndex(0);
+		
 	}
 
 	// trim off the first charactor non-numeric input
 	public void eraseNonNumeric(FocusEvent e)
 	{
 		TXLogger.logger.debug("eraseNonNumeric" + e.getComponent());
-//		System.out.println("eraseNonNumeric" + e.getComponent());
+		// System.out.println("eraseNonNumeric" + e.getComponent());
 		String txt = ((JTextField) (e.getComponent())).getText();
 
 		if ((txt.charAt(txt.length() - 1) < '0' || txt.charAt(txt.length() - 1) > '9')
-				&& txt.charAt(txt.length() - 1) != '.' )
+				&& txt.charAt(txt.length() - 1) != '.')
 		{
 			txt = txt.substring(0, txt.length() - 2);
 			((JTextField) (e.getComponent())).setText(txt);
@@ -1010,7 +1036,7 @@ public class PackagesFrame extends JInternalFrame
 		if (jLabel4 == null)
 		{
 			jLabel4 = new JLabel();
-			jLabel4.setBounds(396, 1, 152, 23);
+			jLabel4.setBounds(351, 3, 149, 23);
 			jLabel4.setName("jLabel4");
 		}
 		return jLabel4;
@@ -1058,9 +1084,10 @@ public class PackagesFrame extends JInternalFrame
 									.getText().toString().trim();
 							TXLogger.logger.debug("Filter regex:"
 									+ cmbPkgFilterModel.getSize());
-//							System.out.println("Filter regex:"
-//									+ cmbPkgFilterModel.getSize());
-							pkgTblModel.searchPackages(regex);
+							// System.out.println("Filter regex:"
+							// + cmbPkgFilterModel.getSize());
+							pkgTblModel.reload_rs_packages(cmbOrderBy
+									.getSelectedItem().toString(), regex);
 							if (cmbPkgFilterModel.getSize() == 0)
 							{
 								cmbPkgFilterModel.addElement(regex);
@@ -1082,14 +1109,14 @@ public class PackagesFrame extends JInternalFrame
 									cmbPkgFilterModel.insertElementAt(regex, 0);
 								}
 								cmbPkgFilter.setSelectedIndex(0);
-								btnNew.setEnabled(false);
-								copyItem.setEnabled(false);
+//								btnNew.setEnabled(false);
+//								copyItem.setEnabled(false);
 
 							}
 							else
 							{
-								btnNew.setEnabled(true);
-								copyItem.setEnabled(true);
+//								btnNew.setEnabled(true);
+//								copyItem.setEnabled(true);
 							}
 						}
 					});
@@ -1107,11 +1134,75 @@ public class PackagesFrame extends JInternalFrame
 		}
 		return jLabel8;
 	}
-	public  void openURL (String url)throws RuntimeException,IOException{
-		  String urlx=null;
-		  urlx="rundll32   url.dll,FileProtocolHandler  "+url;   
-		 Runtime.getRuntime().exec(""+urlx);
-		  
-		   }
+
+	public void openURL(String url) throws RuntimeException, IOException
+	{
+		String urlx = null;
+		urlx = "rundll32   url.dll,FileProtocolHandler  " + url;
+		Runtime.getRuntime().exec("" + urlx);
+
+	}
+
+	private JLabel getJLabel6()
+	{
+		if (jLabel6 == null)
+		{
+			jLabel6 = new JLabel();
+			jLabel6.setBounds(569, 9, 61, 14);
+			jLabel6.setName("jLabel6");
+		}
+		return jLabel6;
+	}
+
+	private JComboBox getCmbOrderBy()
+	{
+		if (cmbOrderBy == null)
+		{
+			final DefaultComboBoxModel cmbOrderByModel = new DefaultComboBoxModel();
+			cmbOrderByModel.addElement("ID");
+			cmbOrderByModel.addElement("Name");
+			cmbOrderByModel.addElement("StartDate");
+			cmbOrderByModel.addElement("EndDate");
+			cmbOrderByModel.addElement("Description");
+			cmbOrderByModel.addElement("Price");
+			cmbOrderByModel.addElement("Commission");
+			cmbOrderBy = new JComboBox();
+			cmbOrderBy.setModel(cmbOrderByModel);
+			cmbOrderBy.setBounds(642, 6, 104, 21);
+			cmbOrderBy.setEditable(false);
+			cmbOrderByModel.addListDataListener(new ListDataListener()
+			{
+
+				@Override
+				public void contentsChanged(ListDataEvent e)
+				{
+					TXLogger.logger.debug(cmbOrderByModel.getSelectedItem()
+							.toString());
+					if(cmbPkgFilter.getSelectedIndex()==-1)
+					{
+						pkgTblModel.reload_rs_packages(cmbOrderByModel
+								.getSelectedItem().toString(), "");
+					}else
+					{
+						pkgTblModel.reload_rs_packages(cmbOrderByModel
+								.getSelectedItem().toString(), cmbPkgFilter
+								.getSelectedItem().toString());
+					}
+				}
+
+				@Override
+				public void intervalAdded(ListDataEvent e)
+				{
+				}
+
+				@Override
+				public void intervalRemoved(ListDataEvent e)
+				{
+				}
+
+			});
+		}
+		return cmbOrderBy;
+	}
 
 }
