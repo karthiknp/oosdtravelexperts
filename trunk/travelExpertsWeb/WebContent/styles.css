@@ -12,9 +12,6 @@ body {
 	color: #0000AA;
 }
 
-#header {
-	font-size: 2em;
-}
 
 #menu {
 	float: left;
@@ -56,6 +53,12 @@ body {
 	font-size: .8em;
 }
 
+#header {
+	/* Login box disabled */
+	/* background: url('pics/newtxlogo.png'); 
+	height: 153px;
+	width: 800px;*/
+}
 .formLabel {
 }
 .formInput {
@@ -72,4 +75,24 @@ input {
 	background: #107fff;
 	background-color: aqua;
 	border: 1px solid #781341;
+}
+
+
+#login {
+	font-size: 11px;
+	float: right;
+	margin-right: 15px;
+	margin-top: 15px;
+	width: 200px;
+	height: 110px;
+	opacity: 0.6;
+	background-color: WHITE;
+}
+
+.loginLabel {
+	color: BLACK;
+}
+
+.loginInput {
+	width: 100px;
 }
