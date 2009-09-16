@@ -221,33 +221,18 @@ public class PackagesFrame extends JInternalFrame
 							@Override
 							public void valueChanged(ListSelectionEvent e)
 							{
+								if(e.getValueIsAdjusting()&&(e.getFirstIndex()!=e.getLastIndex()))
 								listSelectionChaged(e);
 							}
 
 						});
-				tblPackages.getSelectionModel().addListSelectionListener(
-						new ListSelectionListener()
-						{
-							@Override
-							public void valueChanged(ListSelectionEvent e)
-							{
-								listSelectionChaged(e);
-							}
-						});
+
 				tblPackages.setModel(pkgTblModel);
 				initTable(pkgTblModel, -1);
 				// sorter = new TableRowSorter<PackagesTableModel>(pkgTblModel);
 				// sorter confuses my table model
 				// tblPackages.setRowSorter(sorter);
-				tblPackages.getSelectionModel().addListSelectionListener(
-						new ListSelectionListener()
-						{
-							@Override
-							public void valueChanged(ListSelectionEvent e)
-							{
-								listSelectionChaged(e);
-							}
-						});
+
 				tblPackages.setDefaultRenderer(Object.class,
 						new EvenOddRenderer());
 				final NumericTextField ntf = new NumericTextField();
@@ -292,7 +277,7 @@ public class PackagesFrame extends JInternalFrame
 				{
 					public void keyTyped(KeyEvent e)
 					{
-						TXLogger.getLogger().debug(
+						TXLogger.logger.debug(
 								"NumericTextFiled: " + e.getKeyChar());
 						// System.out.println("NumericTextFiled: "
 						// + e.getKeyChar());
@@ -314,7 +299,7 @@ public class PackagesFrame extends JInternalFrame
 							if (((JTextField) e.getComponent()).getText()
 									.indexOf('.') > -1)
 								e.consume();
-							TXLogger.getLogger().debug(
+							TXLogger.logger.debug(
 									"index of ."
 											+ ((JTextField) e.getComponent())
 													.getText().indexOf('.'));
@@ -340,7 +325,7 @@ public class PackagesFrame extends JInternalFrame
 				{
 					public void keyTyped(KeyEvent e)
 					{
-						TXLogger.getLogger().debug(e.getKeyChar());
+						TXLogger.logger.debug(e.getKeyChar());
 						// System.out.println(e.getKeyChar());
 						if (((JTextField) e.getComponent()).getText().length() >= 100)
 						{
@@ -446,12 +431,12 @@ public class PackagesFrame extends JInternalFrame
 						}
 						catch (RuntimeException e1)
 						{
-							TXLogger.getLogger().error(e1.getMessage());
+							TXLogger.logger.error(e1.getMessage());
 							//e1.printStackTrace();
 						}
 						catch (IOException e2)
 						{
-							TXLogger.getLogger().error(e2.getMessage());
+							TXLogger.logger.error(e2.getMessage());
 							//e2.printStackTrace();
 						}
 					}
@@ -509,7 +494,7 @@ public class PackagesFrame extends JInternalFrame
 			{
 				public void mouseClicked(MouseEvent evt)
 				{
-					TXLogger.getLogger().debug("btnInc.mouseClicked, event");
+					TXLogger.logger.debug("btnInc.mouseClicked, event");
 					// System.out.println("btnInc.mouseClicked, event=" + evt);
 					btnIncMouseClicked(evt);
 				}
@@ -639,7 +624,7 @@ public class PackagesFrame extends JInternalFrame
 				+ "%' "
 				+ " AND ps.SupplierId = sup.SupplierId "
 				+ "ORDER BY ProdName, SupName";
-		TXLogger.getLogger().debug(sql1);
+		TXLogger.logger.debug("getAllProdList:"+sql1);
 		// System.out.println(sql1);
 		try
 		{
@@ -669,7 +654,7 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			TXLogger.getLogger().error(e.getMessage());
+			TXLogger.logger.error(e.getMessage());
 			// e.printStackTrace();
 		}
 
@@ -682,7 +667,7 @@ public class PackagesFrame extends JInternalFrame
 		cmbProdFilterModel.addElement("");
 		String sql1 = "Select ProdName cboProd,'1' FROM Products " + " UNION "
 				+ "Select SupName cboProd,'2' FROM Suppliers " + "ORDER BY 2,1";
-		TXLogger.getLogger().debug(sql1);
+		TXLogger.logger.debug(sql1);
 		// System.out.println(sql1);
 		try
 		{
@@ -695,7 +680,7 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			TXLogger.getLogger().error(e.getMessage());
+			TXLogger.logger.error(e.getMessage());
 			// e.printStackTrace();
 		}
 		cmbProdFilter.setSelectedIndex(0);
@@ -755,7 +740,7 @@ public class PackagesFrame extends JInternalFrame
 
 	private void btnIncAllMouseClicked(MouseEvent evt)
 	{
-		TXLogger.getLogger().debug("btnIncAll.mouseClicked, event");
+		TXLogger.logger.debug("btnIncAll.mouseClicked, event");
 		// System.out.println("btnIncAll.mouseClicked, event=" + evt);
 		int[] indeices = new int[dlmAvi.size()];
 		for (int i = 0; i < indeices.length; i++)
@@ -769,7 +754,7 @@ public class PackagesFrame extends JInternalFrame
 
 	private void btnExcAllMouseClicked(MouseEvent evt)
 	{
-		TXLogger.getLogger().debug("btnExcAll.mouseClicked, event");
+		TXLogger.logger.debug("btnExcAll.mouseClicked, event");
 		// System.out.println("btnExcAll.mouseClicked, event=" + evt);
 		int[] indeices = new int[dlmInc.size()];
 		for (int i = 0; i < indeices.length; i++)
@@ -796,7 +781,7 @@ public class PackagesFrame extends JInternalFrame
 		{
 			return;
 		}
-		TXLogger.getLogger().debug("btnSave.mouseClicked, event");
+		TXLogger.logger.debug("btnSave.mouseClicked, event");
 		// System.out.println("btnSave.mouseClicked, event=" + evt);
 		String sql1 = "DELETE from Packages_Products_Suppliers "
 				+ "WHERE PackageId = "
@@ -822,7 +807,7 @@ public class PackagesFrame extends JInternalFrame
 		{
 			return;
 		}
-		TXLogger.getLogger().debug(sql1);
+		TXLogger.logger.debug(sql1);
 		// System.out.println(sql1);
 		try
 		{
@@ -830,7 +815,7 @@ public class PackagesFrame extends JInternalFrame
 			stmt1.execute(sql1);
 			for (int i = 0; i < v_sql2.size(); i++)
 			{
-				TXLogger.getLogger().debug(v_sql2.elementAt(i));
+				TXLogger.logger.debug(v_sql2.elementAt(i));
 				// System.out.println(v_sql2.elementAt(i));
 				stmt1.executeUpdate(v_sql2.elementAt(i));
 			}
@@ -842,7 +827,7 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException e)
 		{
-			TXLogger.getLogger().error(e.getMessage());
+			TXLogger.logger.error(e.getMessage());
 			// e.printStackTrace();
 			try
 			{
@@ -850,7 +835,7 @@ public class PackagesFrame extends JInternalFrame
 			}
 			catch (SQLException e1)
 			{
-				TXLogger.getLogger().error(e1.getMessage());
+				TXLogger.logger.error(e1.getMessage());
 				// e1.printStackTrace();
 			}
 		}
@@ -941,7 +926,7 @@ public class PackagesFrame extends JInternalFrame
 		{
 			return;
 		}
-		TXLogger.getLogger().debug(sql1);
+		TXLogger.logger.debug(sql1);
 		System.out.println(sql1);
 		try
 		{
@@ -961,14 +946,14 @@ public class PackagesFrame extends JInternalFrame
 		}
 		catch (SQLException ex)
 		{
-			TXLogger.getLogger().error(ex.getMessage());
+			TXLogger.logger.error(ex.getMessage());
 			// ex.printStackTrace();
 		}
 	}
 
 	private void btnEditMouseClicked(ActionEvent evt)
 	{
-		TXLogger.getLogger().debug("btnEdit.mouseClicked, event=");
+		TXLogger.logger.debug("btnEdit.mouseClicked, event=");
 		// System.out.println("btnEdit.mouseClicked, event=" + evt);
 		stopCellEditting();
 		tblPackages.setRowSelectionInterval(tblPackages.getSelectedRow(),
@@ -1004,7 +989,7 @@ public class PackagesFrame extends JInternalFrame
 	// trim off the first charactor non-numeric input
 	public void eraseNonNumeric(FocusEvent e)
 	{
-		TXLogger.getLogger().debug("eraseNonNumeric" + e.getComponent());
+		TXLogger.logger.debug("eraseNonNumeric" + e.getComponent());
 //		System.out.println("eraseNonNumeric" + e.getComponent());
 		String txt = ((JTextField) (e.getComponent())).getText();
 
@@ -1067,7 +1052,7 @@ public class PackagesFrame extends JInternalFrame
 							String regex = ((JTextField) (cmbPkgFilter
 									.getEditor().getEditorComponent()))
 									.getText().toString().trim();
-							TXLogger.getLogger().debug("Filter regex:"
+							TXLogger.logger.debug("Filter regex:"
 									+ cmbPkgFilterModel.getSize());
 //							System.out.println("Filter regex:"
 //									+ cmbPkgFilterModel.getSize());
@@ -1121,9 +1106,7 @@ public class PackagesFrame extends JInternalFrame
 	public  void openURL (String url)throws RuntimeException,IOException{
 		  String urlx=null;
 		  urlx="rundll32   url.dll,FileProtocolHandler  "+url;   
-		 
-		   
-		 Process   p=Runtime.getRuntime().exec(""+urlx);
+		 Runtime.getRuntime().exec(""+urlx);
 		  
 		   }
 
