@@ -18,6 +18,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.Format;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -129,11 +132,10 @@ public class PackagesFrame extends JInternalFrame
 		// Add all panels to form
 		getContentPane().add(new JLabel("Viewing Packages"), "North");
 		getContentPane().add(pnlCrudPanel, "South");
-		pnlCrudPanel.setBounds(0, 484, 756, 31);
+		pnlCrudPanel.setBounds(0, 496, 756, 31);
 		pnlCrudPanel.add(btnDelete);
 		pnlCrudPanel.add(btnSave);
 		pnlCrudPanel.add(btnEdit);
-		pnlCrudPanel.add(btnNew);
 		{
 			jScrollPane1 = new JScrollPane();
 			getContentPane().add(jScrollPane1);
@@ -148,6 +150,7 @@ public class PackagesFrame extends JInternalFrame
 				}
 			});
 			btnEdit.setBounds(350, 415, 32, 21);
+			pnlCrudPanel.add(btnNew);
 			btnEdit.addActionListener(new ActionListener()
 			{
 
@@ -235,6 +238,7 @@ public class PackagesFrame extends JInternalFrame
 
 				tblPackages.setDefaultRenderer(Object.class,
 						new EvenOddRenderer());
+//				final NumericTextField ntf = new NumericTextField(currency);
 				final NumericTextField ntf = new NumericTextField();
 				tblPackages.getColumnModel().getColumn(
 						PackagesTableModel.COMMISSION).setCellEditor(
@@ -255,30 +259,12 @@ public class PackagesFrame extends JInternalFrame
 					{
 					}
 				});
-				ntf.addFocusListener(new FocusListener()
-				{
-					@Override
-					public void focusGained(FocusEvent e)
-					{
-						String txt = ((JTextField) (e.getComponent()))
-								.getText();
-						if ((txt.equals(VALUE_REQUIRED)))
-						{
-							((JTextField) (e.getComponent())).setText("");
-						}
-					}
-
-					@Override
-					public void focusLost(FocusEvent e)
-					{
-					}
-				});
 				ntf.addKeyListener(new KeyAdapter()
 				{
 					public void keyTyped(KeyEvent e)
 					{
 						TXLogger.logger.debug(
-								"NumericTextFiled: " + e.getKeyChar());
+								"NumericTextFiled: " + e.getKeyCode());
 						// System.out.println("NumericTextFiled: "
 						// + e.getKeyChar());
 						String txtOld = ((JTextField) e.getComponent())
@@ -307,7 +293,7 @@ public class PackagesFrame extends JInternalFrame
 							// + ((JTextField) e.getComponent()).getText()
 							// .indexOf('.'));
 						}
-						else
+						else if(e.getKeyCode() != '\n')
 						{
 							e.consume();
 						}
@@ -320,6 +306,24 @@ public class PackagesFrame extends JInternalFrame
 				tblPackages.getColumnModel().getColumn(
 						PackagesTableModel.DESCRIPTION).setCellEditor(
 						new DefaultCellEditor(cellNotNull));
+				cellNotNull.addFocusListener(new FocusListener()
+				{
+					@Override
+					public void focusGained(FocusEvent e)
+					{
+						String txt = ((JTextField) (e.getComponent()))
+								.getText();
+						if ((txt.indexOf((VALUE_REQUIRED))>=0))
+						{
+							((JTextField) (e.getComponent())).setText("");
+						}
+					}
+
+					@Override
+					public void focusLost(FocusEvent e)
+					{
+					}
+				});
 				// Column 5 and 6 only accept numeric input
 				cellNotNull.addKeyListener(new KeyAdapter()
 				{
@@ -994,7 +998,7 @@ public class PackagesFrame extends JInternalFrame
 		String txt = ((JTextField) (e.getComponent())).getText();
 
 		if ((txt.charAt(txt.length() - 1) < '0' || txt.charAt(txt.length() - 1) > '9')
-				&& txt.charAt(txt.length() - 1) != '.')
+				&& txt.charAt(txt.length() - 1) != '.' )
 		{
 			txt = txt.substring(0, txt.length() - 2);
 			((JTextField) (e.getComponent())).setText(txt);

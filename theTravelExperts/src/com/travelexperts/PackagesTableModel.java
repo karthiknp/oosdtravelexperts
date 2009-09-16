@@ -7,17 +7,16 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
+import java.text.Format;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
-
-import ch.randelshofer.quaqua.panther.filechooser.SidebarListModel;
 
 public class PackagesTableModel extends AbstractTableModel implements
 		Serializable
@@ -110,10 +109,11 @@ public class PackagesTableModel extends AbstractTableModel implements
 			rs_packages.absolute(rowIndex);
 			if (columnIndex == START_DATE + 1 || columnIndex == END_DATE + 1)
 			{
-				//NumberFormat nf = NumberFormat.;
+				// NumberFormat nf = NumberFormat.;
 				// nf.format(00);
 				// get formatted string for Date
-				if (rs_packages.getString(columnIndex) != null && rs_packages.getString(columnIndex) != "")
+				if (rs_packages.getString(columnIndex) != null
+						&& rs_packages.getString(columnIndex) != "")
 				{
 					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 					Calendar cal = Calendar.getInstance();
@@ -127,6 +127,9 @@ public class PackagesTableModel extends AbstractTableModel implements
 			}
 			else if (columnIndex == PRICE + 1 || columnIndex == COMMISSION + 1)
 			{
+				Format currency = NumberFormat
+						.getCurrencyInstance(Locale.CANADA);
+
 				if (rs_packages.getString(columnIndex) == null
 						|| rs_packages.getString(columnIndex) == "")
 				{
@@ -136,13 +139,15 @@ public class PackagesTableModel extends AbstractTableModel implements
 				{
 					o = rs_packages.getString(columnIndex);
 				}
+				o = currency.format(Float.parseFloat(o.toString()));
 			}
 			else
 			{
-//				TXLogger.logger.debug("columnIndex:" + columnIndex + "rowIndex:"
-//						+ rowIndex);
-//				System.out.println("columnIndex:" + columnIndex + "rowIndex:"
-//						+ rowIndex);
+				// TXLogger.logger.debug("columnIndex:" + columnIndex +
+				// "rowIndex:"
+				// + rowIndex);
+				// System.out.println("columnIndex:" + columnIndex + "rowIndex:"
+				// + rowIndex);
 				o = rs_packages.getString(columnIndex);
 			}
 			sqlConn.commit();
@@ -150,7 +155,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 		catch (SQLException e)
 		{
 			TXLogger.logger.error(e.getMessage());
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 		return o == null ? "" : o;
 	}
@@ -181,10 +186,12 @@ public class PackagesTableModel extends AbstractTableModel implements
 		{
 			TXLogger.logger.debug("validateTable failed: " + rowIndex + ","
 					+ columnIndex);
-//			System.out.println("validateTable failed: " + rowIndex + ","
-//					+ columnIndex);
+			// System.out.println("validateTable failed: " + rowIndex + ","
+			// + columnIndex);
 			return;
 		}
+		NumberFormat currency = NumberFormat.getCurrencyInstance(Locale.CANADA);
+
 		try
 		{
 			rs_packages.absolute(rowIndex + 1);
@@ -197,6 +204,11 @@ public class PackagesTableModel extends AbstractTableModel implements
 				{
 					rs_packages.updateDate(columnIndex + 1, null);
 				}
+			else if (columnIndex == PRICE || columnIndex == COMMISSION)
+			{
+				BigDecimal bgValue = new BigDecimal(currency.parse(value.toString()).doubleValue());
+				rs_packages.updateBigDecimal(columnIndex + 1, bgValue);
+			}
 			else
 			{
 				rs_packages
@@ -210,7 +222,12 @@ public class PackagesTableModel extends AbstractTableModel implements
 		catch (SQLException e)
 		{
 			TXLogger.logger.error(e.getMessage());
-			//e.printStackTrace();
+			// e.printStackTrace();
+		}
+		catch (ParseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -237,7 +254,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 			catch (SQLException e)
 			{
 				TXLogger.logger.error(e.getMessage());
-				//e.printStackTrace();
+				// e.printStackTrace();
 				try
 				{
 					sqlConn.rollback();
@@ -245,7 +262,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				catch (SQLException e1)
 				{
 					TXLogger.logger.error(e1.getMessage());
-					//e1.printStackTrace();
+					// e1.printStackTrace();
 				}
 			}
 		}
@@ -284,11 +301,11 @@ public class PackagesTableModel extends AbstractTableModel implements
 
 			rows++;
 			reload_rs_packages();
-			}
+		}
 		catch (SQLException e)
 		{
 			TXLogger.logger.error(e.getMessage());
-//			e.printStackTrace();
+			// e.printStackTrace();
 		}
 		// System.out.println("addEmptyRow------------------ended");
 	}
@@ -311,14 +328,15 @@ public class PackagesTableModel extends AbstractTableModel implements
 	// validate inputs in jtable
 	public boolean validateTable(Object value, int rowIndex, int columnIndex)
 	{
+		NumberFormat currency = NumberFormat.getCurrencyInstance();
 		String validationMsg = "";
 		TXLogger.logger.debug("validate table");
 		SimpleDateFormat dfStart = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat dfEnd = new SimpleDateFormat("yyyy-MM-dd");
-//		System.out.println("validateTable");
+		// System.out.println("validateTable");
 		boolean flgValidate = true;
-		BigDecimal price;
-		BigDecimal commission;
+		BigDecimal price = new BigDecimal(0);
+		BigDecimal commission = new BigDecimal(0);
 		switch (columnIndex) {
 		// package name not null
 		case PACKAGE_NAME:
@@ -346,7 +364,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				catch (ParseException e)
 				{
 					TXLogger.logger.error(e.getMessage());
-//					e.printStackTrace();
+					// e.printStackTrace();
 				}
 				Calendar startDate = dfStart.getCalendar();
 				Calendar endDate = dfEnd.getCalendar();
@@ -372,7 +390,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				catch (ParseException e)
 				{
 					TXLogger.logger.error(e.getMessage());
-//					e.printStackTrace();
+					// e.printStackTrace();
 				}
 				Calendar startDate = dfStart.getCalendar();
 				Calendar endDate = dfEnd.getCalendar();
@@ -391,9 +409,18 @@ public class PackagesTableModel extends AbstractTableModel implements
 			{
 				value = 0;
 			}
-			price = new BigDecimal(value.toString());
-			commission = new BigDecimal(getValueAt(rowIndex, COMMISSION)
-					.toString());
+			try
+			{
+				price = new BigDecimal(currency.parse(value.toString()).doubleValue());
+				commission = new BigDecimal(currency.parse(getValueAt(rowIndex, COMMISSION)
+						.toString()).doubleValue());
+			}
+			catch (ParseException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			if (commission.compareTo(price) > 0)
 			{
 				flgValidate = false;
@@ -406,8 +433,17 @@ public class PackagesTableModel extends AbstractTableModel implements
 			{
 				value = 0;
 			}
-			price = new BigDecimal(getValueAt(rowIndex, PRICE).toString());
-			commission = new BigDecimal(value.toString());
+			try
+				{
+					price = new BigDecimal(currency.parse(getValueAt(rowIndex, PRICE)
+							.toString()).doubleValue());
+					commission = new BigDecimal(currency.parse(value.toString()).doubleValue());
+				}
+				catch (ParseException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			if (commission.compareTo(price) > 0)
 			{
 				flgValidate = false;
@@ -440,20 +476,17 @@ public class PackagesTableModel extends AbstractTableModel implements
 	{
 		int pkgIdTo = maxPkgID + 1;
 		String sql1 = "UPDATE packages SET PKGNAME = '"
-				+ rowVector.elementAt(PACKAGE_NAME) 
-				+ "', PKGSTARTDATE= to_date('" 
-				+ rowVector.elementAt(START_DATE) 
+				+ rowVector.elementAt(PACKAGE_NAME)
+				+ "', PKGSTARTDATE= to_date('"
+				+ rowVector.elementAt(START_DATE)
 				+ "','yyyy-mm-dd'),PKGENDDATE = to_date('"
-				+ rowVector.elementAt(END_DATE) 
-				+ "','yyyy-mm-dd'),PKGDESC = '"
-				+ rowVector.elementAt(DESCRIPTION) 
-				+ "',PKGBASEPRICE = "
-				+ rowVector.elementAt(PRICE) 
-				+ ",PKGAGENCYCOMMISSION = "
-				+ rowVector.elementAt(COMMISSION) 
-				+ " WHERE PACKAGEID = " + pkgIdTo;
+				+ rowVector.elementAt(END_DATE) + "','yyyy-mm-dd'),PKGDESC = '"
+				+ rowVector.elementAt(DESCRIPTION) + "',PKGBASEPRICE = "
+				+ rowVector.elementAt(PRICE) + ",PKGAGENCYCOMMISSION = "
+				+ rowVector.elementAt(COMMISSION) + " WHERE PACKAGEID = "
+				+ pkgIdTo;
 		TXLogger.logger.debug(sql1);
-//		System.out.println(sql1);
+		// System.out.println(sql1);
 		// add products to the new package
 		Vector<String> v_sql1 = new Vector<String>();
 		if (v_psInc != null)
@@ -478,7 +511,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				for (int i = 0; i < v_sql1.size(); i++)
 				{
 					TXLogger.logger.debug(v_sql1.elementAt(i));
-//					System.out.println(v_sql1.elementAt(i));
+					// System.out.println(v_sql1.elementAt(i));
 					sqlConn.createStatement()
 							.executeUpdate(v_sql1.elementAt(i));
 					sqlConn.commit();
@@ -497,10 +530,10 @@ public class PackagesTableModel extends AbstractTableModel implements
 			catch (SQLException e1)
 			{
 				TXLogger.logger.error(e1.getMessage());
-//				e1.printStackTrace();
+				// e1.printStackTrace();
 			}
 			TXLogger.logger.error(e.getMessage());
-//			e.printStackTrace();
+			// e.printStackTrace();
 		}
 		// System.out.println("setRowValueTo------------------ended");
 	}
@@ -511,7 +544,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				+ "PKGSTARTDATE StartDate, " + "PKGENDDATE EndDate, "
 				+ "PKGDESC Description, " + "PKGBASEPRICE Price,"
 				+ "PKGAGENCYCOMMISSION Commission FROM packages ORDER BY ID";
-		String sqlCreateView = "CREATE OR REPLACE VIEW v_packages AS "+ sql1;
+		String sqlCreateView = "CREATE OR REPLACE VIEW v_packages AS " + sql1;
 		try
 		{
 			rs_packages = sqlConn
@@ -526,7 +559,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 		catch (SQLException e)
 		{
 			TXLogger.logger.error(e.getMessage());
-//			e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -542,7 +575,7 @@ public class PackagesTableModel extends AbstractTableModel implements
 				+ "WHERE PKGNAME ||to_char(PKGSTARTDATE,'yyyy-mm-dd') || to_char(PKGENDDATE,'yyyy-mm-dd') "
 				+ "|| PKGDESC || PKGBASEPRICE || PKGAGENCYCOMMISSION LIKE '%"
 				+ keyWords + "%' ORDER BY ID";
-//		System.out.println(sql1);
+		// System.out.println(sql1);
 		TXLogger.logger.debug(sql1);
 		try
 		{
@@ -552,12 +585,12 @@ public class PackagesTableModel extends AbstractTableModel implements
 			rs_packages.last();
 			rows = rs_packages.getRow();
 			columns = rs_packages.getMetaData().getColumnCount();
-			
+
 		}
 		catch (SQLException e)
 		{
 			TXLogger.logger.error(e.getMessage());
-//			e.printStackTrace();
+			// e.printStackTrace();
 		}
 		fireTableDataChanged();
 	}
