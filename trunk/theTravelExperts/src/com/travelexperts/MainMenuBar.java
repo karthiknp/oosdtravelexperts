@@ -43,7 +43,7 @@ public class MainMenuBar extends JMenuBar
 
 	// Menu items
 	public JMenuItem fileMenuExit = new JMenuItem("Exit", 'X');
-	public JMenuItem packagesMenuEdit = new JMenuItem("Manage Packages", 'P');
+	public JMenuItem packagesMenuEdit = new JMenuItem("Manage", 'P');
 	public JMenuItem productsMenuEdit = new JMenuItem("Edit Products", 'R');
 	public JMenuItem suppliersMenuEdit = new JMenuItem("Edit Suppliers", 'S');
 	public JMenuItem agentsMenuEdit = new JMenuItem("Manage Agents", 'A');
@@ -85,60 +85,60 @@ public class MainMenuBar extends JMenuBar
 		{
 			// Packages->Manage
 			packagesMenu.add(packagesMenuEdit);
-			packagesMenuEdit.setAccelerator(KeyStroke.getKeyStroke("control P"));
 			packagesMenuEdit.setAction(parentFrame.getAppActionMap().get(
 					"showPackages"));
 			packagesMenuEdit.setText("Manage Packages");
+			packagesMenuEdit.setAccelerator(KeyStroke.getKeyStroke("control P"));
 		}
 		add(suppliersMenu);
 		suppliersMenu.setMnemonic('S');
 		{
 			suppliersMenu.add(suppliersMenuEdit);
-			suppliersMenuEdit.setAccelerator(KeyStroke.getKeyStroke("control S"));
 			suppliersMenuEdit.setAction(parentFrame.getAppActionMap().get(
 					"showSuppliers"));
 			suppliersMenuEdit.setText("Manage Suppliers");
-			try
-			{
-				suppliersMenuEdit
-						.setIcon(new ImageIcon(
-								new URL(
-										"http://t1.gstatic.com/images?q=tbn:2VZ5Jdb3EApnjM:http://www.aditnorth.org.uk/uploadedImages/partners_icon.gif")));
-			}
-			catch (MalformedURLException e)
-			{
-				e.printStackTrace();
-			}
+			suppliersMenuEdit.setAccelerator(KeyStroke.getKeyStroke("control S"));
+//			try
+//			{
+//				suppliersMenuEdit
+//						.setIcon(new ImageIcon(
+//								new URL(
+//										"http://t1.gstatic.com/images?q=tbn:2VZ5Jdb3EApnjM:http://www.aditnorth.org.uk/uploadedImages/partners_icon.gif")));
+//			}
+//			catch (MalformedURLException e)
+//			{
+//				e.printStackTrace();
+//			}
 		}
 		add(productsMenu);
 		productsMenu.setMnemonic('R');
 		{
 			productsMenu.add(productsMenuEdit);
-			productsMenuEdit.setAccelerator(KeyStroke.getKeyStroke("control R"));
 			productsMenuEdit.setAction(parentFrame.getAppActionMap().get(
 					"showProducts"));
 			productsMenuEdit.setText("Manage Products");
-			try
-			{
-				// Steal an icon of google lol
-				productsMenuEdit
-						.setIcon(new ImageIcon(
-								new URL(
-										"http://t0.gstatic.com/images?q=tbn:Ez4gvTSY8ob0jM:http://www.istockphoto.com/file_thumbview_approve/6885224/2/istockphoto_6885224-palm-tree.jpg")));
-			}
-			catch (MalformedURLException e)
-			{
-				e.printStackTrace();
-			}
+			productsMenuEdit.setAccelerator(KeyStroke.getKeyStroke("control R"));
+//			try
+//			{
+//				// Steal an icon of google lol
+//				productsMenuEdit
+//						.setIcon(new ImageIcon(
+//								new URL(
+//										"http://t0.gstatic.com/images?q=tbn:Ez4gvTSY8ob0jM:http://www.istockphoto.com/file_thumbview_approve/6885224/2/istockphoto_6885224-palm-tree.jpg")));
+//			}
+//			catch (MalformedURLException e)
+//			{
+//				e.printStackTrace();
+//			}
 		}
 		add(agentsMenu);
 		agentsMenu.setMnemonic('A');
 		{
 			agentsMenu.add(agentsMenuEdit);
-			agentsMenuEdit.setAccelerator(KeyStroke.getKeyStroke("control A"));
 			agentsMenuEdit.setAction(parentFrame.getAppActionMap().get(
 					"showAgents"));
 			agentsMenuEdit.setText("Manage Agents");
+			agentsMenuEdit.setAccelerator(KeyStroke.getKeyStroke("control A"));
 		}
 		add(customersMenu);
 		customersMenu.setMnemonic('C');
@@ -147,12 +147,13 @@ public class MainMenuBar extends JMenuBar
 			customersMenuEdit.setAction(parentFrame.getAppActionMap().get(
 					"showCustomers"));
 			customersMenuEdit.setText("Manage Customers");
+			customersMenuEdit.setAccelerator(KeyStroke.getKeyStroke("control C"));
 
 			customersMenu.add(customersMenuUnassigned);
-			customersMenuUnassigned.setAccelerator(KeyStroke.getKeyStroke("control U"));
 			customersMenuUnassigned.setAction(parentFrame.getAppActionMap()
 					.get("showUnassigned"));
 			customersMenuUnassigned.setText("View Unassigned Customers");
+			customersMenuUnassigned.setAccelerator(KeyStroke.getKeyStroke("control U"));
 		}
 		add(optionsMenu);
 		optionsMenu.setMnemonic('O');
@@ -166,6 +167,7 @@ public class MainMenuBar extends JMenuBar
 				// Add already installed Looks and Feels
 				LookAndFeelInfo[] skins = UIManager.getInstalledLookAndFeels();
 				// Add menu items for each LookAndFeel
+				int i = 0;
 				for (LookAndFeelInfo skin : skins)
 				{
 
@@ -204,18 +206,21 @@ public class MainMenuBar extends JMenuBar
 
 						}
 					});
+					
 					skinsMenu.add(skinMenuItem);
-					skinMenuItem.setAccelerator(KeyStroke.getKeyStroke("control K"));
+					skinMenuItem.setAccelerator(KeyStroke.getKeyStroke("control "+i++));
 				}
 
 				// Add our LNFs attached as jars
 				JMenuItem skinMenuItem = new JMenuItem("Mac");
+				skinMenuItem.setAccelerator(KeyStroke.getKeyStroke("control "+i++));
 				skinMenuItem
 						.addActionListener(newSkinMenuAction("ch.randelshofer.quaqua.QuaquaLookAndFeel"));
 				skinsMenu.add(skinMenuItem);
 
 				skinMenuItem = new JMenuItem("NimROD");
-				skinMenuItem.addActionListener(new ActionListener()
+				skinMenuItem.setAccelerator(KeyStroke.getKeyStroke("control "+i++));
+			skinMenuItem.addActionListener(new ActionListener()
 				{
 					@Override
 					public void actionPerformed(ActionEvent e)
@@ -235,6 +240,7 @@ public class MainMenuBar extends JMenuBar
 				skinsMenu.add(skinMenuItem);
 			}
 			optionsMenu.add(skinsMenu);
+			skinsMenu.setMnemonic('L');
 
 		}
 		add(supportMenu);
@@ -244,12 +250,13 @@ public class MainMenuBar extends JMenuBar
 			helpSupport.setAction(parentFrame.getAppActionMap().get(
 					"showSupport"));
 			helpSupport.setText("Chat Interface");
+			helpSupport.setAccelerator(KeyStroke.getKeyStroke("control I"));
 		}
 		add(helpMenu);
 		helpMenu.setMnemonic('H');
 		{
-			helpMenu.add(helpFAQ).setAccelerator(KeyStroke.getKeyStroke("control Q"));
-			helpMenu.add(helpAbout).setAccelerator(KeyStroke.getKeyStroke("control B"));
+			helpMenu.add(helpFAQ).setAccelerator(KeyStroke.getKeyStroke("control F"));
+			helpMenu.add(helpAbout).setAccelerator(KeyStroke.getKeyStroke("control A"));
 		}
 	}
 
