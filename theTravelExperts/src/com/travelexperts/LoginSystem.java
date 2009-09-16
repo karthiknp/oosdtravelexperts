@@ -56,16 +56,14 @@ public class LoginSystem extends JInternalFrame {
 						" by applicable law. <br/><br/>" +
 						"Users are reminded not to share passwords and to choose<br/> " +
 						"passwords that are unique and difficult to guess.<br/><br/><html>"));
-		pnlNorth.setSize(400, 300);
-		pnlNorth.revalidate();
 
 		pnlCenter.setLayout(new GridLayout(5, 1));
 		pnlCenter.add(new JLabel("Username"), "help");
 		pnlCenter.add(txtUsername);
 		pnlCenter.add(new JLabel("Password:"));
 		pnlCenter.add(txtPassword);
-
 		pnlCenter.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+		
 		pnlSouth.add(btnLogin);
 		
 		add(pnlNorth, BorderLayout.NORTH);
@@ -76,7 +74,6 @@ public class LoginSystem extends JInternalFrame {
 		setLocation(300, 200);
 		setVisible(true);
 		
-
 		// Code for login validation
 		btnLogin.addActionListener(new ActionListener() {
 			@Override public void actionPerformed(ActionEvent e) {

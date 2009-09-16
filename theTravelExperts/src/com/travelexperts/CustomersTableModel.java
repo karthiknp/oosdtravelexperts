@@ -15,17 +15,17 @@ import javax.swing.table.AbstractTableModel;
 @SuppressWarnings("serial")
 public class CustomersTableModel extends AbstractTableModel {
 	private ResultSet customers; 
-	private int rows;
-	private int columns;
+	protected int rows;
+	protected int columns;
 	
 	public CustomersTableModel(ResultSet newTable) {
 		super();
 		
-		customers = newTable;
+		setCustomers(newTable);
 		try {
-			customers.last();
-			rows = customers.getRow();
-			columns = customers.getMetaData().getColumnCount();
+			getCustomers().last();
+			rows = getCustomers().getRow();
+			columns = getCustomers().getMetaData().getColumnCount();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -33,7 +33,7 @@ public class CustomersTableModel extends AbstractTableModel {
 	
 	
 	@Override
-	public Class<?> getColumnClass(int arg0) {
+	public Class<?> getColumnClass(int colIndex) {
 		// All columns will be strings
 		return String.class;
 	}
@@ -73,8 +73,8 @@ public class CustomersTableModel extends AbstractTableModel {
 			rowIndex++; 
 			columnIndex++;
 			
-			customers.absolute(rowIndex);
-			String o = customers.getString(columnIndex);
+			getCustomers().absolute(rowIndex);
+			String o = getCustomers().getString(columnIndex);
 			if(o != null)
 				return o;
 			else return null;
@@ -100,16 +100,25 @@ public class CustomersTableModel extends AbstractTableModel {
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		try {
-			customers.absolute(rowIndex + 1);
-			customers.updateString(columnIndex + 1, String.valueOf(value));
-			customers.updateRow();	// Save to underlying database
+			getCustomers().absolute(rowIndex + 1);
+			getCustomers().updateString(columnIndex + 1, String.valueOf(value));
+			getCustomers().updateRow();	// Save to underlying database
 			fireTableCellUpdated(rowIndex, columnIndex);
 			
-			customers.moveToInsertRow();
+			getCustomers().moveToInsertRow();
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
+
+	protected void setCustomers(ResultSet customers) {
+		this.customers = customers;
 	}
+
+
+	protected ResultSet getCustomers() {
+		return customers;
+	}
+}

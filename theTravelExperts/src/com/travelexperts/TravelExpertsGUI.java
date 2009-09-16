@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 
+import javax.jnlp.UnavailableServiceException;
 import javax.swing.ActionMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -32,6 +33,7 @@ public class TravelExpertsGUI extends JFrame {
     private ProductsFrame productsFrame = new ProductsFrame();
     private AgentsFrame agentsFrame = new AgentsFrame();
     private CustomersFrame customersFrame = new CustomersFrame();
+    private UACustomersFrame uaCustomersFrame = new UACustomersFrame();
     private SupportServerFrame supportServerFrame = new SupportServerFrame();
     
     /**
@@ -64,8 +66,8 @@ public class TravelExpertsGUI extends JFrame {
     	desktopPane.add(productsFrame);
     	desktopPane.add(agentsFrame);
     	desktopPane.add(customersFrame);
+    	desktopPane.add(uaCustomersFrame);
     	desktopPane.add(supportServerFrame);
-    	
     }
     
     @Action public void showPackages() {
@@ -89,6 +91,7 @@ public class TravelExpertsGUI extends JFrame {
     }
     
     @Action public void showUnassigned() {
+    	uaCustomersFrame.setVisible(true);
     }
     
     @Action public void showSupport() {
