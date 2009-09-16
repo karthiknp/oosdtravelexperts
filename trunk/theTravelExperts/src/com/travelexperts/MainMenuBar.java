@@ -19,6 +19,8 @@ import javax.swing.UIManager.LookAndFeelInfo;
 /**
  * Custom menu bar for Travel Experts project
  * 
+ * Keyboard hotkeys/shortcuts added by Ingrid Niu
+ * 
  * @author will_ad
  * 
  */
@@ -48,8 +50,7 @@ public class MainMenuBar extends JMenuBar
 	public JMenuItem suppliersMenuEdit = new JMenuItem("Edit Suppliers", 'S');
 	public JMenuItem agentsMenuEdit = new JMenuItem("Manage Agents", 'A');
 	public JMenuItem customersMenuEdit = new JMenuItem("Manage Customers", 'C');
-	public JMenuItem customersMenuUnassigned = new JMenuItem(
-			"View Unassigned Customers");
+	public JMenuItem customersMenuUnassigned = new JMenuItem("View Unassigned Customers");
 	public JMenuItem customersMenuReport = new JMenuItem("Print Invoices", 'I');
 	public JMenuItem helpFAQ = new JMenuItem("FAQ");
 	public JMenuItem helpAbout = new JMenuItem("About");
@@ -120,7 +121,7 @@ public class MainMenuBar extends JMenuBar
 			productsMenuEdit.setAccelerator(KeyStroke.getKeyStroke("control R"));
 //			try
 //			{
-//				// Steal an icon of google lol
+//				// Steal an icon off google lol
 //				productsMenuEdit
 //						.setIcon(new ImageIcon(
 //								new URL(
@@ -163,6 +164,7 @@ public class MainMenuBar extends JMenuBar
 				// FINALLY FIXED!!!
 				// Had to call SwingUtilities.refreshLookAndFeel
 				// with reference to parent JFrame
+				// - Will Dixon
 
 				// Add already installed Looks and Feels
 				LookAndFeelInfo[] skins = UIManager.getInstalledLookAndFeels();

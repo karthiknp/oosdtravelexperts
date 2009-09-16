@@ -38,10 +38,6 @@ public class CustomersFrame extends JInternalFrame {
 		super("Customers", true, true, true, true);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		
-	
-		
-		
-		
 		try {
 			rssCustomers = dbConnection
 			.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)
