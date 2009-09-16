@@ -10,7 +10,7 @@
 	<script type="text/javascript" src="scripts.js">
 	</script>
 </head>
-<body onload="ajaxInit(); loadContent('home.jsp');">
+<body onload="">
 <div id="wrapper">
 	<div id="header">
 		<img src="pics/txlogo.png" />
