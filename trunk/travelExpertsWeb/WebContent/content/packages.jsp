@@ -7,6 +7,7 @@
 <%!
 	ResultSet rsPackages;
 %>
+<h3>Package Listings still under construction...</h3>
 <%
 	rsPackages = TXConnection.getConnection().createStatement().executeQuery("SELECT * FROM Packages");
 

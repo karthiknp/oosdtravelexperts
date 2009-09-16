@@ -32,6 +32,7 @@ function loadContent(url) {
 
 // Validate email in registration form
 function valCustEmail() {
+	
 	var request = ajaxInit();
 	request.onreadystatechange = function() {
 		if(request.readyState == 4) {
@@ -77,7 +78,7 @@ function doPost(url, formId) {
 	request.setRequestHeader("Connection", "close");	
 	request.send(postData);
 	
-	alert("Thanks for choosing Travel Experts");
+	alert("Thanks for choosing Travel Experts: " + postData);
 }
 
 // Builds string for post data

@@ -18,5 +18,5 @@
 		}
 	}
 	else
-		out.print("Error: No email to verify");
+		out.print("Please enter your email");
 %>
