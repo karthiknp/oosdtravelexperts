@@ -14,6 +14,7 @@ import javax.swing.table.AbstractTableModel;
  */
 @SuppressWarnings("serial")
 public class CustomersTableModel extends AbstractTableModel {
+	private final int COL_INDEX_AGENTID = 10; 
 	private ResultSet customers; 
 	protected int rows;
 	protected int columns;
@@ -68,6 +69,9 @@ public class CustomersTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		if(columnIndex == COL_INDEX_AGENTID) {
+			
+		}
 		try {
 			// Result sets start at 1,1 instead of 0,0
 			rowIndex++; 
@@ -101,12 +105,31 @@ public class CustomersTableModel extends AbstractTableModel {
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		try {
 			getCustomers().absolute(rowIndex + 1);
-			getCustomers().updateString(columnIndex + 1, String.valueOf(value));
+			
+			if ( getCustomers().getMetaData().getColumnName(columnIndex+1).equalsIgnoreCase("AgentID")) {
+				if(value == null) {
+					System.out.println("Not updating null agentid");
+				}
+				else {
+					int agentId;
+					try {
+						agentId = Integer.parseInt(String.valueOf(value));
+						System.out.println("Cust Name " + getCustomers().getString("CustLastName"));
+						System.out.println("AgentID: " + agentId);
+						getCustomers().updateInt(columnIndex + 1, agentId);
+					}
+					catch(NumberFormatException nfe) {
+						nfe.printStackTrace();
+					}
+				}
+			}
+			else {
+				getCustomers().updateString(columnIndex + 1, String.valueOf(value));
+			}
+
 			getCustomers().updateRow();	// Save to underlying database
 			fireTableCellUpdated(rowIndex, columnIndex);
-			
-			getCustomers().moveToInsertRow();
-			
+						
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -115,6 +138,8 @@ public class CustomersTableModel extends AbstractTableModel {
 
 	protected void setCustomers(ResultSet customers) {
 		this.customers = customers;
+		fireTableStructureChanged();
+		fireTableDataChanged();
 	}
 
 
