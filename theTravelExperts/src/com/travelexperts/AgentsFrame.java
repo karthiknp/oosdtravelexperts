@@ -3,6 +3,8 @@ package com.travelexperts;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
@@ -344,31 +346,17 @@ public class AgentsFrame extends JInternalFrame {
 			    	public void mouseClicked(MouseEvent evt) {
 			    		System.out.println("jCboAgencyID.mouseClicked, event="+evt);
 			    		//TODO add your code for jCboAgencyID.mouseClicked
-						System.out.println("Agent Agency ID combobox field clicked.");
-						// if New Button was pressed enable the Save button
-						if (newButPressed) jButSave.setEnabled(true);
-						// if agent row was selected enable the Update button
-						if (agentRowSelected) jButUpdate.setEnabled(true);
-						// disable the delete button
-						jButDelete.setEnabled(false);
+			    		System.out.println("Agent Agency ID combobox field clicked.");
+			    		// if New Button was pressed enable the Save button
+			    		if (newButPressed) jButSave.setEnabled(true);
+			    		// if agent row was selected enable the Update button
+			    		if (agentRowSelected) jButUpdate.setEnabled(true);
+			    		// disable the delete button
+			    		jButDelete.setEnabled(false);
 			    	}
 			    });
 			}
 		}
-
-		// Agency Combo box added by will
-		JComboBox cboAgencies = new JComboBox();
-		try {
-			ResultSet rsAgencies = TXConnection.getConnection().createStatement().executeQuery
-			("SELECT AgencyId FROM Agencies");
-			while(rsAgencies.next()) {
-				cboAgencies.addItem(rsAgencies.getString("AgencyID"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		agentsTable.getColumnModel().getColumn(7).setCellEditor(new DefaultCellEditor(cboAgencies));
-		
 		// Adding the main panel onto the main Agent Frame.
 		add(mainPanel, BorderLayout.CENTER);
 		// Setting the size of the main panel.
@@ -391,10 +379,9 @@ public class AgentsFrame extends JInternalFrame {
 		String colNames[] = {"Agent ID", "First Name", "Initial", "Last Name", "Phone", "Email", "Position", "Agency"};
 		Integer agentID;
         try {
-			//Class.forName(driver);
+			Class.forName(driver);
 			// Connecting to the database...
-	        //Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
-        	Connection connection = TXConnection.getConnection();        	
+	        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
 	        Statement stmt = connection.createStatement();
 	        // Retrieve agents data from the database
 	        String sql = "SELECT * FROM Agents";
@@ -452,7 +439,10 @@ public class AgentsFrame extends JInternalFrame {
     		//System.out.println(hCustID);
     		//System.out.println(hCustName);
 
-	    } catch (SQLException e) {
+	    } catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -525,7 +515,9 @@ public class AgentsFrame extends JInternalFrame {
 		jTextAgtPhone.setText(rowAgent.elementAt(4));
 		jTextAgtEmail.setText(rowAgent.elementAt(5));
 		jTextAgtPosition.setText(rowAgent.elementAt(6));
-		jCboAgencyID.setSelectedItem(rowAgent.elementAt(7));
+		System.out.println(rowAgent);
+		System.out.println("Agency ID = " + Integer.valueOf(rowAgent.elementAt(7)));
+		jCboAgencyID.setSelectedItem(Integer.valueOf(rowAgent.elementAt(7)));
 		
 		//load agent's customers
 		agentID = Integer.valueOf(rowAgent.get(0));
@@ -622,6 +614,17 @@ public class AgentsFrame extends JInternalFrame {
 			validate = false;
 			message = message + "\nPlease enter or update the agent's email address. (Format: fname.lname@travelexperts.com)";
 		}
+		if ((jTextAgtPosition.getText() != "Senior Agent") && (jTextAgtPosition.getText() != "Intermediate Agent") && (jTextAgtPosition.getText() != "Junior Agent") && (jTextAgtPosition.getText() != "inactive"))
+		{
+			System.out.println("Position: " + jTextAgtPosition.getText());
+			validate = false;
+			message = message + "\nPlease enter or update the agent's position. (Format: 'Senior Agent', 'Intermediate Agent', 'Junior Agent' or 'inactive'";
+		}
+		if (!CboItems.contains((Integer)jCboAgencyID.getSelectedItem()))
+		{
+			validate = false;
+			message = message + "\nPlease select the agency ID.";
+		}
 		if (!validate)
 		{
 			message = message + "\n\nSelect OK to correct the faulted fields or CANCEL to cancel the data entry.";
@@ -713,7 +716,7 @@ public class AgentsFrame extends JInternalFrame {
 	        	vAgent.set(4, (vAgent.get(4) != jTextAgtPhone.getText() ? jTextAgtPhone.getText() : vAgent.get(4)));
 	        	vAgent.set(5, (vAgent.get(5) != jTextAgtEmail.getText() ? jTextAgtEmail.getText() : vAgent.get(5)));
 	        	vAgent.set(6, (vAgent.get(6) != jTextAgtPosition.getText() ? jTextAgtPosition.getText() : vAgent.get(6)));
-	        	vAgent.set(7, (vAgent.get(7) != (String)jCboAgencyID.getSelectedItem() ? (String)jCboAgencyID.getSelectedItem() : vAgent.get(7)));
+	        	vAgent.set(7, (vAgent.get(7) != Integer.toString((Integer)jCboAgencyID.getSelectedItem()) ? Integer.toString((Integer)jCboAgencyID.getSelectedItem()) : vAgent.get(7)));
 	        	vvAgents.set(agentsTableRow, vAgent);
 	        	// display the updated agents table
 	        	validate();
