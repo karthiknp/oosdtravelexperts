@@ -355,6 +355,20 @@ public class AgentsFrame extends JInternalFrame {
 			    });
 			}
 		}
+
+		// Agency Combo box added by will
+		JComboBox cboAgencies = new JComboBox();
+		try {
+			ResultSet rsAgencies = TXConnection.getConnection().createStatement().executeQuery
+			("SELECT AgencyId FROM Agencies");
+			while(rsAgencies.next()) {
+				cboAgencies.addItem(rsAgencies.getString("AgencyID"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		agentsTable.getColumnModel().getColumn(7).setCellEditor(new DefaultCellEditor(cboAgencies));
+		
 		// Adding the main panel onto the main Agent Frame.
 		add(mainPanel, BorderLayout.CENTER);
 		// Setting the size of the main panel.
@@ -377,9 +391,10 @@ public class AgentsFrame extends JInternalFrame {
 		String colNames[] = {"Agent ID", "First Name", "Initial", "Last Name", "Phone", "Email", "Position", "Agency"};
 		Integer agentID;
         try {
-			Class.forName(driver);
+			//Class.forName(driver);
 			// Connecting to the database...
-	        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+	        //Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+        	Connection connection = TXConnection.getConnection();        	
 	        Statement stmt = connection.createStatement();
 	        // Retrieve agents data from the database
 	        String sql = "SELECT * FROM Agents";
@@ -437,10 +452,7 @@ public class AgentsFrame extends JInternalFrame {
     		//System.out.println(hCustID);
     		//System.out.println(hCustName);
 
-	    } catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
+	    } catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
