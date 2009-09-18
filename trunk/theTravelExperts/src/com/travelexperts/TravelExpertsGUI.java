@@ -1,25 +1,32 @@
 package com.travelexperts;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.sql.SQLException;
 
 import javax.swing.ActionMap;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
 /**
- * 	The main frame
+ * 	Main Frame
+ * 
+ * 	Contains main JDesktopPane with all our JInternalFrame's
+ * 
+ *	- Will Dixon
  */
 public class TravelExpertsGUI extends JFrame {
 
 	private static final long serialVersionUID = -7769502223714046401L;
 
+	
 	// The MDI "parent container"
     private JDesktopPane desktopPane = new JDesktopPane();
 
@@ -34,28 +41,42 @@ public class TravelExpertsGUI extends JFrame {
     private CustomersFrame customersFrame = new CustomersFrame();
     private SupportServerFrame supportServerFrame = new SupportServerFrame();
     
-    /**
+	// TODO: implement static get/set status method's and update from relevant components
+	private static String status = "<html>Travel Experts Manager prototype  -  " +
+			"Database connection: <font color='#00FF00'>OK</font>, " +
+			"Server status: <font color='#00FF00'>Online</font></html>";
+    private static final JLabel lblStatus = new JLabel(status, SwingConstants.CENTER);
+    /*
+    private static void setStatus(String status) {
+		TravelExpertsGUI.status = status;
+		lblStatus.setText(TravelExpertsGUI.status);
+	}
+	private static String getStatus() {
+		return status;
+	}
+	*/
+
+	/**
      * Main constructor
-     * @throws SQLException 
-     * @throws InterruptedException 
-     * @throws IOException 
      */
     public TravelExpertsGUI() throws SQLException, IOException, InterruptedException {
 
     	super("Travel Experts Management System");
     	setDefaultCloseOperation(EXIT_ON_CLOSE);
     	
-    	
-    	desktopPane.add(new LoginSystem(this));
+    	desktopPane.setBackground(Color.LIGHT_GRAY);
 
-    	//loadAllForms();
-    	
-    	// Maximize and show the main form
-    	add(desktopPane, BorderLayout.CENTER);    	// Attach MDI parent to Main Frame    	
     	pack();
     	setExtendedState(JFrame.MAXIMIZED_BOTH);
     	setVisible(true);
     	
+    	desktopPane.add(new LoginSystem(this), JDesktopPane.CENTER_ALIGNMENT);
+
+    	//loadAllForms();
+    	
+    	// Maximize and show the main form
+    	add(desktopPane, BorderLayout.CENTER);    	// Attach MDI parent to Main Frame
+    	add(lblStatus, BorderLayout.SOUTH);
     }
     
     // Called from the Login System if login is successful
@@ -100,21 +121,22 @@ public class TravelExpertsGUI extends JFrame {
     }
     
     public static void main(String[] args) {
+    	// Insert into AWT EventQueue
     	EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 		        try {
 		        	new TravelExpertsGUI();
-				} catch (MalformedURLException e) {
+				} 
+		        catch (SQLException e) {
 					e.printStackTrace();
 					TXLogger.logError(e.getMessage());
-				} catch (SQLException e) {
+				} 
+		        catch (IOException e) {
 					e.printStackTrace();
 					TXLogger.logError(e.getMessage());
-				} catch (IOException e) {
-					e.printStackTrace();
-					TXLogger.logError(e.getMessage());
-				} catch (InterruptedException e) {
+				} 
+		        catch (InterruptedException e) {
 					e.printStackTrace();
 					TXLogger.logError(e.getMessage());
 				}

@@ -1,9 +1,5 @@
 package com.travelexperts;
-
-//import java.awt.Component;
-
-//import javax.swing.JLabel;
-//import javax.swing.ListCellRenderer;
+//Jacque Pierre
 
 public class Products
 {
