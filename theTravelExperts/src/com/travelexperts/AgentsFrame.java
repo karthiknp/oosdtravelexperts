@@ -160,7 +160,6 @@ public class AgentsFrame extends JInternalFrame {
 				jButUpdate.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent evt) {
 						System.out.println("jButUpdate.mouseClicked, event="+evt);
-						//TODO add your code for jButUpdate.mouseClicked
 						byte result = updateAgentRecord();
 						if (result == 3) clearRowSelection();
 					}
@@ -216,7 +215,7 @@ public class AgentsFrame extends JInternalFrame {
 				jTextAgtFName.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent evt) {
 						System.out.println("jTextAgtFName.mouseClicked, event="+evt);
-						//TODO add your code for jTextAgtFName.mouseClicked
+						//
 						System.out.println("Agent First Name text field clicked");
 						// if New Button was pressed enable the Save button
 						if (newButPressed) jButSave.setEnabled(true);
@@ -234,7 +233,7 @@ public class AgentsFrame extends JInternalFrame {
 				jTextAgtInitial.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent evt) {
 						System.out.println("jTextAgtInitial.mouseClicked, event="+evt);
-						//TODO add your code for jTextAgtInitial.mouseClicked
+						//
 						System.out.println("Agent Initial text field clicked");
 						// if New Button was pressed enable the Save button
 						if (newButPressed) jButSave.setEnabled(true);
@@ -252,7 +251,7 @@ public class AgentsFrame extends JInternalFrame {
 				jTextAgtLName.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent evt) {
 						System.out.println("jTextAgtLName.mouseClicked, event="+evt);
-						//TODO add your code for jTextAgtLName.mouseClicked
+						//
 						System.out.println("Agent Last Name text field clicked");
 						// if New Button was pressed enable the Save button
 						if (newButPressed) jButSave.setEnabled(true);
@@ -290,7 +289,7 @@ public class AgentsFrame extends JInternalFrame {
 				jTextAgtPhone.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent evt) {
 						System.out.println("jTextAgtPhone.mouseClicked, event="+evt);
-						//TODO add your code for jTextAgtPhone.mouseClicked
+						
 						System.out.println("Agent Phone text field clicked");
 						// if New Button was pressed enable the Save button
 						if (newButPressed) jButSave.setEnabled(true);
@@ -308,7 +307,7 @@ public class AgentsFrame extends JInternalFrame {
 				jTextAgtEmail.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent evt) {
 						System.out.println("jTextAgtEmail.mouseClicked, event="+evt);
-						//TODO add your code for jTextAgtEmail.mouseClicked
+						//
 						System.out.println("Agent Email text field clicked");
 						// if New Button was pressed enable the Save button
 						if (newButPressed) jButSave.setEnabled(true);
@@ -326,7 +325,6 @@ public class AgentsFrame extends JInternalFrame {
 				jTextAgtPosition.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent evt) {
 						System.out.println("jTextAgtPosition.mouseClicked, event="+evt);
-						//TODO add your code for jTextAgtPosition.mouseClicked
 						System.out.println("Agent Position text field clicked");
 						// if New Button was pressed enable the Save button
 						if (newButPressed) jButSave.setEnabled(true);
@@ -348,7 +346,6 @@ public class AgentsFrame extends JInternalFrame {
 			    jCboAgencyID.addMouseListener(new MouseAdapter() {
 			    	public void mouseClicked(MouseEvent evt) {
 			    		System.out.println("jCboAgencyID.mouseClicked, event="+evt);
-			    		//TODO add your code for jCboAgencyID.mouseClicked
 			    		System.out.println("Agent Agency ID combobox field clicked.");
 			    		// if New Button was pressed enable the Save button
 			    		if (newButPressed) jButSave.setEnabled(true);
@@ -444,7 +441,6 @@ public class AgentsFrame extends JInternalFrame {
     		//System.out.println(hCustName);
 			
 	    } catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -469,7 +465,6 @@ public class AgentsFrame extends JInternalFrame {
             }
             System.out.println("Combo box items: " + CboItems);
         } catch (SQLException e) {
-            //TXLogger.logError(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -682,7 +677,6 @@ public class AgentsFrame extends JInternalFrame {
 				return 3;
 	        }
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return 3;
 		}
@@ -731,7 +725,6 @@ public class AgentsFrame extends JInternalFrame {
 				return 3;
 	        }
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return 3;
 		}
@@ -771,17 +764,9 @@ public class AgentsFrame extends JInternalFrame {
 					JOptionPane.showOptionDialog(null, "Error in updating a new Agent record. Report the incident to the Help Desk.", "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 		        }
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	    }
 	}
 
-	private void initGUI() {
-		try {
-			Application.getInstance().getContext().getResourceMap(getClass()).injectComponents(this);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
 }
