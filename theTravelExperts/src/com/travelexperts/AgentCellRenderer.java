@@ -43,9 +43,7 @@ public class AgentCellRenderer
 	
 	public AgentCellRenderer() {
 		// JLabel font looks too heavy in the Jtable, so change font		
-		this.setFont(new Font("Helvetica", 0, 12));
-		
-		this.setEnabled(false);
+		this.setFont(new Font("Helvetica", 0, 12));		
 	}
 	
 	// Load agentId => AgtName into HashMap
