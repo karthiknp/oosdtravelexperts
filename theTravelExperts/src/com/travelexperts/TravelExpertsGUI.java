@@ -46,8 +46,9 @@ public class TravelExpertsGUI extends JFrame {
     	setDefaultCloseOperation(EXIT_ON_CLOSE);
     	
     	
-    	//desktopPane.add(new LoginSystem(this));
-    	loadAllForms();
+    	desktopPane.add(new LoginSystem(this));
+
+    	//loadAllForms();
     	
     	// Maximize and show the main form
     	add(desktopPane, BorderLayout.CENTER);    	// Attach MDI parent to Main Frame    	
@@ -87,6 +88,7 @@ public class TravelExpertsGUI extends JFrame {
 
     @Action public void showCustomers() {
     	customersFrame.setVisible(true);
+    	customersFrame.refreshTable();
     }
         
     @Action public void showSupport() {
@@ -122,4 +124,5 @@ public class TravelExpertsGUI extends JFrame {
 			}
 		});
     }
+
 }

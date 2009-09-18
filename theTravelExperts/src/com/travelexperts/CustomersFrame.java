@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.PatternSyntaxException;
 
-import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
@@ -41,6 +40,11 @@ public class CustomersFrame extends JInternalFrame {
 		"FROM Customers " +
 		"WHERE AgentID IS NULL " +
 		"OR AgentID IN (SELECT AgentID FROM Agents WHERE AgtPosition='Inactive')";
+
+	private static final String QUERY_ACTIVE_AGENTS =
+		"SELECT AgentId, AgtLastName, AgtMiddleInitial, AgtFirstName " +
+		"FROM Agents " +
+		"WHERE AgtPosition <> 'Inactive'";
 		
 	private static final String TEXT_USAGE =
 		"<html><strong>Insert</strong> - Create new customer<br/>" +
@@ -49,8 +53,6 @@ public class CustomersFrame extends JInternalFrame {
 	
 	private static final int COL_INDEX_LASTNAME = 2;
 	private static final int COL_INDEX_AGENTID = 10;
-	
-	private 
 	
 	final JPanel pnlNorth = new JPanel();		// Panels
 	final JPanel pnlCenter = new JPanel();
@@ -102,7 +104,6 @@ public class CustomersFrame extends JInternalFrame {
 		});
 		
 		pack();
-		setVisible(true);		
 	}
 	
 	// Refresh the table by fetching new result set and linking all objects
@@ -121,14 +122,27 @@ public class CustomersFrame extends JInternalFrame {
 
 		sorter = new TableRowSorter<CustomersTableModel>(tmCustomers);		// Sorter
 		tblCustomers.setRowSorter(sorter);
-						
+
+		// Custom renderer/editor for AgentId
 		AgentCellRenderer.refreshAgents();
 		tblCustomers.getColumnModel().getColumn(COL_INDEX_AGENTID)
 			.setCellRenderer(new AgentCellRenderer());
-
 		tblCustomers.getColumnModel().getColumn(COL_INDEX_AGENTID)
 			.setCellEditor(new AgentCellEditor());
 
+		// Set column sizes
+		tblCustomers.getColumnModel().getColumn(0).setPreferredWidth(25);
+		tblCustomers.getColumnModel().getColumn(1).setPreferredWidth(50);
+		tblCustomers.getColumnModel().getColumn(2).setPreferredWidth(50);
+		tblCustomers.getColumnModel().getColumn(3).setPreferredWidth(170);
+		tblCustomers.getColumnModel().getColumn(4).setPreferredWidth(50);
+		tblCustomers.getColumnModel().getColumn(5).setPreferredWidth(50);
+		tblCustomers.getColumnModel().getColumn(6).setPreferredWidth(50);
+		tblCustomers.getColumnModel().getColumn(7).setPreferredWidth(50);
+		tblCustomers.getColumnModel().getColumn(8).setPreferredWidth(50);
+		tblCustomers.getColumnModel().getColumn(9).setPreferredWidth(100);
+		tblCustomers.getColumnModel().getColumn(10).setPreferredWidth(100);
+		
 		pnlCenter.add(spCustomers);
 		
 		initSearch();		

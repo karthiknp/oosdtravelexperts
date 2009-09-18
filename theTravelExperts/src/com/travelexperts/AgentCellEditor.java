@@ -1,17 +1,11 @@
 package com.travelexperts;
 
 import java.awt.Component;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.AbstractCellEditor;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
@@ -19,58 +13,54 @@ import javax.swing.table.TableCellEditor;
  * 
  * @author WillDixon
  * 
- * Custom cell editor for AgentId for Customers form 
+ *  TODO: Refactor HashMap out of AgentCellRenderer into it's own class,
+ *  ran out of time tho.
  *
+ *  Hashtable from 
  */
 public class AgentCellEditor
 	extends AbstractCellEditor 
-	implements TableCellEditor, ActionListener {
-	
-	protected static final String ACTION_COMMAND = "SELECT_AGENT"; 
-	
-	// Use int wrapper for handy methods
-	private Integer selectedAgentId = new Integer(0);
-
-	JButton btnCellEditor;
+	implements TableCellEditor {
 	
 	// Contains the Agents to select from
 	JComboBox cboAgents = new JComboBox();
 	
 	public AgentCellEditor() {
-		btnCellEditor = new JButton("Editing");
-		btnCellEditor.addActionListener(this);
-		
-		cboAgents.setActionCommand(ACTION_COMMAND);
 		
 		// Build combo box from Agents hashmap 
 		Set<Integer> set = AgentCellRenderer.hmAgents.keySet();
-		Iterator<E> i = set.iterator();
-		
+		Iterator<Integer> i = set.iterator();
+		cboAgents.addItem("Please Select:");
 		while(i.hasNext()) {
-			cboAgents.addItem()
+			cboAgents.addItem(AgentCellRenderer.hmAgents.get(i.next()));
 		}
-		
 	}
 	
-	// 
+	// Returns the AgentId based on the selected agent name from textbox
 	@Override public Object getCellEditorValue() {
-		// Use array from this class, should be refactored to its own class
 		
-		return selectedAgentId;
+		String selectedAgentName = cboAgents.getSelectedItem().toString();
+		
+		if(AgentCellRenderer.hmAgents.containsValue(selectedAgentName)) {
+			// Find agent id (key) from name in hash map
+			// There must be a faster way to do this :(
+			Set<Integer> set = AgentCellRenderer.hmAgents.keySet();
+			Iterator<Integer> i = set.iterator();		
+			while(i.hasNext()) {
+				Integer agtIndex = i.next();
+				// Does selected agtname in combobox have corresponding key (agentid) in hash map?
+				if(AgentCellRenderer.hmAgents.get(agtIndex).equals(selectedAgentName)) {
+					return agtIndex;
+				}
+			}
+		}
+		
+		return 0;
 	}
 
-	//
 	@Override public Component getTableCellEditorComponent(JTable table, Object value,
 			boolean isSelected, int row, int column) {
 		
-		JOptionPane.showMessageDialog(null, "getTableCellEditorComponent");
-		
-		
 		return cboAgents;
-	}
-
-	// Handles cell editing and combo box selections
-	@Override public void actionPerformed(ActionEvent arg0) {
-	
 	}
 }
