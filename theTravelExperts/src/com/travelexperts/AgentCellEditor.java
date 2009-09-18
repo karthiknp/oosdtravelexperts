@@ -13,10 +13,8 @@ import javax.swing.table.TableCellEditor;
  * 
  * @author WillDixon
  * 
- *  TODO: Refactor HashMap out of AgentCellRenderer into it's own class,
- *  ran out of time tho.
- *
- *  Hashtable from 
+ * Custom cell editor for AgentID in customers table
+ *   
  */
 public class AgentCellEditor
 	extends AbstractCellEditor 

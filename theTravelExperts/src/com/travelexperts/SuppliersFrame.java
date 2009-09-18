@@ -1,14 +1,12 @@
 package com.travelexperts;
 /***********************************************************************
 
-Gui by Will Dixon, Code by Michelle Hasna
+ Code by Michelle Hasna
 
 
 ************************************************************************/
 
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -33,8 +31,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 
 

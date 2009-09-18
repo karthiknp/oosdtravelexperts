@@ -13,6 +13,8 @@ import javax.swing.table.TableCellRenderer;
 /**
  * 
  * @author Will Dixon
+
+ *  TODO: Refactor HashMap out of AgentCellRenderer into it's own class.
  *
  *  Custom cell renderer for AgentID in the Customers table
  *  
@@ -40,9 +42,8 @@ public class AgentCellRenderer
 	}
 	
 	public AgentCellRenderer() {
-		// JLabel isbold by default: turn it off so it looks better in table
-		
-		this.setFont(new Font("Times New Roman", 0, 12));
+		// JLabel font looks too heavy in the Jtable, so change font		
+		this.setFont(new Font("Helvetica", 0, 12));
 		
 		this.setEnabled(false);
 	}

@@ -11,6 +11,7 @@ import java.sql.SQLException;
 public class TXConnection 
 {
 	// TODO: load from properties file
+	// Add Linux connect string support in inner try/catch block
 	private static String dbDriverClassname = "oracle.jdbc.driver.OracleDriver";
 	private static String dbConnectionString = "jdbc:oracle:thin:@localhost:1521:xe";
 	private static String dbUsername = "ictoosd";

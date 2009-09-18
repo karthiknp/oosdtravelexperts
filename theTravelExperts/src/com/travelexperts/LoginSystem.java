@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 
 /**
- * This class uses all static methods so other objects may easily
+ * This class uses static methods so other objects may easily
  * find the current user logged in. 
  * 
  * @author Will_Dixon
@@ -71,7 +71,10 @@ public class LoginSystem extends JInternalFrame {
 		add(pnlSouth, BorderLayout.SOUTH);
 		pack();
 		
-		setLocation(300, 200);
+		// Center frame in desktop pane
+		setLocation((parentFrame.getWidth() - getWidth()) / 2, 
+				(parentFrame.getHeight() - getHeight()) / 2);
+		
 		setVisible(true);
 		
 		// Code for login validation

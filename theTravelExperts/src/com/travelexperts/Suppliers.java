@@ -1,5 +1,7 @@
 package com.travelexperts;
 
+// Jacque Pierre
+
 public class Suppliers
 {
 	// Suppliers class definition

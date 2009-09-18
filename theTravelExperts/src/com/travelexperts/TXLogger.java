@@ -21,13 +21,12 @@ import org.apache.log4j.PatternLayout;
 /**
  * 
  * @author Will Dixon & Ingrid Niu
+ *
+ * Combined both lol, needs to be cleaned up
  * 
- * 
- *         Logger that saves errors/warnings in XML
  */
 public class TXLogger extends Logger
 {
-
 	// Ingrids log4J stuff
 	protected static final String LOG_NAME = "TXLog";
 	static Logger logger = Logger.getLogger(LOG_NAME);
@@ -62,10 +61,10 @@ public class TXLogger extends Logger
 	public static final int EVENT_NOTICE = 3;
 	public static final int EVENT_INFO = 4;
 
-	private static final String[] EVENT_NAMES = { "Unknown", "Error",
+	public static final String[] EVENT_NAMES = { "Unknown", "Error",
 			"Warning", "Notice", "Info" };
 
-	private static String LOG_FILENAME = "txlog.txt";
+	protected static String LOG_FILENAME = "txlog.txt";
 
 	private static BufferedWriter bfwLogger;
 
