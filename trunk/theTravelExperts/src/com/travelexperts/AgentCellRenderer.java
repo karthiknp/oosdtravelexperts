@@ -2,7 +2,6 @@ package com.travelexperts;
 
 import java.awt.Component;
 import java.awt.Font;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -40,12 +39,21 @@ public class AgentCellRenderer
 		refreshAgents();
 	}
 	
+	public AgentCellRenderer() {
+		// JLabel isbold by default: turn it off so it looks better in table
+		
+		this.setFont(new Font("Times New Roman", 0, 12));
+		
+		this.setEnabled(false);
+	}
+	
 	// Load agentId => AgtName into HashMap
 	// Fire this after Agent table is modified 
 	static public void refreshAgents() {
 		try {
 			ResultSet rs = TXConnection.getConnection().createStatement()
 				.executeQuery(QUERY_ACTIVE_AGENTS);
+			hmAgents.clear();
 			while(rs.next()) {
 				hmAgents.put(rs.getInt("AgentId"), 
 						rs.getString("AgtLastName") + ", " + rs.getString("AgtFirstName"));
@@ -79,7 +87,7 @@ public class AgentCellRenderer
 			// Will be hard to not see this exception lolz
 			this.setText(nfe.getMessage());
 		}
-		
+				
 		return this;		// Return Jlabel with Agent name as text
 	}
 }
