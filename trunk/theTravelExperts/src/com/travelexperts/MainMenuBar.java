@@ -207,13 +207,16 @@ public class MainMenuBar extends JMenuBar
 					skinMenuItem.setAccelerator(KeyStroke.getKeyStroke("control "+i++));
 				}
 
+				JMenuItem skinMenuItem;
 				// Add our LNFs attached as jars
-				JMenuItem skinMenuItem = new JMenuItem("Mac");
+				/*// Mac disabled, kinda broken
+				skinMenuItem = new JMenuItem("Mac");
 				skinMenuItem.setAccelerator(KeyStroke.getKeyStroke("control "+i++));
 				skinMenuItem
 						.addActionListener(newSkinMenuAction("ch.randelshofer.quaqua.QuaquaLookAndFeel"));
 				skinsMenu.add(skinMenuItem);
-
+				*/
+				
 				skinMenuItem = new JMenuItem("NimROD");
 				skinMenuItem.setAccelerator(KeyStroke.getKeyStroke("control "+i++));
 			skinMenuItem.addActionListener(new ActionListener()

@@ -41,10 +41,6 @@ public class CustomersFrame extends JInternalFrame {
 		"WHERE AgentID IS NULL " +
 		"OR AgentID IN (SELECT AgentID FROM Agents WHERE AgtPosition='Inactive')";
 
-	private static final String QUERY_ACTIVE_AGENTS =
-		"SELECT AgentId, AgtLastName, AgtMiddleInitial, AgtFirstName " +
-		"FROM Agents " +
-		"WHERE AgtPosition <> 'Inactive'";
 		
 	private static final String TEXT_USAGE =
 		"<html><strong>Insert</strong> - Create new customer<br/>" +
@@ -118,7 +114,7 @@ public class CustomersFrame extends JInternalFrame {
 		tblCustomers.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		spCustomers = new JScrollPane(tblCustomers);
-		spCustomers.setPreferredSize(new Dimension(1200, 500));
+		spCustomers.setPreferredSize(new Dimension(800, 500));
 
 		sorter = new TableRowSorter<CustomersTableModel>(tmCustomers);		// Sorter
 		tblCustomers.setRowSorter(sorter);
@@ -133,15 +129,15 @@ public class CustomersFrame extends JInternalFrame {
 		// Set column sizes
 		tblCustomers.getColumnModel().getColumn(0).setPreferredWidth(25);
 		tblCustomers.getColumnModel().getColumn(1).setPreferredWidth(50);
-		tblCustomers.getColumnModel().getColumn(2).setPreferredWidth(50);
-		tblCustomers.getColumnModel().getColumn(3).setPreferredWidth(170);
-		tblCustomers.getColumnModel().getColumn(4).setPreferredWidth(50);
+		tblCustomers.getColumnModel().getColumn(2).setPreferredWidth(60);
+		tblCustomers.getColumnModel().getColumn(3).setPreferredWidth(160);
+		tblCustomers.getColumnModel().getColumn(4).setPreferredWidth(60);
 		tblCustomers.getColumnModel().getColumn(5).setPreferredWidth(50);
-		tblCustomers.getColumnModel().getColumn(6).setPreferredWidth(50);
-		tblCustomers.getColumnModel().getColumn(7).setPreferredWidth(50);
-		tblCustomers.getColumnModel().getColumn(8).setPreferredWidth(50);
+		tblCustomers.getColumnModel().getColumn(6).setPreferredWidth(70);
+		tblCustomers.getColumnModel().getColumn(7).setPreferredWidth(70);
+		tblCustomers.getColumnModel().getColumn(8).setPreferredWidth(60);
 		tblCustomers.getColumnModel().getColumn(9).setPreferredWidth(100);
-		tblCustomers.getColumnModel().getColumn(10).setPreferredWidth(100);
+		tblCustomers.getColumnModel().getColumn(10).setPreferredWidth(130);
 		
 		pnlCenter.add(spCustomers);
 		
