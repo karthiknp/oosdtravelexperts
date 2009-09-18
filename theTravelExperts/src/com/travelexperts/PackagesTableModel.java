@@ -293,8 +293,8 @@ public class PackagesTableModel extends AbstractTableModel implements
 			rs_packages.moveToInsertRow();
 			rs_packages.updateInt(1, maxPkgID + 1);
 			rs_packages.updateString(2, "value required");
-			rs_packages.updateString(3, "");
-			rs_packages.updateString(4, "");
+			//rs_packages.updateString(3, "");
+			//rs_packages.updateString(4, "");
 			rs_packages.updateString(5, "");
 			rs_packages.updateInt(6, 0);
 			rs_packages.updateInt(7, 0);
