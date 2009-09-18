@@ -26,7 +26,7 @@ import javax.swing.table.TableRowSorter;
 
 /**
  * 
- * @author will_ad
+ * @author WillDixon
  *
  */
 @SuppressWarnings("serial")
@@ -77,7 +77,8 @@ public class CustomersFrame extends JInternalFrame {
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 	
 		initFrame();
-				
+		
+		refreshTable();
 		chkUnassigned.addActionListener(new ActionListener() {
 			@Override public void actionPerformed(ActionEvent e) {
 				refreshTable();
@@ -125,25 +126,13 @@ public class CustomersFrame extends JInternalFrame {
 
 		sorter = new TableRowSorter<CustomersTableModel>(tmCustomers);		// Sorter
 		tblCustomers.setRowSorter(sorter);
-		
-		/*  
-		tblCustomers.addMouseListener(new MouseAdapter() {
-			@Override public void mouseClicked(MouseEvent e) {
-				Point p = e.getPoint();
-				int rowClicked = tblCustomers.rowAtPoint(p);
-				int colClicked = tblCustomers.columnAtPoint(p);
-				
-				if(colClicked == COL_INDEX_AGENTID) {
-					tmCustomers.setValueAt(agentID, rowClicked, colClicked);
-				}
-			}
-		});
-		*/
-		
-		refreshAgents();
-		// Use combo box for Agent ID
+						
+		AgentCellRenderer.refreshAgents();
 		tblCustomers.getColumnModel().getColumn(COL_INDEX_AGENTID)
-			.setCellEditor(new DefaultCellEditor(cboAgents));
+			.setCellRenderer(new AgentCellRenderer());
+
+		tblCustomers.getColumnModel().getColumn(COL_INDEX_AGENTID)
+			.setCellEditor(new AgentCellEditor());
 
 		pnlCenter.add(spCustomers);
 		
@@ -190,26 +179,7 @@ public class CustomersFrame extends JInternalFrame {
 		} 
 		
 	}
-	
-	public void refreshAgents() {
-		// Populate the Agent combo box with active agents
-		try {
-			rsAgents = TXConnection.getConnection().createStatement()
-			.executeQuery(QUERY_ACTIVE_AGENTS);
-			
-			cboAgents.removeAllItems();
-			cboAgents.setEditable(false);
-			while(rsAgents.next()) {
-				cboAgents.addItem(rsAgents.getString("AgentID"));
-			}
-			cboAgents.setSelectedIndex(-1);
-			rsAgents.getStatement().close();
-		}
-		catch(SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
-	
+		
 	public void initSearch() {		
 		// TextField action handler: search by last name 
 		txtSearch.addActionListener(new ActionListener() {
