@@ -41,11 +41,6 @@ public class CustomersFrame extends JInternalFrame {
 		"FROM Customers " +
 		"WHERE AgentID IS NULL " +
 		"OR AgentID IN (SELECT AgentID FROM Agents WHERE AgtPosition='Inactive')";
-
-	private static final String QUERY_ACTIVE_AGENTS =
-		"SELECT AgentId, AgtLastName, AgtMiddleInitial, AgtFirstName " +
-		"FROM Agents " +
-		"WHERE AgtPosition <> 'Inactive'";
 		
 	private static final String TEXT_USAGE =
 		"<html><strong>Insert</strong> - Create new customer<br/>" +
