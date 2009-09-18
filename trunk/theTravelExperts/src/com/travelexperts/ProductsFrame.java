@@ -158,9 +158,9 @@ public class ProductsFrame extends JInternalFrame {
 			jScrollPane2.setViewportView(lstProductsSuppliers);
 		}
 		flowPanel.add(btnMoveLeft);
-		btnMoveLeft.setBounds(294, 78, 24, 21);
+		btnMoveLeft.setBounds(275, 77, 50, 36);
 		flowPanel.add(btnMoveRight);
-		btnMoveRight.setBounds(343, 78, 24, 21);
+		btnMoveRight.setBounds(336, 78, 51, 35);
 		//flowPanel.add(pnlLeftButtons);
 		//flowPanel.add(pnlRightButtons);
 		//

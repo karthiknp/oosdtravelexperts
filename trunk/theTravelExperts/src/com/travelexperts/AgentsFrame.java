@@ -1,23 +1,24 @@
 package com.travelexperts;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.Vector;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
-import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -28,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+
 import org.jdesktop.application.Application;
 
 /**
@@ -87,6 +89,7 @@ public class AgentsFrame extends JInternalFrame {
 
 	public AgentsFrame() {
 		super("Agent Management", true, true, true, true);
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		
 		loadAgentCustData();
 			
@@ -379,9 +382,10 @@ public class AgentsFrame extends JInternalFrame {
 		String colNames[] = {"Agent ID", "First Name", "Initial", "Last Name", "Phone", "Email", "Position", "Agency"};
 		Integer agentID;
         try {
-			Class.forName(driver);
+			//Class.forName(driver);
 			// Connecting to the database...
-	        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+	        //Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+			Connection connection = TXConnection.getConnection();
 	        Statement stmt = connection.createStatement();
 	        // Retrieve agents data from the database
 	        String sql = "SELECT * FROM Agents";
@@ -438,11 +442,8 @@ public class AgentsFrame extends JInternalFrame {
 			rs.close();
     		//System.out.println(hCustID);
     		//System.out.println(hCustName);
-
-	    } catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
+			
+	    } catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -452,9 +453,10 @@ public class AgentsFrame extends JInternalFrame {
     {
         // Build combo box containing active agents
         try {
-			Class.forName(driver);
+			//Class.forName(driver);
 			// Connecting to the database...
-	        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+	        //Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+			Connection connection = TXConnection.getConnection();
 	        Statement stmt = connection.createStatement();
 	        // Retrieve agents data from the database
 	        String sql = "SELECT UNIQUE AgencyID FROM Agencies";
@@ -469,10 +471,7 @@ public class AgentsFrame extends JInternalFrame {
         } catch (SQLException e) {
             //TXLogger.logError(e.getMessage());
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        }
     }
     
 	private void clearRowSelection()
@@ -558,6 +557,7 @@ public class AgentsFrame extends JInternalFrame {
     	//lstCustomers.setSize(300, 200);
     	lstCustomers.setSize(100, 200);
 		jspCustomers = new JScrollPane(lstCustomers);
+		jspCustomers.setPreferredSize(new Dimension(150, 200));
     	customerPanel.add(jspCustomers, BorderLayout.CENTER);
 		add(jspCustomers, BorderLayout.EAST);
 		pack();
@@ -614,11 +614,11 @@ public class AgentsFrame extends JInternalFrame {
 			validate = false;
 			message = message + "\nPlease enter or update the agent's email address. (Format: fname.lname@travelexperts.com)";
 		}
-		if ((jTextAgtPosition.getText() != "Senior Agent") && (jTextAgtPosition.getText() != "Intermediate Agent") && (jTextAgtPosition.getText() != "Junior Agent") && (jTextAgtPosition.getText() != "inactive"))
+		if ((!jTextAgtPosition.getText().equals("Senior Agent")) && (!jTextAgtPosition.getText().equals("Intermediate Agent")) && (!jTextAgtPosition.getText().equals( "Junior Agent")) && (!jTextAgtPosition.getText().equals("Inactive")))
 		{
 			System.out.println("Position: " + jTextAgtPosition.getText());
 			validate = false;
-			message = message + "\nPlease enter or update the agent's position. (Format: 'Senior Agent', 'Intermediate Agent', 'Junior Agent' or 'inactive'";
+			message = message + "\nPlease enter or update the agent's position. (Format: 'Senior Agent', 'Intermediate Agent', 'Junior Agent' or 'Inactive'";
 		}
 		if (!CboItems.contains((Integer)jCboAgencyID.getSelectedItem()))
 		{
@@ -643,8 +643,10 @@ public class AgentsFrame extends JInternalFrame {
 		byte choice = validateFields();
 		if (choice != 1) return choice;
 		try {
-			Class.forName(driver);
-	        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+			//Class.forName(driver);
+	        //Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+			Connection connection = TXConnection.getConnection();
+			
 	        Integer NextAgentNo = getNextAgentNum();
 	        String sql = "INSERT INTO Agents VALUES ('" + NextAgentNo + "','" + jTextAgtFName.getText() + "','" 
 	        	+ jTextAgtInitial.getText() + "','" + jTextAgtLName.getText() + "','"
@@ -665,7 +667,7 @@ public class AgentsFrame extends JInternalFrame {
 	        	vAgent.add(jTextAgtPhone.getText());
 	        	vAgent.add(jTextAgtEmail.getText());
 	        	vAgent.add(jTextAgtPosition.getText());
-	        	vAgent.add((String)jCboAgencyID.getSelectedItem());
+	        	vAgent.add(""+jCboAgencyID.getSelectedItem());
 	        	vvAgents.add(vAgent);
 	        	// display the updated agents table
 	        	jButSave.setEnabled(false);
@@ -679,10 +681,6 @@ public class AgentsFrame extends JInternalFrame {
 				JOptionPane.showOptionDialog(null, "Error in saving a new Agent record. Report the incident to the Help Desk.", "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 				return 3;
 	        }
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return 3;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -695,9 +693,11 @@ public class AgentsFrame extends JInternalFrame {
 		byte choice = validateFields();
 		if (choice != 1) return choice;
 		try {
-			Class.forName(driver);
-	        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
-	        String sql = "UPDATE Agents SET AgtFirstName='" + jTextAgtFName.getText() + "',AgtMiddleInitial='" +
+			//Class.forName(driver);
+	        //Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+			Connection connection = TXConnection.getConnection();
+
+			String sql = "UPDATE Agents SET AgtFirstName='" + jTextAgtFName.getText() + "',AgtMiddleInitial='" +
 	        	jTextAgtInitial.getText() + "',AgtLastName='" + jTextAgtLName.getText() + "',AgtBusPhone='" +
 	        	jTextAgtPhone.getText() + "',AgtEmail='" + jTextAgtEmail.getText() + "',AgtPosition='" +
 	        	jTextAgtPosition.getText() + "',AgencyID='" + jCboAgencyID.getSelectedItem() + "' WHERE AgentID='" +
@@ -730,10 +730,6 @@ public class AgentsFrame extends JInternalFrame {
 				JOptionPane.showOptionDialog(null, "Error in updating a new Agent record. Report the incident to the Help Desk.", "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 				return 3;
 	        }
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return 3;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -752,8 +748,9 @@ public class AgentsFrame extends JInternalFrame {
 	    else
 	    {
 			try {
-				Class.forName(driver);
-		        Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+				//Class.forName(driver);
+		        //Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orant11g","ictoosd","ictoosd");
+				Connection connection = TXConnection.getConnection();
 		        String sql = "DELETE Agents WHERE AgentID='" + jTextAgtID.getText() + "'";
 		        System.out.println(sql);
 		        Statement stmt = connection.createStatement();
@@ -773,9 +770,6 @@ public class AgentsFrame extends JInternalFrame {
 					Object options[] = {"OK", "Cancel"};
 					JOptionPane.showOptionDialog(null, "Error in updating a new Agent record. Report the incident to the Help Desk.", "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 		        }
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
