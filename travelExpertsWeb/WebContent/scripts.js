@@ -77,7 +77,7 @@ function doPost(url, formId) {
 	request.setRequestHeader("Connection", "close");	
 	request.send(postData);
 	
-	alert("Thanks for choosing Travel Experts: " + postData);
+	alert("Thanks for choosing Travel Experts");
 }
 
 // Builds string for AJAX get/post from form data 

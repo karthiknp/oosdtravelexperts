@@ -5,19 +5,17 @@
 	
 	fixed: all contents in jar file must be signed since full access to system is required
 	ex: jarsigner -keystore oosdKeystore txapp.jar oosd
-	repeat for all required .jars 
-	fixed: used fat-jar to put all required libraries into 1 signable jar
 -->
 
 <jnlp spec="1.0+"
-  codebase="http://localhost:7080/travelExpertsWWW"
+  codebase="http://localhost:7080/travelExpertsWeb"
   href="TXApplication.jnlp">
 
   <information>
-    <title>TXApp</title>
+    <title>Travel Experts Manager</title>
     <vendor>OOSD</vendor>
     <homepage href="http://oosdtravelexperts.googlecode.com/"/>
-    <description>long desc here.</description>
+    <description>Ingrid Niu, Michelle Hasna, Jacque Pierre, Will Dixon</description>
     <description kind="short">Project for Java</description>
     <offline-allowed/>
   </information>
@@ -28,7 +26,7 @@
 
   <resources>
     <j2se version="1.5+"/>
-    <jar href="TXApplication.jar" main="true"/>
+    <jar href="TXManager.jar" main="true"/>
     <extension href="http://download.java.net/media/java3d/webstart/release/java3d-latest.jnlp"/>
   </resources>
 
