@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
@@ -166,8 +167,10 @@ public class SupportServerFrame extends JInternalFrame implements Runnable {
 	 * @return	Returns the message with a date prefix
 	 */
 	private String formatMessage(String unformattedMessage) {
-		return "( " +
-			"HH:MM" +
+		SimpleDateFormat sdf = new SimpleDateFormat("h:mm a");
+		
+		
+		return "( " + sdf.format(new Date()) +
 			")" +
 			unformattedMessage + "\r\n";
 	}
